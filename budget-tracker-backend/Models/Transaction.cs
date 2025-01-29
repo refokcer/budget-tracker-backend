@@ -9,7 +9,9 @@
         public int CurrencyId { get; set; }
         public int CategoryId { get; set; }
         public DateTime Date { get; set; }
-        public string AccountId { get; set; } = null!;
+        public int? AccountFrom { get; set; }
+        public int? AccountTo {  get; set; }
+        public string Type { get; set; } = null!; // enum of => exprnsive, income, transaction
         public string? Description { get; set; }
 
         // Навигационные свойства
