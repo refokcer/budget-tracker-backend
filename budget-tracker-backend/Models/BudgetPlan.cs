@@ -1,4 +1,6 @@
-﻿namespace budget_tracker_backend.Models;
+﻿using budget_tracker_backend.Models.Enums;
+
+namespace budget_tracker_backend.Models;
 
 public class BudgetPlan
 {

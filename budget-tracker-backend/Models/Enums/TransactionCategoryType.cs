@@ -1,4 +1,4 @@
-﻿namespace budget_tracker_backend.Models
+﻿namespace budget_tracker_backend.Models.Enums
 {
     public enum TransactionCategoryType
     {
