@@ -5,7 +5,9 @@ using budget_tracker_backend.Models;
 
 namespace budget_tracker_backend.Controllers;
 
-public class CurrenciesController : Controller
+[Route("api/[controller]")]
+[ApiController]
+public class CurrenciesController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
 
@@ -14,134 +16,83 @@ public class CurrenciesController : Controller
         _context = context;
     }
 
-    // GET: Currencies
-    public async Task<IActionResult> Index()
+    // GET: api/Currencies
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Currency>>> GetCurrencies()
     {
-        return View(await _context.Currencies.ToListAsync());
+        return await _context.Currencies.ToListAsync();
     }
 
-    // GET: Currencies/Details/5
-    public async Task<IActionResult> Details(int? id)
+    // GET: api/Currencies/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Currency>> GetCurrency(int id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var currency = await _context.Currencies
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (currency == null)
-        {
-            return NotFound();
-        }
-
-        return View(currency);
-    }
-
-    // GET: Currencies/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: Currencies/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Title,Code,Symbol,IsBase")] Currency currency)
-    {
-        if (ModelState.IsValid)
-        {
-            _context.Add(currency);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        return View(currency);
-    }
-
-    // GET: Currencies/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
         var currency = await _context.Currencies.FindAsync(id);
+
         if (currency == null)
         {
             return NotFound();
         }
-        return View(currency);
+
+        return currency;
     }
 
-    // POST: Currencies/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Code,Symbol,IsBase")] Currency currency)
+    // PUT: api/Currencies/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutCurrency(int id, Currency currency)
     {
         if (id != currency.Id)
         {
-            return NotFound();
+            return BadRequest();
         }
 
-        if (ModelState.IsValid)
+        _context.Entry(currency).State = EntityState.Modified;
+
+        try
         {
-            try
-            {
-                _context.Update(currency);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CurrencyExists(currency.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
+            await _context.SaveChangesAsync();
         }
-        return View(currency);
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!CurrencyExists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
     }
 
-    // GET: Currencies/Delete/5
-    public async Task<IActionResult> Delete(int? id)
+    // POST: api/Currencies
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<Currency>> PostCurrency(Currency currency)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        _context.Currencies.Add(currency);
+        await _context.SaveChangesAsync();
 
-        var currency = await _context.Currencies
-            .FirstOrDefaultAsync(m => m.Id == id);
+        return CreatedAtAction("GetCurrency", new { id = currency.Id }, currency);
+    }
+
+    // DELETE: api/Currencies/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteCurrency(int id)
+    {
+        var currency = await _context.Currencies.FindAsync(id);
         if (currency == null)
         {
             return NotFound();
         }
 
-        return View(currency);
-    }
-
-    // POST: Currencies/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var currency = await _context.Currencies.FindAsync(id);
-        if (currency != null)
-        {
-            _context.Currencies.Remove(currency);
-        }
-
+        _context.Currencies.Remove(currency);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+
+        return NoContent();
     }
 
     private bool CurrencyExists(int id)

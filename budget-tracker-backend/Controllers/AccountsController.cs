@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Models;
 
 namespace budget_tracker_backend.Controllers;
 
-public class AccountsController : Controller
+[Route("api/[controller]")]
+[ApiController]
+public class AccountsController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
 
@@ -15,141 +16,83 @@ public class AccountsController : Controller
         _context = context;
     }
 
-    // GET: Accounts
-    public async Task<IActionResult> Index()
+    // GET: api/Accounts
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
     {
-        var applicationDbContext = _context.Accounts.Include(a => a.Currency);
-        return View(await applicationDbContext.ToListAsync());
+        return await _context.Accounts.ToListAsync();
     }
 
-    // GET: Accounts/Details/5
-    public async Task<IActionResult> Details(int? id)
+    // GET: api/Accounts/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Account>> GetAccount(int id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var account = await _context.Accounts
-            .Include(a => a.Currency)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (account == null)
-        {
-            return NotFound();
-        }
-
-        return View(account);
-    }
-
-    // GET: Accounts/Create
-    public IActionResult Create()
-    {
-        ViewData["CurrencyId"] = new SelectList(_context.Currencies, "Id", "Id");
-        return View();
-    }
-
-    // POST: Accounts/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Title,Amount,CurrencyId,Description")] Account account)
-    {
-        if (ModelState.IsValid)
-        {
-            _context.Add(account);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-        ViewData["CurrencyId"] = new SelectList(_context.Currencies, "Id", "Id", account.CurrencyId);
-        return View(account);
-    }
-
-    // GET: Accounts/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
         var account = await _context.Accounts.FindAsync(id);
+
         if (account == null)
         {
             return NotFound();
         }
-        ViewData["CurrencyId"] = new SelectList(_context.Currencies, "Id", "Id", account.CurrencyId);
-        return View(account);
+
+        return account;
     }
 
-    // POST: Accounts/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Amount,CurrencyId,Description")] Account account)
+    // PUT: api/Accounts/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutAccount(int id, Account account)
     {
         if (id != account.Id)
         {
-            return NotFound();
+            return BadRequest();
         }
 
-        if (ModelState.IsValid)
+        _context.Entry(account).State = EntityState.Modified;
+
+        try
         {
-            try
-            {
-                _context.Update(account);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccountExists(account.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
+            await _context.SaveChangesAsync();
         }
-        ViewData["CurrencyId"] = new SelectList(_context.Currencies, "Id", "Id", account.CurrencyId);
-        return View(account);
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!AccountExists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
     }
 
-    // GET: Accounts/Delete/5
-    public async Task<IActionResult> Delete(int? id)
+    // POST: api/Accounts
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<Account>> PostAccount(Account account)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        _context.Accounts.Add(account);
+        await _context.SaveChangesAsync();
 
-        var account = await _context.Accounts
-            .Include(a => a.Currency)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        return CreatedAtAction("GetAccount", new { id = account.Id }, account);
+    }
+
+    // DELETE: api/Accounts/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAccount(int id)
+    {
+        var account = await _context.Accounts.FindAsync(id);
         if (account == null)
         {
             return NotFound();
         }
 
-        return View(account);
-    }
-
-    // POST: Accounts/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var account = await _context.Accounts.FindAsync(id);
-        if (account != null)
-        {
-            _context.Accounts.Remove(account);
-        }
-
+        _context.Accounts.Remove(account);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+
+        return NoContent();
     }
 
     private bool AccountExists(int id)
