@@ -42,7 +42,7 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(t => t.CategoryId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // 3. Разрешаем удаление Account (ставим NULL)
+        // 3. Удаление Account запрещаем, если есть связанные Transactions
         modelBuilder.Entity<Transaction>()
             .HasOne(t => t.FromAccount)
             .WithMany()

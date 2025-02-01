@@ -9,6 +9,6 @@
         public List<Transaction> Transactions { get; set; } = [];
 
         // Навигационное свойство
-        public BudgetPlan BudgetPlan { get; set; } = null!;
+        public BudgetPlan BudgetPlan { get; set; } = new BudgetPlan();
     }
 }

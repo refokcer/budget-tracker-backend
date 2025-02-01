@@ -7,7 +7,7 @@ public class Transaction
     public int Id { get; set; }
     public string Title { get; set; } = null!;
     public decimal Amount { get; set; }
-    public int EventId { get; set; }
+    public int? EventId { get; set; }
     public int CurrencyId { get; set; }
     public int? CategoryId { get; set; }
     public DateTime Date { get; set; }
