@@ -9,6 +9,6 @@
         public string? Description { get; set; }
 
         // Навигационные свойства
-        public virtual Currency Currency { get; set; } = new Currency();
+        public virtual Currency? Currency { get; set; }
     }
 }

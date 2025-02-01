@@ -20,8 +20,8 @@ public class Transaction
 
     // Навигационные свойства
     public virtual Category? Category { get; set; }
-    public virtual Currency Currency { get; set; } = null!;
-    public virtual Event Event { get; set; } = null!;
+    public virtual Currency? Currency { get; set; }
+    public virtual Event? Event { get; set; }
     public virtual Account? FromAccount { get; set; }
     public virtual Account? ToAccount { get; set; }
 }

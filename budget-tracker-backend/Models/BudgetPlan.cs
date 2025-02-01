@@ -14,5 +14,5 @@ public class BudgetPlan
     public string? Description { get; set; }
 
     // Навигационные свойства
-    public virtual Category Category { get; set; } = new Category();
+    public virtual Category? Category { get; set; } = new Category();
 }
