@@ -1,5 +1,6 @@
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Models;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,5 +35,20 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("AllowReact"); // Включаем CORS
+
+app.UseExceptionHandler(appBuilder =>
+{
+    appBuilder.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        if (exception != null)
+        {
+            Console.WriteLine($"Ошибка на сервере: {exception.Message}");
+            Console.WriteLine($"StackTrace: {exception.StackTrace}");
+        }
+        await context.Response.WriteAsync("An unexpected error occurred.");
+    });
+});
 
 app.Run();
