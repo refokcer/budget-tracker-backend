@@ -1,4 +1,6 @@
-﻿namespace budget_tracker_backend.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace budget_tracker_backend.Models;
 
 public class Account
 {
@@ -9,5 +11,6 @@ public class Account
     public string? Description { get; set; }
 
     // Навигационные свойства
+    [JsonIgnore]
     public virtual Currency? Currency { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using budget_tracker_backend.Models.Enums;
+using System.Text.Json.Serialization;
 
 namespace budget_tracker_backend.Models;
 
@@ -19,9 +20,14 @@ public class Transaction
     public string? Description { get; set; }
 
     // Навигационные свойства
+    [JsonIgnore]
     public virtual Category? Category { get; set; }
+    [JsonIgnore]
     public virtual Currency? Currency { get; set; }
+    [JsonIgnore]
     public virtual Event? Event { get; set; }
+    [JsonIgnore]
     public virtual Account? FromAccount { get; set; }
+    [JsonIgnore]
     public virtual Account? ToAccount { get; set; }
 }

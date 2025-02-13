@@ -1,4 +1,6 @@
-﻿namespace budget_tracker_backend.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace budget_tracker_backend.Models;
 
 public class Event
 {
@@ -9,5 +11,6 @@ public class Event
     public List<Transaction> Transactions { get; set; } = [];
 
     // Навигационное свойство
+    [JsonIgnore]
     public BudgetPlan? BudgetPlan { get; set; }
 }

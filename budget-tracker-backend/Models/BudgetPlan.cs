@@ -1,4 +1,5 @@
 ﻿using budget_tracker_backend.Models.Enums;
+using System.Text.Json.Serialization;
 
 namespace budget_tracker_backend.Models;
 
@@ -14,5 +15,6 @@ public class BudgetPlan
     public string? Description { get; set; }
 
     // Навигационные свойства
+    [JsonIgnore]
     public virtual Category? Category { get; set; }
 }
