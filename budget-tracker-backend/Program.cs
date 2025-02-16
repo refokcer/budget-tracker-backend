@@ -1,9 +1,11 @@
 using budget_tracker_backend.Data;
-using budget_tracker_backend.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
+var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+
 
 // Подключаем EF Core и MS SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -12,6 +14,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddMediatR(currentAssemblies);
+builder.Services.AddAutoMapper(currentAssemblies);
 
 builder.Services.AddCors(options =>
 {
