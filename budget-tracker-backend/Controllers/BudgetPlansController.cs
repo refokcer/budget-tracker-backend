@@ -1,102 +1,55 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using budget_tracker_backend.Data;
-using budget_tracker_backend.Models;
+﻿using budget_tracker_backend.Dto.BudgetPlans;
+using budget_tracker_backend.MediatR.BudgetPlans.Commands.Create;
+using budget_tracker_backend.MediatR.BudgetPlans.Commands.Delete;
+using budget_tracker_backend.MediatR.BudgetPlans.Commands.Update;
+using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetAll;
+using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetById;
+using Microsoft.AspNetCore.Mvc;
+using Streetcode.WebApi.Controllers;
 
 namespace budget_tracker_backend.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class BudgetPlansController : ControllerBase
+public class BudgetPlansController : BaseApiController
 {
-    private readonly ApplicationDbContext _context;
-
-    public BudgetPlansController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
-
     // GET: api/BudgetPlans
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BudgetPlan>>> GetBudgetPlans()
+    public async Task<IActionResult> GetBudgetPlans()
     {
-        return await _context.BudgetPlans.ToListAsync();
+        var result = await Mediator.Send(new GetAllBudgetPlansQuery());
+        return HandleResult(result);
     }
 
     // GET: api/BudgetPlans/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<BudgetPlan>> GetBudgetPlan(int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetBudgetPlan(int id)
     {
-        var budgetPlan = await _context.BudgetPlans.FindAsync(id);
-
-        if (budgetPlan == null)
-        {
-            return NotFound();
-        }
-
-        return budgetPlan;
-    }
-
-    // PUT: api/BudgetPlans/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutBudgetPlan(int id, BudgetPlan budgetPlan)
-    {
-        if (id != budgetPlan.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(budgetPlan).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!BudgetPlanExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
+        var result = await Mediator.Send(new GetBudgetPlanByIdQuery(id));
+        return HandleResult(result);
     }
 
     // POST: api/BudgetPlans
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<BudgetPlan>> PostBudgetPlan(BudgetPlan budgetPlan)
+    public async Task<IActionResult> PostBudgetPlan([FromBody] CreateBudgetPlanDto dto)
     {
-        _context.BudgetPlans.Add(budgetPlan);
-        await _context.SaveChangesAsync();
+        var result = await Mediator.Send(new CreateBudgetPlanCommand(dto));
+        return HandleResult(result);
+    }
 
-        return CreatedAtAction("GetBudgetPlan", new { id = budgetPlan.Id }, budgetPlan);
+    // PUT: api/BudgetPlans
+    [HttpPut]
+    public async Task<IActionResult> PutBudgetPlan([FromBody] BudgetPlanDto dto)
+    {
+        var result = await Mediator.Send(new UpdateBudgetPlanCommand(dto));
+        return HandleResult(result);
     }
 
     // DELETE: api/BudgetPlans/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteBudgetPlan(int id)
     {
-        var budgetPlan = await _context.BudgetPlans.FindAsync(id);
-        if (budgetPlan == null)
-        {
-            return NotFound();
-        }
-
-        _context.BudgetPlans.Remove(budgetPlan);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private bool BudgetPlanExists(int id)
-    {
-        return _context.BudgetPlans.Any(e => e.Id == id);
+        var result = await Mediator.Send(new DeleteBudgetPlanCommand(id));
+        return HandleResult(result);
     }
 }
