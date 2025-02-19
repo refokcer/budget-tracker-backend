@@ -1,102 +1,58 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using budget_tracker_backend.Data;
-using budget_tracker_backend.Models;
+using budget_tracker_backend.Dto.Currencies;
+using budget_tracker_backend.MediatR.Currencies.Commands.Create;
+using budget_tracker_backend.MediatR.Currencies.Commands.Delete;
+using budget_tracker_backend.MediatR.Currencies.Commands.Update;
+using budget_tracker_backend.MediatR.Currencies.Queries.GetAll;
+using budget_tracker_backend.MediatR.Currencies.Queries.GetById;
+using Streetcode.WebApi.Controllers;
 
 namespace budget_tracker_backend.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CurrenciesController : ControllerBase
+public class CurrenciesController : BaseApiController
 {
-    private readonly ApplicationDbContext _context;
-
-    public CurrenciesController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
-
     // GET: api/Currencies
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Currency>>> GetCurrencies()
+    public async Task<IActionResult> GetCurrencies()
     {
-        return await _context.Currencies.ToListAsync();
+        var result = await Mediator.Send(new GetAllCurrenciesQuery());
+        return HandleResult(result);
     }
 
     // GET: api/Currencies/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Currency>> GetCurrency(int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetCurrency(int id)
     {
-        var currency = await _context.Currencies.FindAsync(id);
-
-        if (currency == null)
-        {
-            return NotFound();
-        }
-
-        return currency;
-    }
-
-    // PUT: api/Currencies/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutCurrency(int id, Currency currency)
-    {
-        if (id != currency.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(currency).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!CurrencyExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
+        var result = await Mediator.Send(new GetCurrencyByIdQuery(id));
+        return HandleResult(result);
     }
 
     // POST: api/Currencies
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Currency>> PostCurrency(Currency currency)
+    public async Task<IActionResult> PostCurrency([FromBody] CreateCurrencyDto dto)
     {
-        _context.Currencies.Add(currency);
-        await _context.SaveChangesAsync();
+        var command = new CreateCurrencyCommand(dto);
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
+    }
 
-        return CreatedAtAction("GetCurrency", new { id = currency.Id }, currency);
+    // PUT: api/Currencies
+    [HttpPut]
+    public async Task<IActionResult> PutCurrency([FromBody] CurrencyDto dto)
+    {
+        var command = new UpdateCurrencyCommand(dto);
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
     }
 
     // DELETE: api/Currencies/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCurrency(int id)
     {
-        var currency = await _context.Currencies.FindAsync(id);
-        if (currency == null)
-        {
-            return NotFound();
-        }
-
-        _context.Currencies.Remove(currency);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private bool CurrencyExists(int id)
-    {
-        return _context.Currencies.Any(e => e.Id == id);
+        var command = new DeleteCurrencyCommand(id);
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
     }
 }
