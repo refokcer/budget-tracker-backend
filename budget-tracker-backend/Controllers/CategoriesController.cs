@@ -1,102 +1,58 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using budget_tracker_backend.Data;
-using budget_tracker_backend.Models;
+using budget_tracker_backend.Dto.Categories;
+using budget_tracker_backend.MediatR.Categories.Commands.Create;
+using budget_tracker_backend.MediatR.Categories.Commands.Delete;
+using budget_tracker_backend.MediatR.Categories.Commands.Update;
+using budget_tracker_backend.MediatR.Categories.Queries.GetAll;
+using budget_tracker_backend.MediatR.Categories.Queries.GetById;
+using Streetcode.WebApi.Controllers;
 
 namespace budget_tracker_backend.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CategoriesController : ControllerBase
+public class CategoriesController : BaseApiController
 {
-    private readonly ApplicationDbContext _context;
-
-    public CategoriesController(ApplicationDbContext context)
-    {
-        _context = context;
-    }
-
     // GET: api/Categories
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+    public async Task<IActionResult> GetCategories()
     {
-        return await _context.Categories.ToListAsync();
+        var result = await Mediator.Send(new GetAllCategoriesQuery());
+        return HandleResult(result);
     }
 
     // GET: api/Categories/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Category>> GetCategory(int id)
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetCategory(int id)
     {
-        var category = await _context.Categories.FindAsync(id);
-
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        return category;
-    }
-
-    // PUT: api/Categories/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutCategory(int id, Category category)
-    {
-        if (id != category.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(category).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!CategoryExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
+        var result = await Mediator.Send(new GetCategoryByIdQuery(id));
+        return HandleResult(result);
     }
 
     // POST: api/Categories
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Category>> PostCategory(Category category)
+    public async Task<IActionResult> PostCategory([FromBody] CreateCategoryDto dto)
     {
-        _context.Categories.Add(category);
-        await _context.SaveChangesAsync();
+        var command = new CreateCategoryCommand(dto);
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
+    }
 
-        return CreatedAtAction("GetCategory", new { id = category.Id }, category);
+    // PUT: api/Categories
+    [HttpPut]
+    public async Task<IActionResult> PutCategory([FromBody] CategoryDto dto)
+    {
+        var command = new UpdateCategoryCommand(dto);
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
     }
 
     // DELETE: api/Categories/5
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCategory(int id)
     {
-        var category = await _context.Categories.FindAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        _context.Categories.Remove(category);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private bool CategoryExists(int id)
-    {
-        return _context.Categories.Any(e => e.Id == id);
+        var command = new DeleteCategoryCommand(id);
+        var result = await Mediator.Send(command);
+        return HandleResult(result);
     }
 }
