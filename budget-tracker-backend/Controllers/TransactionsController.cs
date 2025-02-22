@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Dto.Transactions;
-using budget_tracker_backend.MediatR.Transactions.Commands.Create;
 using budget_tracker_backend.MediatR.Transactions.Commands.Delete;
 using budget_tracker_backend.MediatR.Transactions.Commands.Update;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetAll;
@@ -12,38 +11,36 @@ namespace budget_tracker_backend.Controllers;
 [ApiController]
 public class TransactionsController : BaseApiController
 {
+    // 1. Получить все транзакции (любого типа)
     [HttpGet]
-    public async Task<IActionResult> GetTransactions()
+    public async Task<IActionResult> GetAll()
     {
-        var result = await Mediator.Send(new GetAllTransactionsQuery());
+        var query = new GetAllTransactionsQuery();
+        var result = await Mediator.Send(query);
         return HandleResult(result);
     }
 
+    // 2. Получить транзакцию по Id
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetTransaction(int id)
+    public async Task<IActionResult> GetById(int id)
     {
-        var result = await Mediator.Send(new GetTransactionByIdQuery(id));
+        var query = new GetTransactionByIdQuery(id);
+        var result = await Mediator.Send(query);
         return HandleResult(result);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> PostTransaction([FromBody] CreateTransactionDto dto)
-    {
-        var command = new CreateTransactionCommand(dto);
-        var result = await Mediator.Send(command);
-        return HandleResult(result);
-    }
-
+    // 3. Обновить транзакцию (PUT) - может менять поля, в т.ч. Type
     [HttpPut]
-    public async Task<IActionResult> PutTransaction([FromBody] TransactionDto dto)
+    public async Task<IActionResult> Update([FromBody] TransactionDto dto)
     {
         var command = new UpdateTransactionCommand(dto);
         var result = await Mediator.Send(command);
         return HandleResult(result);
     }
 
+    // 4. Удалить транзакцию
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteTransaction(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         var command = new DeleteTransactionCommand(id);
         var result = await Mediator.Send(command);

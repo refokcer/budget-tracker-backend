@@ -1,4 +1,6 @@
-﻿namespace budget_tracker_backend.Dto.Transactions;
+﻿using budget_tracker_backend.Models.Enums;
+
+namespace budget_tracker_backend.Dto.Transactions;
 
 public class CreateTransactionDto
 {
@@ -10,6 +12,6 @@ public class CreateTransactionDto
     public int CurrencyId { get; set; }
     public int? CategoryId { get; set; }
     public DateTime Date { get; set; }
-    public int Type { get; set; }
+    public TransactionCategoryType? Type { get; set; }
     public string? Description { get; set; }
 }
