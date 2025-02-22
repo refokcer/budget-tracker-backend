@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Streetcode.WebApi.Controllers;
+namespace budget_tracker_backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]

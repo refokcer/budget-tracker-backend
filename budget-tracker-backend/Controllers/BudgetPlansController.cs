@@ -5,7 +5,6 @@ using budget_tracker_backend.MediatR.BudgetPlans.Commands.Update;
 using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetAll;
 using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetById;
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.WebApi.Controllers;
 
 namespace budget_tracker_backend.Controllers;
 

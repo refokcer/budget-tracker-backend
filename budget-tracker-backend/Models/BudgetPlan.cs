@@ -6,9 +6,7 @@ namespace budget_tracker_backend.Models;
 public class BudgetPlan
 {
     public int Id { get; set; }
-    public int CategoryId { get; set; }
-    public decimal Amount { get; set; }
-    public int CurrencyId { get; set; }
+    public string Title { get; set; } = null!;
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public BudgetPlanType Type { get; set; }
@@ -16,5 +14,5 @@ public class BudgetPlan
 
     // Навигационные свойства
     [JsonIgnore]
-    public virtual Category? Category { get; set; }
+    public virtual ICollection<BudgetPlanItem>? Items { get; set; }
 }

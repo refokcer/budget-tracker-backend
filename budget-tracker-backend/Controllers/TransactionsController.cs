@@ -5,7 +5,6 @@ using budget_tracker_backend.MediatR.Transactions.Commands.Delete;
 using budget_tracker_backend.MediatR.Transactions.Commands.Update;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetAll;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetById;
-using Streetcode.WebApi.Controllers;
 
 namespace budget_tracker_backend.Controllers;
 

@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<Account> Accounts { get; set; }
     public DbSet<BudgetPlan> BudgetPlans { get; set; }
+    public DbSet<BudgetPlanItem> BudgetPlanItems { get; set; }
     public DbSet<Currency> Currencies { get; set; }
     public DbSet<Event> Events { get; set; }
 
@@ -20,9 +21,15 @@ public class ApplicationDbContext : DbContext
            .Property(a => a.Amount)
            .HasColumnType("decimal(18,4)");
 
-        modelBuilder.Entity<BudgetPlan>()
+        modelBuilder.Entity<BudgetPlanItem>()
             .Property(bp => bp.Amount)
             .HasColumnType("decimal(18,4)");
+
+        modelBuilder.Entity<BudgetPlanItem>()
+            .HasOne(i => i.BudgetPlan)
+            .WithMany(p => p.Items)
+            .HasForeignKey(i => i.BudgetPlanId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Transaction>()
             .Property(t => t.Amount)
