@@ -5,6 +5,7 @@ using budget_tracker_backend.MediatR.Currencies.Commands.Delete;
 using budget_tracker_backend.MediatR.Currencies.Commands.Update;
 using budget_tracker_backend.MediatR.Currencies.Queries.GetAll;
 using budget_tracker_backend.MediatR.Currencies.Queries.GetById;
+using budget_tracker_backend.Controllers.Interfaces;
 
 namespace budget_tracker_backend.Controllers;
 

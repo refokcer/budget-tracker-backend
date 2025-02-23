@@ -5,6 +5,7 @@ using budget_tracker_backend.MediatR.Events.Commands.Delete;
 using budget_tracker_backend.MediatR.Events.Commands.Update;
 using budget_tracker_backend.MediatR.Events.Queries.GetAll;
 using budget_tracker_backend.MediatR.Events.Queries.GetById;
+using budget_tracker_backend.Controllers.Interfaces;
 
 namespace budget_tracker_backend.Controllers;
 

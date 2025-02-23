@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Transactions;
+using budget_tracker_backend.Extensions;
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,27 +21,14 @@ public class GetTransactionsHandler : IRequestHandler<GetTransactionsQuery, Resu
 
     public async Task<Result<IEnumerable<TransactionDto>>> Handle(GetTransactionsQuery request, CancellationToken token)
     {
-        var query = _context.Transactions.AsQueryable();
-
-        // Фильтр по Type, если указано
-        if (request.Type.HasValue)
-        {
-            query = query.Where(t => t.Type == request.Type.Value);
-        }
-
-        // Фильтр по дате, если указано
-        if (request.StartDate.HasValue)
-        {
-            query = query.Where(t => t.Date >= request.StartDate.Value);
-        }
-        if (request.EndDate.HasValue)
-        {
-            query = query.Where(t => t.Date <= request.EndDate.Value);
-        }
-
-        var list = await query
+        var query = _context.Transactions
             .AsNoTracking()
-            .ToListAsync(token);
+            .WhereIf(request.Type.HasValue, t => t.Type == request.Type!.Value)
+            .WhereIf(request.StartDate.HasValue, t => t.Date >= request.StartDate!.Value)
+            .WhereIf(request.EndDate.HasValue, t => t.Date <= request.EndDate!.Value)
+            .WhereIf(request.EventId.HasValue, t => t.EventId == request.EventId!.Value);
+
+        var list = await query.ToListAsync(token);
 
         var dtos = _mapper.Map<IEnumerable<TransactionDto>>(list);
         return Result.Ok(dtos);

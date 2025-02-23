@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace budget_tracker_backend.Controllers;
+namespace budget_tracker_backend.Controllers.Interfaces;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
@@ -17,7 +17,7 @@ public class BaseApiController : ControllerBase
     {
         if (result.IsSuccess)
         {
-            return (result.Value is null) ?
+            return result.Value is null ?
                 NotFound("Found result matching null") : Ok(result.Value);
         }
 

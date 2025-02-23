@@ -1,4 +1,5 @@
-﻿using budget_tracker_backend.Dto.Accounts;
+﻿using budget_tracker_backend.Controllers.Interfaces;
+using budget_tracker_backend.Dto.Accounts;
 using budget_tracker_backend.MediatR.Accounts.Commands.Create;
 using budget_tracker_backend.MediatR.Accounts.Commands.Delete;
 using budget_tracker_backend.MediatR.Accounts.Commands.Update;

@@ -4,8 +4,10 @@ using budget_tracker_backend.MediatR.Transactions.Commands.Delete;
 using budget_tracker_backend.MediatR.Transactions.Commands.Update;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetAll;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetById;
+using budget_tracker_backend.Controllers.Interfaces;
+using budget_tracker_backend.MediatR.Transactions.Queries.GetTransactions;
 
-namespace budget_tracker_backend.Controllers;
+namespace budget_tracker_backend.Controllers.Transactions;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -44,6 +46,16 @@ public class TransactionsController : BaseApiController
     {
         var command = new DeleteTransactionCommand(id);
         var result = await Mediator.Send(command);
+        return HandleResult(result);
+    }
+
+    [HttpGet("event/{eventId:int}")]
+    public async Task<IActionResult> GetTransactionsByEvent(int eventId)
+    {
+        var query = new GetTransactionsQuery(
+            EventId: eventId // <-- фильтр
+        );
+        var result = await Mediator.Send(query);
         return HandleResult(result);
     }
 }

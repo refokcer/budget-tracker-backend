@@ -3,8 +3,9 @@ using budget_tracker_backend.Dto.Transactions;
 using budget_tracker_backend.MediatR.Transactions.Commands.Create;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetTransactions;
 using budget_tracker_backend.Models.Enums;
+using budget_tracker_backend.Controllers.Interfaces;
 
-namespace budget_tracker_backend.Controllers;
+namespace budget_tracker_backend.Controllers.Transactions;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -14,9 +15,7 @@ public class IncomeController : BaseApiController
     public async Task<IActionResult> GetAllIncome()
     {
         var query = new GetTransactionsQuery(
-            Type: TransactionCategoryType.Income,
-            StartDate: null,
-            EndDate: null
+            Type: TransactionCategoryType.Income
         );
         var result = await Mediator.Send(query);
         return HandleResult(result);
@@ -44,4 +43,16 @@ public class IncomeController : BaseApiController
         var result = await Mediator.Send(command);
         return HandleResult(result);
     }
+
+    [HttpGet("event/{eventId:int}")]
+    public async Task<IActionResult> GetIncomeByEvent(int eventId)
+    {
+        var query = new GetTransactionsQuery(
+            Type: TransactionCategoryType.Income,
+            EventId: eventId
+        );
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
 }

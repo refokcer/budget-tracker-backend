@@ -23,7 +23,7 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
         var dto = request.NewTransaction;
 
         // Если Type не задан в dto, можно сказать "Ошибка" или "Type=Transaction" по умолчанию
-        var type = dto.Type ?? TransactionCategoryType.Transaction;
+        var type = dto.Type ?? TransactionCategoryType.None;
 
         // Мапим DTO -> модель
         var entity = _mapper.Map<Transaction>(dto);
@@ -61,7 +61,7 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
         }
         else if (type == TransactionCategoryType.Transaction)
         {
-            // "Перевод" (между двумя счетами)
+            // "Перевод" (между двумя счетами)           
             if (entity.AccountFrom.HasValue)
             {
                 var fromAcc = await _context.Accounts.FindAsync(entity.AccountFrom.Value);
@@ -76,6 +76,10 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
                     return Result.Fail("AccountTo not found");
                 toAcc.Amount += entity.Amount;
             }
+        }
+        else if (type == TransactionCategoryType.None)
+        {
+            return Result.Fail("Transaction typy not defined");
         }
 
         // Добавляем транзакцию
