@@ -16,5 +16,9 @@ public class EventProfile : Profile
 
         // Из полного EventDto -> сущность (для Update)
         CreateMap<EventDto, Event>();
+
+        CreateMap<Event, EventWithTransactionsDto>()
+            .ForMember(dst => dst.Transactions,
+                       opt => opt.MapFrom(src => src.Transactions));
     }
 }

@@ -6,6 +6,7 @@ using budget_tracker_backend.MediatR.Transactions.Queries.GetAll;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetById;
 using budget_tracker_backend.Controllers.Interfaces;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetTransactions;
+using budget_tracker_backend.MediatR.Transactions.Queries.GetByEvent;
 
 namespace budget_tracker_backend.Controllers.Transactions;
 
@@ -55,6 +56,14 @@ public class TransactionsController : BaseApiController
         var query = new GetTransactionsQuery(
             EventId: eventId // <-- фильтр
         );
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    [HttpGet("byEvent/{eventId:int}")]
+    public async Task<IActionResult> GetAllByEvent(int eventId)
+    {
+        var query = new GetAllTransactionsByEventQuery(eventId);
         var result = await Mediator.Send(query);
         return HandleResult(result);
     }

@@ -6,6 +6,7 @@ using budget_tracker_backend.MediatR.BudgetPlanItems.Commands.Update;
 using budget_tracker_backend.MediatR.BudgetPlanItems.Queries.GetAll;
 using budget_tracker_backend.MediatR.BudgetPlanItems.Queries.GetById;
 using budget_tracker_backend.Controllers.Interfaces;
+using budget_tracker_backend.MediatR.BudgetPlanItems.Queries.GetByPlanId;
 
 namespace budget_tracker_backend.Controllers;
 
@@ -53,6 +54,14 @@ public class BudgetPlanItemsController : BaseApiController
     {
         var command = new DeleteBudgetPlanItemCommand(id);
         var result = await Mediator.Send(command);
+        return HandleResult(result);
+    }
+
+    [HttpGet("byPlan/{planId:int}")]
+    public async Task<IActionResult> GetAllByPlanId(int planId)
+    {
+        var query = new GetAllBudgetPlanItemsByPlanIdQuery(planId);
+        var result = await Mediator.Send(query);
         return HandleResult(result);
     }
 }
