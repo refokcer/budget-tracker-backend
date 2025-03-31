@@ -6,6 +6,8 @@ using budget_tracker_backend.MediatR.Categories.Commands.Update;
 using budget_tracker_backend.MediatR.Categories.Queries.GetAll;
 using budget_tracker_backend.MediatR.Categories.Queries.GetById;
 using budget_tracker_backend.Controllers.Interfaces;
+using budget_tracker_backend.MediatR.Categories.Queries.GetByType;
+using budget_tracker_backend.Models.Enums;
 
 namespace budget_tracker_backend.Controllers;
 
@@ -53,6 +55,33 @@ public class CategoriesController : BaseApiController
     {
         var command = new DeleteCategoryCommand(id);
         var result = await Mediator.Send(command);
+        return HandleResult(result);
+    }
+
+    // GET: /api/Categories/expenses
+    [HttpGet("expenses")]
+    public async Task<IActionResult> GetExpenses()
+    {
+        var query = new GetCategoriesByTypeQuery(TransactionCategoryType.Expense);
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    // GET: /api/Categories/income
+    [HttpGet("income")]
+    public async Task<IActionResult> GetIncome()
+    {
+        var query = new GetCategoriesByTypeQuery(TransactionCategoryType.Income);
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    // GET: /api/Categories/transactions
+    [HttpGet("transactions")]
+    public async Task<IActionResult> GetTransactionCategories()
+    {
+        var query = new GetCategoriesByTypeQuery(TransactionCategoryType.Transaction);
+        var result = await Mediator.Send(query);
         return HandleResult(result);
     }
 }

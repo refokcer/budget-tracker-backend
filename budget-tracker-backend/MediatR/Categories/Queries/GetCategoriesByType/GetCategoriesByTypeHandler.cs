@@ -1,0 +1,36 @@
+﻿using AutoMapper;
+using FluentResults;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using budget_tracker_backend.Data;
+using budget_tracker_backend.Dto.Categories;
+using budget_tracker_backend.Models;
+using budget_tracker_backend.Models.Enums;
+
+namespace budget_tracker_backend.MediatR.Categories.Queries.GetByType;
+
+public class GetCategoriesByTypeHandler
+    : IRequestHandler<GetCategoriesByTypeQuery, Result<IEnumerable<CategoryDto>>>
+{
+    private readonly ApplicationDbContext _context;
+    private readonly IMapper _mapper;
+
+    public GetCategoriesByTypeHandler(ApplicationDbContext context, IMapper mapper)
+    {
+        _context = context;
+        _mapper = mapper;
+    }
+
+    public async Task<Result<IEnumerable<CategoryDto>>> Handle(GetCategoriesByTypeQuery request, CancellationToken cancellationToken)
+    {
+        // Фильтруем категории по заданному Type
+        var categories = await _context.Categories
+            .Where(c => c.Type == request.Type)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        // Мапим в DTO
+        var dtos = _mapper.Map<IEnumerable<CategoryDto>>(categories);
+        return Result.Ok(dtos);
+    }
+}
