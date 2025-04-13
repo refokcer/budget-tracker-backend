@@ -20,7 +20,6 @@ public class CreateEventHandler : IRequestHandler<CreateEventCommand, Result<Eve
 
     public async Task<Result<EventDto>> Handle(CreateEventCommand request, CancellationToken cancellationToken)
     {
-        // Мапим DTO -> сущность
         var entity = _mapper.Map<Event>(request.NewEvent);
         if (entity == null)
         {
@@ -34,7 +33,6 @@ public class CreateEventHandler : IRequestHandler<CreateEventCommand, Result<Eve
             return Result.Fail("Failed to create Event in database");
         }
 
-        // Мапим обратно в Dto
         var eventDto = _mapper.Map<EventDto>(entity);
         return Result.Ok(eventDto);
     }

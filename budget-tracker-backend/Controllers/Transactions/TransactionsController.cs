@@ -14,7 +14,6 @@ namespace budget_tracker_backend.Controllers.Transactions;
 [ApiController]
 public class TransactionsController : BaseApiController
 {
-    // 1. Получить все транзакции (любого типа)
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -23,7 +22,6 @@ public class TransactionsController : BaseApiController
         return HandleResult(result);
     }
 
-    // 2. Получить транзакцию по Id
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -32,7 +30,6 @@ public class TransactionsController : BaseApiController
         return HandleResult(result);
     }
 
-    // 3. Обновить транзакцию (PUT) - может менять поля, в т.ч. Type
     [HttpPut]
     public async Task<IActionResult> Update([FromBody] TransactionDto dto)
     {
@@ -41,7 +38,6 @@ public class TransactionsController : BaseApiController
         return HandleResult(result);
     }
 
-    // 4. Удалить транзакцию
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {

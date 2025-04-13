@@ -11,7 +11,7 @@ public class BudgetPlanItem
     public int CurrencyId { get; set; }
     public string? Description { get; set; }
 
-    // Навигационные свойства
+    // Navigation properties
     [JsonIgnore]
     public virtual BudgetPlan? BudgetPlan { get; set; }
     [JsonIgnore]

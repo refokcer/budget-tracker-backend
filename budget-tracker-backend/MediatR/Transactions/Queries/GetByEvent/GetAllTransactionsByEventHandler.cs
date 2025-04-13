@@ -21,13 +21,11 @@ public class GetAllTransactionsByEventHandler : IRequestHandler<GetAllTransactio
 
     public async Task<Result<IEnumerable<TransactionDto>>> Handle(GetAllTransactionsByEventQuery request, CancellationToken cancellationToken)
     {
-        // Выбираем транзакции, где EventId совпадает
         var transactions = await _context.Transactions
             .Where(t => t.EventId == request.EventId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        // Мапим в DTO
         var dtos = _mapper.Map<IEnumerable<TransactionDto>>(transactions);
         return Result.Ok(dtos);
     }

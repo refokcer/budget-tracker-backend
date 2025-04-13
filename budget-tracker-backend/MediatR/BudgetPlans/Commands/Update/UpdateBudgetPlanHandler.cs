@@ -26,7 +26,6 @@ public class UpdateBudgetPlanHandler : IRequestHandler<UpdateBudgetPlanCommand, 
             return Result.Fail($"BudgetPlan with Id={dto.Id} not found");
         }
 
-        // Обновляем поля. Можно мапить через AutoMapper, если настроено
         _mapper.Map(dto, existing);
 
         _context.BudgetPlans.Update(existing);

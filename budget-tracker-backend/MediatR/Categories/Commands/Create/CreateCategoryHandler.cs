@@ -34,7 +34,7 @@ public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Resu
             return Result.Fail("Failed to create Category in database");
         }
 
-        // Мапим обратно в CategoryDto
+        // Map back to CategoryDto
         var resultDto = _mapper.Map<CategoryDto>(entity);
         return Result.Ok(resultDto);
     }

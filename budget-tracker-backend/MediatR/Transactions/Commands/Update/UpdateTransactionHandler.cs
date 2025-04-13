@@ -27,7 +27,6 @@ public class UpdateTransactionHandler : IRequestHandler<UpdateTransactionCommand
             return Result.Fail($"Transaction with Id={dto.Id} not found");
         }
 
-        // Мапим Dto → existing
         _mapper.Map(dto, existing);
 
         _context.Transactions.Update(existing);

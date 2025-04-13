@@ -20,7 +20,7 @@ public class CreateBudgetPlanHandler : IRequestHandler<CreateBudgetPlanCommand, 
 
     public async Task<Result<BudgetPlanDto>> Handle(CreateBudgetPlanCommand request, CancellationToken cancellationToken)
     {
-        // Преобразуем DTO → сущность
+        // Convert DTO → entity
         var entity = _mapper.Map<BudgetPlan>(request.NewPlan);
         if (entity == null)
         {
@@ -34,7 +34,7 @@ public class CreateBudgetPlanHandler : IRequestHandler<CreateBudgetPlanCommand, 
             return Result.Fail("Failed to create BudgetPlan in database");
         }
 
-        // Мапим обратно в DTO для ответа
+        // Map back to DTO for a response
         var resultDto = _mapper.Map<BudgetPlanDto>(entity);
         return Result.Ok(resultDto);
     }

@@ -8,13 +8,10 @@ public class CurrencyProfile : Profile
 {
     public CurrencyProfile()
     {
-        // Сущность → Dto
         CreateMap<Currency, CurrencyDto>();
 
-        // DTO создания → сущность
         CreateMap<CreateCurrencyDto, Currency>();
 
-        // Dto → сущность (для Update)
         CreateMap<CurrencyDto, Currency>();
     }
 }

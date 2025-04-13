@@ -8,10 +8,8 @@ public class AccountProfile : Profile
 {
     public AccountProfile()
     {
-        // Из сущности Account -> Dto
         CreateMap<Account, AccountDto>();
 
-        // Из DTO -> сущность
         CreateMap<CreateAccountDto, Account>();
     }
 }

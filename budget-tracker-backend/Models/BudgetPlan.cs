@@ -12,7 +12,7 @@ public class BudgetPlan
     public BudgetPlanType Type { get; set; }
     public string? Description { get; set; }
 
-    // Навигационные свойства
+    // Navigation properties
     [JsonIgnore]
     public virtual ICollection<BudgetPlanItem>? Items { get; set; }
 }

@@ -28,7 +28,7 @@ public class GetAllBudgetPlanItemsByPlanIdHandler : IRequestHandler<GetAllBudget
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        // Мапим в DTO
+        // Mapim in DTO
         var dtos = _mapper.Map<IEnumerable<BudgetPlanItemDto>>(items);
         return Result.Ok(dtos);
     }

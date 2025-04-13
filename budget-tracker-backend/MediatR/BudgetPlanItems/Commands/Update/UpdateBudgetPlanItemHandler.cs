@@ -21,14 +21,14 @@ public class UpdateBudgetPlanItemHandler : IRequestHandler<UpdateBudgetPlanItemC
     {
         var dto = request.ItemDto;
 
-        // Ищем существующую запись
+        // Looking for an existing record
         var existing = await _context.BudgetPlanItems.FindAsync(new object[] { dto.Id }, cancellationToken);
         if (existing == null)
         {
             return Result.Fail($"BudgetPlanItem with Id={dto.Id} not found");
         }
 
-        // Мапим поля из dto -> existing 
+        // Map fields from dto -> existing 
         _mapper.Map(dto, existing);
 
         _context.BudgetPlanItems.Update(existing);

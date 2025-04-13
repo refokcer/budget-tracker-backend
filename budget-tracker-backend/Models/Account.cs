@@ -10,7 +10,7 @@ public class Account
     public int CurrencyId { get; set; }
     public string? Description { get; set; }
 
-    // Навигационные свойства
+    // Navigation properties
     [JsonIgnore]
     public virtual Currency? Currency { get; set; }
 }

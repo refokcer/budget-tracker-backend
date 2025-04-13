@@ -20,7 +20,7 @@ public class UpdateAccountHandler : IRequestHandler<UpdateAccountCommand, Result
 
     public async Task<Result<AccountDto>> Handle(UpdateAccountCommand request, CancellationToken cancellationToken)
     {
-        // Получаем из базы
+        // Pull from the database
         var existing = await _dbContext.Accounts.FindAsync(new object[] { request.UpdatedAccount.Id }, cancellationToken);
         if (existing == null)
         {
@@ -28,7 +28,7 @@ public class UpdateAccountHandler : IRequestHandler<UpdateAccountCommand, Result
             throw new CustomException(errorMsg, StatusCodes.Status404NotFound);
         }
 
-        // Переносим данные из DTO в сущность
+        // Transfer data from DTO to entity
         existing.Title = request.UpdatedAccount.Title;
         existing.Amount = request.UpdatedAccount.Amount;
         existing.CurrencyId = request.UpdatedAccount.CurrencyId;

@@ -38,7 +38,7 @@ public class TransfersController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> CreateTransfer([FromBody] CreateTransactionDto dto)
     {
-        // Принудительно ставим Type=Transaction
+        // Force Type=Transaction
         dto.Type = TransactionCategoryType.Transaction;
 
         var command = new CreateTransactionCommand(dto);

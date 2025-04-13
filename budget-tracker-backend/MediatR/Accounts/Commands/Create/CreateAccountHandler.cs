@@ -21,7 +21,7 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Result
 
     public async Task<Result<AccountDto>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
     {
-        // Мапим DTO → модель
+        // Mapping DTO → model
         var entity = _mapper.Map<Account>(request.NewAccount);
         if (entity == null)
         {
@@ -29,7 +29,7 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Result
             throw new CustomException(errorMsg, StatusCodes.Status400BadRequest);
         }
 
-        // Добавляем запись в DbContext
+        // Add record to DbContext
         await _dbContext.Accounts.AddAsync(entity, cancellationToken);
         var saveResult = await _dbContext.SaveChangesAsync(cancellationToken) > 0;
 
@@ -39,7 +39,7 @@ public class CreateAccountHandler : IRequestHandler<CreateAccountCommand, Result
             throw new CustomException(errorMsg, StatusCodes.Status500InternalServerError);
         }
 
-        // Возвращаем успешный результат
+        // Returning a successful result
         var resultDto = _mapper.Map<AccountDto>(entity);
         return Result.Ok(resultDto);
     }

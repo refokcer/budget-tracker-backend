@@ -29,7 +29,6 @@ public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Resu
             return Result.Fail($"Category with Id={dto.Id} not found");
         }
 
-        // Мапим dto → existing (можно вручную присваивать)
         _mapper.Map(dto, existing);
 
         _context.Categories.Update(existing);

@@ -24,7 +24,7 @@ public class GetAllAccountsHandler : IRequestHandler<GetAllAccountsQuery, Result
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        // Мапим список Account → список AccountDto
+        // Map Account list → AccountDto list
         var dtos = _mapper.Map<IEnumerable<AccountDto>>(accounts);
         return Result.Ok(dtos);
     }

@@ -36,7 +36,7 @@ public class IncomeController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> CreateIncome([FromBody] CreateTransactionDto dto)
     {
-        // Принудительно ставим Type=Income
+        // Force Type=Income
         dto.Type = TransactionCategoryType.Income;
 
         var command = new CreateTransactionCommand(dto);

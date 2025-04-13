@@ -10,7 +10,7 @@ public class Event
     public string? Description { get; set; }
     public List<Transaction> Transactions { get; set; } = [];
 
-    // Навигационное свойство
+    // Navigation properties
     [JsonIgnore]
     public BudgetPlan? BudgetPlan { get; set; }
 }

@@ -13,13 +13,13 @@ public class Transaction
     public int? CategoryId { get; set; }
     public DateTime Date { get; set; }
 
-    public int? AccountFrom { get; set; } // Ссылка на счет, с которого списаны деньги
-    public int? AccountTo { get; set; }   // Ссылка на счет, на который зачислены деньги
+    public int? AccountFrom { get; set; }
+    public int? AccountTo { get; set; } 
 
     public TransactionCategoryType Type { get; set; }
     public string? Description { get; set; }
 
-    // Навигационные свойства
+    // Navigation properties
     [JsonIgnore]
     public virtual Category? Category { get; set; }
     [JsonIgnore]

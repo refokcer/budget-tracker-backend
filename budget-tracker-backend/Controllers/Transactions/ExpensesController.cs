@@ -39,7 +39,7 @@ public class ExpensesController : BaseApiController
     [HttpPost]
     public async Task<IActionResult> CreateExpense([FromBody] CreateTransactionDto dto)
     {
-        // Принудительно ставим Type=Expense
+        // Force Type=Expense
         dto.Type = TransactionCategoryType.Expense;
 
         var command = new CreateTransactionCommand(dto);

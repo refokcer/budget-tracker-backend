@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Currencies;
 using budget_tracker_backend.Models;
@@ -22,7 +21,6 @@ public class CreateCurrencyHandler
 
     public async Task<Result<CurrencyDto>> Handle(CreateCurrencyCommand request, CancellationToken cancellationToken)
     {
-        // Мапим DTO → модель
         var entity = _mapper.Map<Currency>(request.NewCurrency);
         if (entity == null)
         {
@@ -36,7 +34,6 @@ public class CreateCurrencyHandler
             return Result.Fail("Failed to create Currency in database");
         }
 
-        // Мапим обратно в DTO
         var currencyDto = _mapper.Map<CurrencyDto>(entity);
         return Result.Ok(currencyDto);
     }

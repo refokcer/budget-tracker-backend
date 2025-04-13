@@ -8,13 +8,10 @@ public class EventProfile : Profile
 {
     public EventProfile()
     {
-        // Из сущности -> Dto
         CreateMap<Event, EventDto>();
 
-        // Из Dto создания -> сущность
         CreateMap<CreateEventDto, Event>();
 
-        // Из полного EventDto -> сущность (для Update)
         CreateMap<EventDto, Event>();
 
         CreateMap<Event, EventWithTransactionsDto>()

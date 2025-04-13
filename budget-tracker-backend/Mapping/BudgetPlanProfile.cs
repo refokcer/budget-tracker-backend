@@ -8,13 +8,10 @@ public class BudgetPlanProfile : Profile
 {
     public BudgetPlanProfile()
     {
-        // Мапим сущность → DTO
         CreateMap<BudgetPlan, BudgetPlanDto>();
 
-        // Мапим CreateDTO → сущность
         CreateMap<CreateBudgetPlanDto, BudgetPlan>();
 
-        // Дополнительно, если нужно, маппинг из BudgetPlanDto → BudgetPlan
         CreateMap<BudgetPlanDto, BudgetPlan>();
     }
 }

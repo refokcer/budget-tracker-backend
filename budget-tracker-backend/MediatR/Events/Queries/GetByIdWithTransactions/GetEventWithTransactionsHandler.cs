@@ -21,9 +21,8 @@ public class GetEventWithTransactionsHandler : IRequestHandler<GetEventWithTrans
 
     public async Task<Result<EventWithTransactionsDto>> Handle(GetEventWithTransactionsQuery request, CancellationToken cancellationToken)
     {
-        // Загружаем событие вместе с транзакциями
         var eventEntity = await _context.Events
-            .Include(e => e.Transactions) // Подгружаем связанные транзакции
+            .Include(e => e.Transactions) 
             .FirstOrDefaultAsync(e => e.Id == request.EventId, cancellationToken);
 
         if (eventEntity == null)
@@ -31,7 +30,6 @@ public class GetEventWithTransactionsHandler : IRequestHandler<GetEventWithTrans
             return Result.Fail($"Event with Id={request.EventId} not found");
         }
 
-        // Мапим в DTO
         var dto = _mapper.Map<EventWithTransactionsDto>(eventEntity);
         return Result.Ok(dto);
     }

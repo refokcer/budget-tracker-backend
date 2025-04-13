@@ -8,13 +8,10 @@ public class BudgetPlanItemProfile : Profile
 {
     public BudgetPlanItemProfile()
     {
-        // Мапим сущность -> Dto
         CreateMap<BudgetPlanItem, BudgetPlanItemDto>();
 
-        // Мапим CreateDto -> сущность
         CreateMap<CreateBudgetPlanItemDto, BudgetPlanItem>();
 
-        // Мапим Dto -> сущность (для Update)
         CreateMap<BudgetPlanItemDto, BudgetPlanItem>();
     }
 }

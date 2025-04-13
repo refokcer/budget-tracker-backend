@@ -26,12 +26,6 @@ public class CreateBudgetPlanItemHandler : IRequestHandler<CreateBudgetPlanItemC
             return Result.Fail("Cannot map CreateBudgetPlanItemDto to BudgetPlanItem");
         }
 
-        // Доп. проверка, что BudgetPlanId существует, если нужно:
-        // var plan = await _context.BudgetPlans.FindAsync(entity.BudgetPlanId);
-        // if (plan == null) {
-        //     return Result.Fail($"BudgetPlan with Id={entity.BudgetPlanId} not found");
-        // }
-
         _context.BudgetPlanItems.Add(entity);
         var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
 
@@ -40,7 +34,7 @@ public class CreateBudgetPlanItemHandler : IRequestHandler<CreateBudgetPlanItemC
             return Result.Fail("Failed to create BudgetPlanItem");
         }
 
-        // Мапим обратно в Dto
+        // Map back to Dto.
         var itemDto = _mapper.Map<BudgetPlanItemDto>(entity);
         return Result.Ok(itemDto);
     }

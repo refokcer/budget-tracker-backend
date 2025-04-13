@@ -35,21 +35,21 @@ public class ApplicationDbContext : DbContext
             .Property(t => t.Amount)
             .HasColumnType("decimal(18,4)");
 
-        // 1. Запрещаем каскадное удаление Event → Transaction
+        // 1. Prohibit cascading deletion Event → Transaction
         modelBuilder.Entity<Transaction>()
             .HasOne(t => t.Event)
             .WithMany(e => e.Transactions)
             .HasForeignKey(t => t.EventId)
-            .OnDelete(DeleteBehavior.Restrict); // ОТКЛЮЧАЕМ CASCADE
+            .OnDelete(DeleteBehavior.Restrict);
 
-        // 2. Разрешаем удаление Category (ставим NULL)
+        // 2. Allow deletion of Category (set NULL)
         modelBuilder.Entity<Transaction>()
             .HasOne(t => t.Category)
             .WithMany()
             .HasForeignKey(t => t.CategoryId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // 3. Удаление Account запрещаем, если есть связанные Transactions
+        // 3. Account deletion is prohibited if there are related Transactions
         modelBuilder.Entity<Transaction>()
             .HasOne(t => t.FromAccount)
             .WithMany()
@@ -62,7 +62,7 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(t => t.AccountTo)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // 4. Удаление Currency запрещаем, если есть связанные Transactions
+        // 4. Currency deletion is prohibited if there are related Transactions
         modelBuilder.Entity<Transaction>()
             .HasOne(t => t.Currency)
             .WithMany()

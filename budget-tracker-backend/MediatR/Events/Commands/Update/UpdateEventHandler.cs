@@ -28,7 +28,6 @@ public class UpdateEventHandler : IRequestHandler<UpdateEventCommand, Result<Eve
             return Result.Fail($"Event with Id={dto.Id} not found");
         }
 
-        // Мапим Dto -> existing (или вручную)
         _mapper.Map(dto, existing);
 
         _context.Events.Update(existing);

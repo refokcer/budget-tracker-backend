@@ -23,13 +23,13 @@ public class GetCategoriesByTypeHandler
 
     public async Task<Result<IEnumerable<CategoryDto>>> Handle(GetCategoriesByTypeQuery request, CancellationToken cancellationToken)
     {
-        // Фильтруем категории по заданному Type
+        // Filter categories by specified Type
         var categories = await _context.Categories
             .Where(c => c.Type == request.Type)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        // Мапим в DTO
+        // Mapim in DTO
         var dtos = _mapper.Map<IEnumerable<CategoryDto>>(categories);
         return Result.Ok(dtos);
     }

@@ -8,13 +8,10 @@ public class CategoryProfile : Profile
 {
     public CategoryProfile()
     {
-        // Из сущности → DTO
         CreateMap<Category, CategoryDto>();
 
-        // Из DTO создания → сущность
         CreateMap<CreateCategoryDto, Category>();
 
-        // Из полного DTO → сущность
         CreateMap<CategoryDto, Category>();
     }
 }

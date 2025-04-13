@@ -27,7 +27,6 @@ public class UpdateCurrencyHandler : IRequestHandler<UpdateCurrencyCommand, Resu
             return Result.Fail($"Currency with Id={dto.Id} not found");
         }
 
-        // Мапим Dto → существующий объект (или вручную)
         _mapper.Map(dto, existing);
 
         _context.Currencies.Update(existing);
