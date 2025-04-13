@@ -7,6 +7,7 @@ using budget_tracker_backend.MediatR.Transactions.Queries.GetById;
 using budget_tracker_backend.Controllers.Interfaces;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetTransactions;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetByEvent;
+using budget_tracker_backend.MediatR.Transactions.Queries.GetByBudgetPlan;
 
 namespace budget_tracker_backend.Controllers.Transactions;
 
@@ -60,6 +61,15 @@ public class TransactionsController : BaseApiController
     public async Task<IActionResult> GetAllByEvent(int eventId)
     {
         var query = new GetAllTransactionsByEventQuery(eventId);
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    // GET: /api/Transactions/byPlan/5
+    [HttpGet("byPlan/{planId:int}")]
+    public async Task<IActionResult> GetByBudgetPlan(int planId)
+    {
+        var query = new GetTransactionsByBudgetPlanIdQuery(planId);
         var result = await Mediator.Send(query);
         return HandleResult(result);
     }
