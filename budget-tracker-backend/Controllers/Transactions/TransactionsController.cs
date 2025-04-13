@@ -51,7 +51,7 @@ public class TransactionsController : BaseApiController
     public async Task<IActionResult> GetTransactionsByEvent(int eventId)
     {
         var query = new GetTransactionsQuery(
-            EventId: eventId // <-- фильтр
+            EventId: eventId
         );
         var result = await Mediator.Send(query);
         return HandleResult(result);
