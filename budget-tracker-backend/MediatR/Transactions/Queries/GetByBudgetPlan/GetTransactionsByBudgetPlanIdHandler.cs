@@ -25,9 +25,7 @@ public class GetTransactionsByBudgetPlanIdHandler
         CancellationToken ct)
     {
         var transactions = await _context.Transactions
-            .Where(t => t.EventId != null &&
-                        _context.Events.Any(e => e.Id == t.EventId &&
-                                             e.BudgetPlanId == request.BudgetPlanId))
+            .Where(t => t.BudgetPlanId == request.BudgetPlanId)
             .AsNoTracking()
             .ToListAsync(ct);
 

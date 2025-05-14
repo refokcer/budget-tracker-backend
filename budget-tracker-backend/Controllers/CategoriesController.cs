@@ -76,8 +76,8 @@ public class CategoriesController : BaseApiController
         return HandleResult(result);
     }
 
-    // GET: /api/Categories/transactions
-    [HttpGet("transactions")]
+    // GET: /api/Categories/Transfers
+    [HttpGet("Transfers")]
     public async Task<IActionResult> GetTransactionCategories()
     {
         var query = new GetCategoriesByTypeQuery(TransactionCategoryType.Transaction);

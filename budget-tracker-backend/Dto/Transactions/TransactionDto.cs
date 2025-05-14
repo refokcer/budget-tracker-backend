@@ -9,7 +9,8 @@ public class TransactionDto
     public decimal Amount { get; set; }
     public int? AccountFrom { get; set; }
     public int? AccountTo { get; set; }
-    public int EventId { get; set; }
+    public int? EventId { get; set; }
+    public int? BudgetPlanId { get; set; }
     public int CurrencyId { get; set; }
     public int? CategoryId { get; set; }
     public DateTime Date { get; set; }
