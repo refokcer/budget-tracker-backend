@@ -38,6 +38,9 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
                 if (account == null)
                     return Result.Fail("AccountTo not found");
 
+                if (entity.Amount <= 0)
+                    return Result.Fail("Income must be >0");
+
                 account.Amount += entity.Amount;
             }
         }
@@ -49,6 +52,9 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
                 if (account == null)
                     return Result.Fail("AccountFrom not found");
 
+                if (account.Amount - entity.Amount < 0)
+                    return Result.Fail("Not enough money");
+
                 account.Amount -= entity.Amount;
             }
         }
@@ -59,6 +65,10 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
                 var fromAcc = await _context.Accounts.FindAsync(entity.AccountFrom.Value);
                 if (fromAcc == null)
                     return Result.Fail("AccountFrom not found");
+
+                if(fromAcc.Amount - entity.Amount < 0)
+                    return Result.Fail("Not enough money");
+
                 fromAcc.Amount -= entity.Amount;
             }
             if (entity.AccountTo.HasValue)
@@ -66,6 +76,7 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
                 var toAcc = await _context.Accounts.FindAsync(entity.AccountTo.Value);
                 if (toAcc == null)
                     return Result.Fail("AccountTo not found");
+
                 toAcc.Amount += entity.Amount;
             }
         }
