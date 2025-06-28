@@ -28,7 +28,7 @@ public class PagesController : BaseApiController
     /// </summary>
     /// <param name="month">1–12</param>
     /// <param name="year">необов’язково, за замовчанням – поточний</param>
-    [HttpGet("incomeByMonth/{month:int}")]
+    [HttpGet("incomesByMonth/{month:int}")]
     public async Task<IActionResult> IncomeByMonth(int month, [FromQuery] int? year)
     {
         var query = new GetIncomesByMonthQuery(month, year);
