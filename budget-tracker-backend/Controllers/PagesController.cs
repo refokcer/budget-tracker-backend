@@ -2,6 +2,9 @@
 using budget_tracker_backend.MediatR.Pages.ExpensesByMonth;
 using budget_tracker_backend.MediatR.Pages.IncomesByMonth;
 using budget_tracker_backend.MediatR.Pages.TransfersByMonth;
+using budget_tracker_backend.MediatR.Pages.BudgetPlanPage;
+using budget_tracker_backend.MediatR.Pages.Dashboard;
+using budget_tracker_backend.MediatR.Pages.MonthlyReport;
 using budget_tracker_backend.Controllers.Interfaces;
 
 namespace budget_tracker_backend.Controllers;
@@ -45,6 +48,29 @@ public class PagesController : BaseApiController
     public async Task<IActionResult> TransfersByMonth(int month, [FromQuery] int? year)
     {
         var query = new GetTransfersByMonthQuery(month, year);
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+    
+    [HttpGet("budgetPlanPage/{planId:int}")]
+    public async Task<IActionResult> BudgetPlanPage(int planId)
+    {
+        var query = new GetBudgetPlanPageQuery(planId);
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    [HttpGet("dashboard")]
+    public async Task<IActionResult> Dashboard()
+    {
+        var result = await Mediator.Send(new GetDashboardQuery());
+        return HandleResult(result);
+    }
+
+    [HttpGet("monthlyReport/{month:int}")]
+    public async Task<IActionResult> MonthlyReport(int month, [FromQuery] int? year)
+    {
+        var query = new GetMonthlyReportQuery(month, year);
         var result = await Mediator.Send(query);
         return HandleResult(result);
     }
