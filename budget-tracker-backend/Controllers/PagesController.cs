@@ -31,7 +31,7 @@ public class PagesController : BaseApiController
     /// </summary>
     /// <param name="month">1–12</param>
     /// <param name="year">необов’язково, за замовчанням – поточний</param>
-    [HttpGet("incomeByMonth/{month:int}")]
+    [HttpGet("incomesByMonth/{month:int}")]
     public async Task<IActionResult> IncomeByMonth(int month, [FromQuery] int? year)
     {
         var query = new GetIncomesByMonthQuery(month, year);
@@ -51,7 +51,7 @@ public class PagesController : BaseApiController
         var result = await Mediator.Send(query);
         return HandleResult(result);
     }
-
+    
     [HttpGet("budgetPlanPage/{planId:int}")]
     public async Task<IActionResult> BudgetPlanPage(int planId)
     {
