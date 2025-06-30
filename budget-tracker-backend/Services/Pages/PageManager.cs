@@ -4,6 +4,9 @@ using AutoMapper;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Pages;
 using budget_tracker_backend.Services.Accounts;
+using budget_tracker_backend.Services.BudgetPlans;
+using budget_tracker_backend.Services.BudgetPlanItems;
+using budget_tracker_backend.Services.Transactions;
 using budget_tracker_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,12 +15,24 @@ public class PageManager : IPageManager
     private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
     private readonly IAccountManager _accountManager;
+    private readonly IBudgetPlanManager _budgetPlanManager;
+    private readonly IBudgetPlanItemManager _budgetPlanItemManager;
+    private readonly ITransactionManager _transactionManager;
 
-    public PageManager(IApplicationDbContext ctx, IMapper mapper, IAccountManager accountManager)
+    public PageManager(
+        IApplicationDbContext ctx,
+        IMapper mapper,
+        IAccountManager accountManager,
+        IBudgetPlanManager budgetPlanManager,
+        IBudgetPlanItemManager budgetPlanItemManager,
+        ITransactionManager transactionManager)
     {
         _ctx = ctx;
         _mapper = mapper;
         _accountManager = accountManager;
+        _budgetPlanManager = budgetPlanManager;
+        _budgetPlanItemManager = budgetPlanItemManager;
+        _transactionManager = transactionManager;
     }
 
     public async Task<DashboardDto> GetDashboardAsync(CancellationToken ct)
@@ -93,25 +108,20 @@ public class PageManager : IPageManager
 
     public async Task<BudgetPlanPageDto> GetBudgetPlanPageAsync(int planId, CancellationToken ct)
     {
-        var plan = await _ctx.BudgetPlans.AsNoTracking().FirstOrDefaultAsync(p => p.Id == planId, ct);
+        var plan = await _budgetPlanManager.GetByIdAsync(planId, ct);
         if (plan == null)
             throw new Exception($"Budget plan {planId} not found");
 
-        var items = await _ctx.BudgetPlanItems
-            .Include(i => i.Category)
-            .Include(i => i.Currency)
-            .Where(i => i.BudgetPlanId == planId)
-            .AsNoTracking()
-            .ToListAsync(ct);
+        var items = await _budgetPlanItemManager.GetByPlanIdAsync(planId, ct);
 
         var categoryIds = items.Select(i => i.CategoryId).ToList();
-        var txSums = await _ctx.Transactions
+        var transactions = await _transactionManager.GetByBudgetPlanIdAsync(planId, ct);
+        var txSums = transactions
             .Where(t => t.CategoryId != null && categoryIds.Contains(t.CategoryId.Value) &&
-                        t.Date >= plan.StartDate && t.Date <= plan.EndDate &&
                         t.Type == TransactionCategoryType.Expense)
-            .GroupBy(t => t.CategoryId)
-            .Select(g => new { CatId = g.Key!.Value, Sum = g.Sum(x => x.Amount) })
-            .ToListAsync(ct);
+            .GroupBy(t => t.CategoryId!.Value)
+            .Select(g => new { CatId = g.Key, Sum = g.Sum(x => x.Amount) })
+            .ToList();
         var spentByCat = txSums.ToDictionary(x => x.CatId, x => x.Sum);
 
         var dto = new BudgetPlanPageDto
