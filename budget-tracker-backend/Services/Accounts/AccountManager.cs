@@ -6,6 +6,7 @@ using budget_tracker_backend.Dto.Accounts;
 using budget_tracker_backend.Exceptions;
 using budget_tracker_backend.Models;
 using budget_tracker_backend.Models.Enums;
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
 public class AccountManager : IAccountManager
@@ -129,5 +130,48 @@ public class AccountManager : IAccountManager
             _dbContext.Accounts.Update(to);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<Result> HandleTransactionAsync(
+        TransactionCategoryType type,
+        decimal amount,
+        int? fromId,
+        int? toId,
+        bool reverse,
+        CancellationToken cancellationToken)
+    {
+        Account? from = null;
+        if (fromId.HasValue)
+        {
+            from = await GetByIdAsync(fromId.Value, cancellationToken);
+            if (from == null)
+                return Result.Fail("AccountFrom not found");
+        }
+
+        Account? to = null;
+        if (toId.HasValue)
+        {
+            to = await GetByIdAsync(toId.Value, cancellationToken);
+            if (to == null)
+                return Result.Fail("AccountTo not found");
+        }
+
+        if (!reverse)
+        {
+            if (type == TransactionCategoryType.Income)
+            {
+                if (amount <= 0)
+                    return Result.Fail("Income must be >0");
+            }
+            else if (type == TransactionCategoryType.Expense ||
+                     type == TransactionCategoryType.Transaction)
+            {
+                if (from != null && from.Amount - amount < 0)
+                    return Result.Fail("Not enough money");
+            }
+        }
+
+        await ApplyBalanceAsync(type, amount, from, to, reverse, cancellationToken);
+        return Result.Ok();
     }
 }

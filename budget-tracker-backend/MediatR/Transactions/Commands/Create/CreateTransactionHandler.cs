@@ -33,61 +33,21 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
         entity.Type = type;
 
 
-        if (type == TransactionCategoryType.Income)
-        {
-            if (entity.AccountTo.HasValue)
-            {
-                var account = await _accountManager.GetByIdAsync(entity.AccountTo.Value, token);
-                if (account == null)
-                    return Result.Fail("AccountTo not found");
-
-                if (entity.Amount <= 0)
-                    return Result.Fail("Income must be >0");
-
-                await _accountManager.ApplyBalanceAsync(type, entity.Amount, null, account, false, token);
-            }
-        }
-        else if (type == TransactionCategoryType.Expense)
-        {
-            if (entity.AccountFrom.HasValue)
-            {
-                var account = await _accountManager.GetByIdAsync(entity.AccountFrom.Value, token);
-                if (account == null)
-                    return Result.Fail("AccountFrom not found");
-
-                if (account.Amount - entity.Amount < 0)
-                    return Result.Fail("Not enough money");
-
-                await _accountManager.ApplyBalanceAsync(type, entity.Amount, account, null, false, token);
-            }
-        }
-        else if (type == TransactionCategoryType.Transaction)
-        {
-            Account? fromAcc = null;
-            if (entity.AccountFrom.HasValue)
-            {
-                fromAcc = await _accountManager.GetByIdAsync(entity.AccountFrom.Value, token);
-                if (fromAcc == null)
-                    return Result.Fail("AccountFrom not found");
-
-                if(fromAcc.Amount - entity.Amount < 0)
-                    return Result.Fail("Not enough money");
-            }
-
-            Account? toAcc = null;
-            if (entity.AccountTo.HasValue)
-            {
-                toAcc = await _accountManager.GetByIdAsync(entity.AccountTo.Value, token);
-                if (toAcc == null)
-                    return Result.Fail("AccountTo not found");
-            }
-
-            await _accountManager.ApplyBalanceAsync(type, entity.Amount, fromAcc, toAcc, false, token);
-        }
-        else if (type == TransactionCategoryType.None)
+        if (type == TransactionCategoryType.None)
         {
             return Result.Fail("Transaction typy not defined");
         }
+
+        var result = await _accountManager.HandleTransactionAsync(
+            type,
+            entity.Amount,
+            entity.AccountFrom,
+            entity.AccountTo,
+            false,
+            token);
+
+        if (result.IsFailed)
+            return Result.Fail(result.Errors.First().Message);
 
         _context.Transactions.Add(entity);
         var saved = await _context.SaveChangesAsync(token) > 0;

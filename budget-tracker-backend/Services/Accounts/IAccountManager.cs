@@ -18,4 +18,11 @@ public interface IAccountManager
         Account? to,
         bool reverse,
         CancellationToken cancellationToken);
+    Task<Result> HandleTransactionAsync(
+        TransactionCategoryType type,
+        decimal amount,
+        int? fromId,
+        int? toId,
+        bool reverse,
+        CancellationToken cancellationToken);
 }
