@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Pages;
+using budget_tracker_backend.Services.Accounts;
 using budget_tracker_backend.Models.Enums;
 
 namespace budget_tracker_backend.MediatR.Pages.Dashboard;
@@ -12,10 +13,13 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, Result<Das
 {
     private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
+    private readonly IAccountManager _accountManager;
 
-    public GetDashboardHandler(IApplicationDbContext ctx, IMapper mapper)
+    public GetDashboardHandler(IApplicationDbContext ctx, IMapper mapper, IAccountManager accountManager)
     {
-        _ctx = ctx; _mapper = mapper;
+        _ctx = ctx;
+        _mapper = mapper;
+        _accountManager = accountManager;
     }
 
     public async Task<Result<DashboardDto>> Handle(GetDashboardQuery rq, CancellationToken ct)
@@ -24,10 +28,7 @@ public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, Result<Das
         var start = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var end = start.AddMonths(1);
 
-        var accounts = await _ctx.Accounts
-            .Include(a => a.Currency)
-            .AsNoTracking()
-            .ToListAsync(ct);
+        var accounts = await _accountManager.GetAllAsync(ct);
 
         var accountDtos = _mapper.Map<List<DashboardAccountDto>>(accounts);
         var totalBalance = accounts.Sum(a => a.Amount);

@@ -21,6 +21,7 @@ public class AccountManager : IAccountManager
     public async Task<IEnumerable<Account>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await _dbContext.Accounts
+            .Include(a => a.Currency)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
