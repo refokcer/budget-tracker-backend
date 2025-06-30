@@ -6,9 +6,9 @@ namespace budget_tracker_backend.MediatR.BudgetPlanItems.Commands.Delete;
 
 public class DeleteBudgetPlanItemHandler : IRequestHandler<DeleteBudgetPlanItemCommand, Result<bool>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public DeleteBudgetPlanItemHandler(ApplicationDbContext context)
+    public DeleteBudgetPlanItemHandler(IApplicationDbContext context)
     {
         _context = context;
     }

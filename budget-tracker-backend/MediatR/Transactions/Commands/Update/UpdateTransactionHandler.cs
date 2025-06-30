@@ -13,10 +13,10 @@ namespace budget_tracker_backend.MediatR.Transactions.Commands.Update;
 public class UpdateTransactionHandler
     : IRequestHandler<UpdateTransactionCommand, Result<TransactionDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public UpdateTransactionHandler(ApplicationDbContext ctx, IMapper mapper)
+    public UpdateTransactionHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx;
         _mapper = mapper;

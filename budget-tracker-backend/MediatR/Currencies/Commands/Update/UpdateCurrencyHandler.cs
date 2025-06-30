@@ -9,10 +9,10 @@ namespace budget_tracker_backend.MediatR.Currencies.Commands.Update;
 
 public class UpdateCurrencyHandler : IRequestHandler<UpdateCurrencyCommand, Result<CurrencyDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UpdateCurrencyHandler(ApplicationDbContext context, IMapper mapper)
+    public UpdateCurrencyHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

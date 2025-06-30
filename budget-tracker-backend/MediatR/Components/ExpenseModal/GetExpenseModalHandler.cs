@@ -14,10 +14,10 @@ namespace budget_tracker_backend.MediatR.Components.ExpenseModal;
 
 public class GetExpenseModalHandler : IRequestHandler<GetExpenseModalQuery, Result<ExpenseModalDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetExpenseModalHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetExpenseModalHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx;
         _mapper = mapper;

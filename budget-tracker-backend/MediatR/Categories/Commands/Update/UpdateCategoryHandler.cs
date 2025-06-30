@@ -10,10 +10,10 @@ namespace budget_tracker_backend.MediatR.Categories.Commands.Update;
 
 public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand, Result<CategoryDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UpdateCategoryHandler(ApplicationDbContext context, IMapper mapper)
+    public UpdateCategoryHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

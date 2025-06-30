@@ -12,6 +12,8 @@ builder.Services.AddScoped<IAccountManager, AccountManager>();
 // Ïîäêëþ÷àåì EF Core è MS SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IApplicationDbContext>(sp =>
+    sp.GetRequiredService<ApplicationDbContext>());
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

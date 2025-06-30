@@ -12,10 +12,10 @@ namespace budget_tracker_backend.MediatR.Components.EditPlanModal;
 
 public class GetEditPlanModalHandler : IRequestHandler<GetEditPlanModalQuery, Result<EditPlanModalDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetEditPlanModalHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetEditPlanModalHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx;
         _mapper = mapper;

@@ -10,9 +10,9 @@ namespace budget_tracker_backend.MediatR.Transactions.Commands.Delete;
 public class DeleteTransactionHandler
     : IRequestHandler<DeleteTransactionCommand, Result<bool>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
 
-    public DeleteTransactionHandler(ApplicationDbContext ctx) => _ctx = ctx;
+    public DeleteTransactionHandler(IApplicationDbContext ctx) => _ctx = ctx;
 
     public async Task<Result<bool>> Handle(DeleteTransactionCommand request, CancellationToken ct)
     {

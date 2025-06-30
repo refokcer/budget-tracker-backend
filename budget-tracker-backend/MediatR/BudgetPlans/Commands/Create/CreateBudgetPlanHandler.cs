@@ -9,10 +9,10 @@ namespace budget_tracker_backend.MediatR.BudgetPlans.Commands.Create;
 
 public class CreateBudgetPlanHandler : IRequestHandler<CreateBudgetPlanCommand, Result<BudgetPlanDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public CreateBudgetPlanHandler(ApplicationDbContext context, IMapper mapper)
+    public CreateBudgetPlanHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

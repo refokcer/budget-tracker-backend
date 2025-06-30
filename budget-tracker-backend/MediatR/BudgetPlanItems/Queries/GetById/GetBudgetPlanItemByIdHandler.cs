@@ -8,10 +8,10 @@ namespace budget_tracker_backend.MediatR.BudgetPlanItems.Queries.GetById;
 
 public class GetBudgetPlanItemByIdHandler : IRequestHandler<GetBudgetPlanItemByIdQuery, Result<BudgetPlanItemDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetBudgetPlanItemByIdHandler(ApplicationDbContext context, IMapper mapper)
+    public GetBudgetPlanItemByIdHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

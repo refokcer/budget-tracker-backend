@@ -10,10 +10,10 @@ namespace budget_tracker_backend.MediatR.Pages.Dashboard;
 
 public class GetDashboardHandler : IRequestHandler<GetDashboardQuery, Result<DashboardDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetDashboardHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetDashboardHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx; _mapper = mapper;
     }

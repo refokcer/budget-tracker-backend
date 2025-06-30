@@ -9,10 +9,10 @@ namespace budget_tracker_backend.MediatR.Events.Queries.GetById;
 
 public class GetEventByIdHandler : IRequestHandler<GetEventByIdQuery, Result<EventDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetEventByIdHandler(ApplicationDbContext context, IMapper mapper)
+    public GetEventByIdHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

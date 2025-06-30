@@ -11,10 +11,10 @@ namespace budget_tracker_backend.MediatR.Pages.IncomesByMonth;
 public class GetIncomesByMonthHandler
     : IRequestHandler<GetIncomesByMonthQuery, Result<IncomesByMonthDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetIncomesByMonthHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetIncomesByMonthHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx; _mapper = mapper;
     }

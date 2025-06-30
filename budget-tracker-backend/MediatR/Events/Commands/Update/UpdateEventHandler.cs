@@ -9,10 +9,10 @@ namespace budget_tracker_backend.MediatR.Events.Commands.Update;
 
 public class UpdateEventHandler : IRequestHandler<UpdateEventCommand, Result<EventDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UpdateEventHandler(ApplicationDbContext context, IMapper mapper)
+    public UpdateEventHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

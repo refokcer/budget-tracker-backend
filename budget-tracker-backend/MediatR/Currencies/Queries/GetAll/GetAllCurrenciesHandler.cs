@@ -9,10 +9,10 @@ namespace budget_tracker_backend.MediatR.Currencies.Queries.GetAll;
 
 public class GetAllCurrenciesHandler : IRequestHandler<GetAllCurrenciesQuery, Result<IEnumerable<CurrencyDto>>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetAllCurrenciesHandler(ApplicationDbContext context, IMapper mapper)
+    public GetAllCurrenciesHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

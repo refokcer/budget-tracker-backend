@@ -10,10 +10,10 @@ namespace budget_tracker_backend.MediatR.Pages.BudgetPlanPage;
 
 public class GetBudgetPlanPageHandler : IRequestHandler<GetBudgetPlanPageQuery, Result<BudgetPlanPageDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetBudgetPlanPageHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetBudgetPlanPageHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx; _mapper = mapper;
     }
