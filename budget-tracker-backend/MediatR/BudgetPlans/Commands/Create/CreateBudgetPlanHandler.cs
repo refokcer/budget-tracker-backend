@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
-using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.BudgetPlans;
-using budget_tracker_backend.Models;
+using budget_tracker_backend.Services.BudgetPlans;
 using FluentResults;
 using MediatR;
 
@@ -9,32 +8,18 @@ namespace budget_tracker_backend.MediatR.BudgetPlans.Commands.Create;
 
 public class CreateBudgetPlanHandler : IRequestHandler<CreateBudgetPlanCommand, Result<BudgetPlanDto>>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IBudgetPlanManager _manager;
     private readonly IMapper _mapper;
 
-    public CreateBudgetPlanHandler(IApplicationDbContext context, IMapper mapper)
+    public CreateBudgetPlanHandler(IBudgetPlanManager manager, IMapper mapper)
     {
-        _context = context;
+        _manager = manager;
         _mapper = mapper;
     }
 
     public async Task<Result<BudgetPlanDto>> Handle(CreateBudgetPlanCommand request, CancellationToken cancellationToken)
     {
-        // Convert DTO → entity
-        var entity = _mapper.Map<BudgetPlan>(request.NewPlan);
-        if (entity == null)
-        {
-            return Result.Fail("Failed to map CreateBudgetPlanDto to BudgetPlan");
-        }
-
-        _context.BudgetPlans.Add(entity);
-        var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
-        if (!saved)
-        {
-            return Result.Fail("Failed to create BudgetPlan in database");
-        }
-
-        // Map back to DTO for a response
+        var entity = await _manager.CreateAsync(request.NewPlan, cancellationToken);
         var resultDto = _mapper.Map<BudgetPlanDto>(entity);
         return Result.Ok(resultDto);
     }

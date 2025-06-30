@@ -2,9 +2,8 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Transactions;
-using budget_tracker_backend.Services.Accounts;
+using budget_tracker_backend.Services.Transactions;
 using budget_tracker_backend.Models;
 using budget_tracker_backend.Models.Enums;
 
@@ -13,59 +12,18 @@ namespace budget_tracker_backend.MediatR.Transactions.Commands.Update;
 public class UpdateTransactionHandler
     : IRequestHandler<UpdateTransactionCommand, Result<TransactionDto>>
 {
-    private readonly IApplicationDbContext _ctx;
+    private readonly ITransactionManager _manager;
     private readonly IMapper _mapper;
-    private readonly IAccountManager _accountManager;
 
-    public UpdateTransactionHandler(IApplicationDbContext ctx, IMapper mapper, IAccountManager accountManager)
+    public UpdateTransactionHandler(ITransactionManager manager, IMapper mapper)
     {
-        _ctx = ctx;
+        _manager = manager;
         _mapper = mapper;
-        _accountManager = accountManager;
     }
 
     public async Task<Result<TransactionDto>> Handle(UpdateTransactionCommand request, CancellationToken ct)
     {
-        var dto = request.TransactionToUpdate;
-        var tr = await _ctx.Transactions.FirstOrDefaultAsync(t => t.Id == dto.Id, ct);
-        if (tr is null)
-            return Result.Fail($"Transaction {dto.Id} not found");
-
-        // --- 1) откатываем старые значения ----------------------------------
-        var oldFrom = tr.AccountFrom.HasValue
-            ? await _accountManager.GetByIdAsync(tr.AccountFrom.Value, ct)
-            : null;
-
-        var oldTo = tr.AccountTo.HasValue
-            ? await _accountManager.GetByIdAsync(tr.AccountTo.Value, ct)
-            : null;
-
-        await _accountManager.ApplyBalanceAsync(tr.Type, tr.Amount, oldFrom, oldTo, true, ct);
-
-        // --- 2) применяем новые значения ------------------------------------
-        _mapper.Map(dto, tr);                // копируем поля из DTO → entity
-
-        // проверяем / загружаем новые аккаунты
-        var newFrom = tr.AccountFrom.HasValue
-            ? await _accountManager.GetByIdAsync(tr.AccountFrom.Value, ct)
-            : null;
-
-        var newTo = tr.AccountTo.HasValue
-            ? await _accountManager.GetByIdAsync(tr.AccountTo.Value, ct)
-            : null;
-
-        // если передан несуществующий счёт — вернём ошибку
-        if (tr.AccountFrom.HasValue && newFrom == null)
-            return Result.Fail("AccountFrom not found");
-        if (tr.AccountTo.HasValue && newTo == null)
-            return Result.Fail("AccountTo not found");
-
-        await _accountManager.ApplyBalanceAsync(tr.Type, tr.Amount, newFrom, newTo, false, ct);
-
-        var saved = await _ctx.SaveChangesAsync(ct) > 0;
-        if (!saved)
-            return Result.Fail("Failed to update Transaction");
-
-        return Result.Ok(_mapper.Map<TransactionDto>(tr));
+        var entity = await _manager.UpdateAsync(request.TransactionToUpdate, ct);
+        return Result.Ok(_mapper.Map<TransactionDto>(entity));
     }
 }

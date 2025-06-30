@@ -1,4 +1,4 @@
-﻿using budget_tracker_backend.Data;
+﻿using budget_tracker_backend.Services.BudgetPlans;
 using FluentResults;
 using MediatR;
 
@@ -6,25 +6,16 @@ namespace budget_tracker_backend.MediatR.BudgetPlans.Commands.Delete;
 
 public class DeleteBudgetPlanHandler : IRequestHandler<DeleteBudgetPlanCommand, Result<bool>>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IBudgetPlanManager _manager;
 
-    public DeleteBudgetPlanHandler(IApplicationDbContext context)
+    public DeleteBudgetPlanHandler(IBudgetPlanManager manager)
     {
-        _context = context;
+        _manager = manager;
     }
 
     public async Task<Result<bool>> Handle(DeleteBudgetPlanCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.BudgetPlans.FindAsync(new object[] { request.Id }, cancellationToken);
-        if (entity == null)
-        {
-            return Result.Fail($"BudgetPlan with Id={request.Id} not found");
-        }
-
-        _context.BudgetPlans.Remove(entity);
-        var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
-        return saved
-            ? Result.Ok(true)
-            : Result.Fail("Failed to delete BudgetPlan");
+        var result = await _manager.DeleteAsync(request.Id, cancellationToken);
+        return Result.Ok(result);
     }
 }
