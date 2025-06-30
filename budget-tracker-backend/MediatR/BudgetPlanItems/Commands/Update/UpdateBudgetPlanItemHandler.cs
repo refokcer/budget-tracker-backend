@@ -8,10 +8,10 @@ namespace budget_tracker_backend.MediatR.BudgetPlanItems.Commands.Update;
 
 public class UpdateBudgetPlanItemHandler : IRequestHandler<UpdateBudgetPlanItemCommand, Result<BudgetPlanItemDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public UpdateBudgetPlanItemHandler(ApplicationDbContext context, IMapper mapper)
+    public UpdateBudgetPlanItemHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

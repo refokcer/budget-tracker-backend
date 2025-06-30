@@ -9,10 +9,10 @@ using MediatR;
 
 public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand, Result<TransactionDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public CreateTransactionHandler(ApplicationDbContext context, IMapper mapper)
+    public CreateTransactionHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

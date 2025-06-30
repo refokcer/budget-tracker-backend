@@ -10,10 +10,10 @@ namespace budget_tracker_backend.MediatR.Transactions.Queries.GetByEvent;
 
 public class GetAllTransactionsByEventHandler : IRequestHandler<GetAllTransactionsByEventQuery, Result<IEnumerable<TransactionDto>>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetAllTransactionsByEventHandler(ApplicationDbContext context, IMapper mapper)
+    public GetAllTransactionsByEventHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

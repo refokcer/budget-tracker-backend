@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 public class AccountManager : IAccountManager
 {
-    private readonly ApplicationDbContext _dbContext;
+    private readonly IApplicationDbContext _dbContext;
     private readonly IMapper _mapper;
 
-    public AccountManager(ApplicationDbContext dbContext, IMapper mapper)
+    public AccountManager(IApplicationDbContext dbContext, IMapper mapper)
     {
         _dbContext = dbContext;
         _mapper = mapper;

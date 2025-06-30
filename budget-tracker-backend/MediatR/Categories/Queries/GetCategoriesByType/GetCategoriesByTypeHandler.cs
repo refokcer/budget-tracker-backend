@@ -12,10 +12,10 @@ namespace budget_tracker_backend.MediatR.Categories.Queries.GetByType;
 public class GetCategoriesByTypeHandler
     : IRequestHandler<GetCategoriesByTypeQuery, Result<IEnumerable<CategoryDto>>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetCategoriesByTypeHandler(ApplicationDbContext context, IMapper mapper)
+    public GetCategoriesByTypeHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

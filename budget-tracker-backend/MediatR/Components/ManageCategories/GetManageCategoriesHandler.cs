@@ -11,10 +11,10 @@ namespace budget_tracker_backend.MediatR.Components.ManageCategories;
 
 public class GetManageCategoriesHandler : IRequestHandler<GetManageCategoriesQuery, Result<ManageCategoriesDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetManageCategoriesHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetManageCategoriesHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx;
         _mapper = mapper;

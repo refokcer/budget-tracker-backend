@@ -11,10 +11,10 @@ public class GetTransactionsByBudgetPlanIdHandler
     : IRequestHandler<GetTransactionsByBudgetPlanIdQuery,
                       Result<IEnumerable<TransactionDto>>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetTransactionsByBudgetPlanIdHandler(ApplicationDbContext context, IMapper mapper)
+    public GetTransactionsByBudgetPlanIdHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

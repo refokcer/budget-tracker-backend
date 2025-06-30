@@ -9,10 +9,10 @@ namespace budget_tracker_backend.MediatR.Transactions.Queries.GetById;
 
 public class GetTransactionByIdHandler : IRequestHandler<GetTransactionByIdQuery, Result<TransactionDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetTransactionByIdHandler(ApplicationDbContext context, IMapper mapper)
+    public GetTransactionByIdHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

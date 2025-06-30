@@ -10,10 +10,10 @@ namespace budget_tracker_backend.MediatR.Components.ManageAccounts;
 
 public class GetManageAccountsHandler : IRequestHandler<GetManageAccountsQuery, Result<ManageAccountsDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetManageAccountsHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetManageAccountsHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx;
         _mapper = mapper;

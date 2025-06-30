@@ -13,10 +13,10 @@ namespace budget_tracker_backend.MediatR.Components.IncomeModal;
 
 public class GetIncomeModalHandler : IRequestHandler<GetIncomeModalQuery, Result<IncomeModalDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetIncomeModalHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetIncomeModalHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx;
         _mapper = mapper;

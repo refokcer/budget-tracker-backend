@@ -13,10 +13,10 @@ namespace budget_tracker_backend.MediatR.Components.TransferModal;
 
 public class GetTransferModalHandler : IRequestHandler<GetTransferModalQuery, Result<TransferModalDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetTransferModalHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetTransferModalHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx;
         _mapper = mapper;

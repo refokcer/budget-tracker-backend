@@ -9,9 +9,9 @@ namespace budget_tracker_backend.MediatR.Pages.MonthlyReport;
 
 public class GetMonthlyReportHandler : IRequestHandler<GetMonthlyReportQuery, Result<MonthlyReportDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
 
-    public GetMonthlyReportHandler(ApplicationDbContext ctx)
+    public GetMonthlyReportHandler(IApplicationDbContext ctx)
     {
         _ctx = ctx;
     }

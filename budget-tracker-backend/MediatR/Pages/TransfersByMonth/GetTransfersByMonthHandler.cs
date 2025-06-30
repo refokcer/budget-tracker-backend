@@ -11,10 +11,10 @@ namespace budget_tracker_backend.MediatR.Pages.TransfersByMonth;
 public class GetTransfersByMonthHandler
     : IRequestHandler<GetTransfersByMonthQuery, Result<TransfersByMonthDto>>
 {
-    private readonly ApplicationDbContext _ctx;
+    private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
 
-    public GetTransfersByMonthHandler(ApplicationDbContext ctx, IMapper mapper)
+    public GetTransfersByMonthHandler(IApplicationDbContext ctx, IMapper mapper)
     {
         _ctx = ctx; _mapper = mapper;
     }

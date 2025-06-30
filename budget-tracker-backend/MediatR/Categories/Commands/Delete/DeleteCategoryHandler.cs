@@ -8,9 +8,9 @@ namespace budget_tracker_backend.MediatR.Categories.Commands.Delete;
 
 public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, Result<bool>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public DeleteCategoryHandler(ApplicationDbContext context)
+    public DeleteCategoryHandler(IApplicationDbContext context)
     {
         _context = context;
     }

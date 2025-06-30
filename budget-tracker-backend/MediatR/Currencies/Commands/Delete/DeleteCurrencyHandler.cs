@@ -7,9 +7,9 @@ namespace budget_tracker_backend.MediatR.Currencies.Commands.Delete;
 
 public class DeleteCurrencyHandler : IRequestHandler<DeleteCurrencyCommand, Result<bool>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
 
-    public DeleteCurrencyHandler(ApplicationDbContext context)
+    public DeleteCurrencyHandler(IApplicationDbContext context)
     {
         _context = context;
     }

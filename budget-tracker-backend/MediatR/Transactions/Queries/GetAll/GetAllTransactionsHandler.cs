@@ -9,10 +9,10 @@ namespace budget_tracker_backend.MediatR.Transactions.Queries.GetAll;
 
 public class GetAllTransactionsHandler : IRequestHandler<GetAllTransactionsQuery, Result<IEnumerable<TransactionDto>>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetAllTransactionsHandler(ApplicationDbContext context, IMapper mapper)
+    public GetAllTransactionsHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

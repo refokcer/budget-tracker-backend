@@ -10,10 +10,10 @@ namespace budget_tracker_backend.MediatR.Categories.Commands.Create;
 
 public class CreateCategoryHandler : IRequestHandler<CreateCategoryCommand, Result<CategoryDto>>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public CreateCategoryHandler(ApplicationDbContext context, IMapper mapper)
+    public CreateCategoryHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
