@@ -34,6 +34,8 @@ public class BudgetPlanItemManager : IBudgetPlanItemManager
     public async Task<IEnumerable<BudgetPlanItem>> GetByPlanIdAsync(int planId, CancellationToken cancellationToken)
     {
         return await _context.BudgetPlanItems
+            .Include(i => i.Category)
+            .Include(i => i.Currency)
             .Where(i => i.BudgetPlanId == planId)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
