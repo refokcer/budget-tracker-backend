@@ -1,5 +1,13 @@
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Services.Accounts;
+using budget_tracker_backend.Services.BudgetPlans;
+using budget_tracker_backend.Services.BudgetPlanItems;
+using budget_tracker_backend.Services.Categories;
+using budget_tracker_backend.Services.Components;
+using budget_tracker_backend.Services.Currencies;
+using budget_tracker_backend.Services.Events;
+using budget_tracker_backend.Services.Pages;
+using budget_tracker_backend.Services.Transactions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
@@ -9,6 +17,14 @@ var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
 
 builder.Services.AddScoped<IAccountManager, AccountManager>();
+builder.Services.AddScoped<IBudgetPlanManager, BudgetPlanManager>();
+builder.Services.AddScoped<IBudgetPlanItemManager, BudgetPlanItemManager>();
+builder.Services.AddScoped<ICategoryManager, CategoryManager>();
+builder.Services.AddScoped<IComponentManager, ComponentManager>();
+builder.Services.AddScoped<ICurrencyManager, CurrencyManager>();
+builder.Services.AddScoped<IEventManager, EventManager>();
+builder.Services.AddScoped<ITransactionManager, TransactionManager>();
+builder.Services.AddScoped<IPageManager, PageManager>();
 // Ïîäêëþ÷àåì EF Core è MS SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
