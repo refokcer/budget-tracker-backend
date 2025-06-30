@@ -1,4 +1,5 @@
 using budget_tracker_backend.Data;
+using budget_tracker_backend.Services.Accounts;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
@@ -7,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
 
-// Подключаем EF Core и MS SQL
+builder.Services.AddScoped<IAccountManager, AccountManager>();
+// ГЏГ®Г¤ГЄГ«ГѕГ·Г ГҐГ¬ EF Core ГЁ MS SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -39,7 +41,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-app.UseCors("AllowReact"); // Включаем CORS
+app.UseCors("AllowReact"); // Г‚ГЄГ«ГѕГ·Г ГҐГ¬ CORS
 
 app.UseExceptionHandler(appBuilder =>
 {
@@ -49,7 +51,7 @@ app.UseExceptionHandler(appBuilder =>
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
         if (exception != null)
         {
-            Console.WriteLine($"Ошибка на сервере: {exception.Message}");
+            Console.WriteLine($"ГЋГёГЁГЎГЄГ  Г­Г  Г±ГҐГ°ГўГҐГ°ГҐ: {exception.Message}");
             Console.WriteLine($"StackTrace: {exception.StackTrace}");
         }
         await context.Response.WriteAsync("An unexpected error occurred.");
