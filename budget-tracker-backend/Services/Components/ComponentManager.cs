@@ -9,23 +9,28 @@ using budget_tracker_backend.Models.Enums;
 using budget_tracker_backend.Services.Accounts;
 using budget_tracker_backend.Services.Categories;
 using budget_tracker_backend.Services.Currencies;
+using budget_tracker_backend.Services.BudgetPlans;
+using budget_tracker_backend.Dto.BudgetPlans;
 
 public class ComponentManager : IComponentManager
 {
     private readonly IAccountManager _accountManager;
     private readonly ICategoryManager _categoryManager;
     private readonly ICurrencyManager _currencyManager;
+    private readonly IBudgetPlanManager _budgetPlanManager;
     private readonly IMapper _mapper;
 
     public ComponentManager(
         IAccountManager accountManager,
         ICategoryManager categoryManager,
         ICurrencyManager currencyManager,
+        IBudgetPlanManager budgetPlanManager,
         IMapper mapper)
     {
         _accountManager = accountManager;
         _categoryManager = categoryManager;
         _currencyManager = currencyManager;
+        _budgetPlanManager = budgetPlanManager;
         _mapper = mapper;
     }
 
@@ -48,12 +53,14 @@ public class ComponentManager : IComponentManager
         var currencies = await _currencyManager.GetAllAsync(ct);
         var categories = await _categoryManager.GetByTypeAsync(TransactionCategoryType.Expense, ct);
         var accounts = await _accountManager.GetAllAsync(ct);
+        var plans = await _budgetPlanManager.GetAllAsync(ct);
 
         return new ExpenseModalDto
         {
             Currencies = _mapper.Map<List<CurrencyDto>>(currencies),
             Categories = _mapper.Map<List<CategoryDto>>(categories),
-            Accounts = _mapper.Map<List<AccountDto>>(accounts)
+            Accounts = _mapper.Map<List<AccountDto>>(accounts),
+            Plans = _mapper.Map<List<BudgetPlanDto>>(plans)
         };
     }
 
