@@ -2,8 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Data;
-using budget_tracker_backend.Helpers;
-using budget_tracker_backend.Models;
+using budget_tracker_backend.Services.Accounts;
 
 namespace budget_tracker_backend.MediatR.Transactions.Commands.Delete;
 
@@ -11,8 +10,13 @@ public class DeleteTransactionHandler
     : IRequestHandler<DeleteTransactionCommand, Result<bool>>
 {
     private readonly IApplicationDbContext _ctx;
+    private readonly IAccountManager _accountManager;
 
-    public DeleteTransactionHandler(IApplicationDbContext ctx) => _ctx = ctx;
+    public DeleteTransactionHandler(IApplicationDbContext ctx, IAccountManager accountManager)
+    {
+        _ctx = ctx;
+        _accountManager = accountManager;
+    }
 
     public async Task<Result<bool>> Handle(DeleteTransactionCommand request, CancellationToken ct)
     {
@@ -24,15 +28,15 @@ public class DeleteTransactionHandler
 
         // Загружаем связанные аккаунты (если есть)
         var fromAcc = tr.AccountFrom.HasValue
-            ? await _ctx.Accounts.FindAsync(new object[] { tr.AccountFrom.Value }, ct)
+            ? await _accountManager.GetByIdAsync(tr.AccountFrom.Value, ct)
             : null;
 
         var toAcc = tr.AccountTo.HasValue
-            ? await _ctx.Accounts.FindAsync(new object[] { tr.AccountTo.Value }, ct)
+            ? await _accountManager.GetByIdAsync(tr.AccountTo.Value, ct)
             : null;
 
         // Откатить влияние транзакции
-        AccountBalanceHelper.Apply(tr.Type, tr.Amount, fromAcc, toAcc, reverse: true);
+        await _accountManager.ApplyBalanceAsync(tr.Type, tr.Amount, fromAcc, toAcc, true, ct);
 
         _ctx.Transactions.Remove(tr);
         var saved = await _ctx.SaveChangesAsync(ct) > 0;

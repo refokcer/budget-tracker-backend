@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using budget_tracker_backend.Data;
+using budget_tracker_backend.Services.Accounts;
 using budget_tracker_backend.Dto.Transactions;
 using budget_tracker_backend.MediatR.Transactions.Commands.Create;
 using budget_tracker_backend.Models;
@@ -11,11 +12,13 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
 {
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
+    private readonly IAccountManager _accountManager;
 
-    public CreateTransactionHandler(IApplicationDbContext context, IMapper mapper)
+    public CreateTransactionHandler(IApplicationDbContext context, IMapper mapper, IAccountManager accountManager)
     {
         _context = context;
         _mapper = mapper;
+        _accountManager = accountManager;
     }
 
     public async Task<Result<TransactionDto>> Handle(CreateTransactionCommand request, CancellationToken token)
@@ -30,60 +33,21 @@ public class CreateTransactionHandler : IRequestHandler<CreateTransactionCommand
         entity.Type = type;
 
 
-        if (type == TransactionCategoryType.Income)
-        {
-            if (entity.AccountTo.HasValue)
-            {
-                var account = await _context.Accounts.FindAsync(entity.AccountTo.Value);
-                if (account == null)
-                    return Result.Fail("AccountTo not found");
-
-                if (entity.Amount <= 0)
-                    return Result.Fail("Income must be >0");
-
-                account.Amount += entity.Amount;
-            }
-        }
-        else if (type == TransactionCategoryType.Expense)
-        {
-            if (entity.AccountFrom.HasValue)
-            {
-                var account = await _context.Accounts.FindAsync(entity.AccountFrom.Value);
-                if (account == null)
-                    return Result.Fail("AccountFrom not found");
-
-                if (account.Amount - entity.Amount < 0)
-                    return Result.Fail("Not enough money");
-
-                account.Amount -= entity.Amount;
-            }
-        }
-        else if (type == TransactionCategoryType.Transaction)
-        {
-            if (entity.AccountFrom.HasValue)
-            {
-                var fromAcc = await _context.Accounts.FindAsync(entity.AccountFrom.Value);
-                if (fromAcc == null)
-                    return Result.Fail("AccountFrom not found");
-
-                if(fromAcc.Amount - entity.Amount < 0)
-                    return Result.Fail("Not enough money");
-
-                fromAcc.Amount -= entity.Amount;
-            }
-            if (entity.AccountTo.HasValue)
-            {
-                var toAcc = await _context.Accounts.FindAsync(entity.AccountTo.Value);
-                if (toAcc == null)
-                    return Result.Fail("AccountTo not found");
-
-                toAcc.Amount += entity.Amount;
-            }
-        }
-        else if (type == TransactionCategoryType.None)
+        if (type == TransactionCategoryType.None)
         {
             return Result.Fail("Transaction typy not defined");
         }
+
+        var result = await _accountManager.HandleTransactionAsync(
+            type,
+            entity.Amount,
+            entity.AccountFrom,
+            entity.AccountTo,
+            false,
+            token);
+
+        if (result.IsFailed)
+            return Result.Fail(result.Errors.First().Message);
 
         _context.Transactions.Add(entity);
         var saved = await _context.SaveChangesAsync(token) > 0;

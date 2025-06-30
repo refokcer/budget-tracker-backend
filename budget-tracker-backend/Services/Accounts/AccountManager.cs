@@ -5,6 +5,8 @@ using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Accounts;
 using budget_tracker_backend.Exceptions;
 using budget_tracker_backend.Models;
+using budget_tracker_backend.Models.Enums;
+using FluentResults;
 using Microsoft.EntityFrameworkCore;
 
 public class AccountManager : IAccountManager
@@ -21,6 +23,7 @@ public class AccountManager : IAccountManager
     public async Task<IEnumerable<Account>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await _dbContext.Accounts
+            .Include(a => a.Currency)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
@@ -83,5 +86,92 @@ public class AccountManager : IAccountManager
         }
 
         return true;
+    }
+
+    private static void ApplyBalance(
+        TransactionCategoryType type,
+        decimal amount,
+        Account? from,
+        Account? to,
+        bool reverse)
+    {
+        var sign = reverse ? -1 : 1;
+
+        switch (type)
+        {
+            case TransactionCategoryType.Income:
+                if (to != null) to.Amount += sign * amount;
+                break;
+
+            case TransactionCategoryType.Expense:
+                if (from != null) from.Amount -= sign * amount;
+                break;
+
+            case TransactionCategoryType.Transaction:
+                if (from != null) from.Amount -= sign * amount;
+                if (to != null) to.Amount += sign * amount;
+                break;
+        }
+    }
+
+    public async Task ApplyBalanceAsync(
+        TransactionCategoryType type,
+        decimal amount,
+        Account? from,
+        Account? to,
+        bool reverse,
+        CancellationToken cancellationToken)
+    {
+        ApplyBalance(type, amount, from, to, reverse);
+
+        if (from != null)
+            _dbContext.Accounts.Update(from);
+        if (to != null)
+            _dbContext.Accounts.Update(to);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<Result> HandleTransactionAsync(
+        TransactionCategoryType type,
+        decimal amount,
+        int? fromId,
+        int? toId,
+        bool reverse,
+        CancellationToken cancellationToken)
+    {
+        Account? from = null;
+        if (fromId.HasValue)
+        {
+            from = await GetByIdAsync(fromId.Value, cancellationToken);
+            if (from == null)
+                return Result.Fail("AccountFrom not found");
+        }
+
+        Account? to = null;
+        if (toId.HasValue)
+        {
+            to = await GetByIdAsync(toId.Value, cancellationToken);
+            if (to == null)
+                return Result.Fail("AccountTo not found");
+        }
+
+        if (!reverse)
+        {
+            if (type == TransactionCategoryType.Income)
+            {
+                if (amount <= 0)
+                    return Result.Fail("Income must be >0");
+            }
+            else if (type == TransactionCategoryType.Expense ||
+                     type == TransactionCategoryType.Transaction)
+            {
+                if (from != null && from.Amount - amount < 0)
+                    return Result.Fail("Not enough money");
+            }
+        }
+
+        await ApplyBalanceAsync(type, amount, from, to, reverse, cancellationToken);
+        return Result.Ok();
     }
 }
