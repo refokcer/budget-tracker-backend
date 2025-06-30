@@ -2,6 +2,8 @@ namespace budget_tracker_backend.Services.Accounts;
 
 using budget_tracker_backend.Dto.Accounts;
 using budget_tracker_backend.Models;
+using budget_tracker_backend.Models.Enums;
+using FluentResults;
 
 public interface IAccountManager
 {
