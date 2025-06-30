@@ -5,6 +5,7 @@ using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Accounts;
 using budget_tracker_backend.Exceptions;
 using budget_tracker_backend.Models;
+using budget_tracker_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 public class AccountManager : IAccountManager
@@ -84,5 +85,49 @@ public class AccountManager : IAccountManager
         }
 
         return true;
+    }
+
+    private static void ApplyBalance(
+        TransactionCategoryType type,
+        decimal amount,
+        Account? from,
+        Account? to,
+        bool reverse)
+    {
+        var sign = reverse ? -1 : 1;
+
+        switch (type)
+        {
+            case TransactionCategoryType.Income:
+                if (to != null) to.Amount += sign * amount;
+                break;
+
+            case TransactionCategoryType.Expense:
+                if (from != null) from.Amount -= sign * amount;
+                break;
+
+            case TransactionCategoryType.Transaction:
+                if (from != null) from.Amount -= sign * amount;
+                if (to != null) to.Amount += sign * amount;
+                break;
+        }
+    }
+
+    public async Task ApplyBalanceAsync(
+        TransactionCategoryType type,
+        decimal amount,
+        Account? from,
+        Account? to,
+        bool reverse,
+        CancellationToken cancellationToken)
+    {
+        ApplyBalance(type, amount, from, to, reverse);
+
+        if (from != null)
+            _dbContext.Accounts.Update(from);
+        if (to != null)
+            _dbContext.Accounts.Update(to);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

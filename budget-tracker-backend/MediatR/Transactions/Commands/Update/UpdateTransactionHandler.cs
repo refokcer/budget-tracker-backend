@@ -4,9 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Transactions;
-using budget_tracker_backend.Dto.Accounts;
 using budget_tracker_backend.Services.Accounts;
-using budget_tracker_backend.Helpers;
 using budget_tracker_backend.Models;
 using budget_tracker_backend.Models.Enums;
 
@@ -42,11 +40,7 @@ public class UpdateTransactionHandler
             ? await _accountManager.GetByIdAsync(tr.AccountTo.Value, ct)
             : null;
 
-        AccountBalanceHelper.Apply(tr.Type, tr.Amount, oldFrom, oldTo, reverse: true);
-        if (oldFrom != null)
-            await _accountManager.UpdateAsync(_mapper.Map<AccountDto>(oldFrom), ct);
-        if (oldTo != null)
-            await _accountManager.UpdateAsync(_mapper.Map<AccountDto>(oldTo), ct);
+        await _accountManager.ApplyBalanceAsync(tr.Type, tr.Amount, oldFrom, oldTo, true, ct);
 
         // --- 2) применяем новые значения ------------------------------------
         _mapper.Map(dto, tr);                // копируем поля из DTO → entity
@@ -66,11 +60,7 @@ public class UpdateTransactionHandler
         if (tr.AccountTo.HasValue && newTo == null)
             return Result.Fail("AccountTo not found");
 
-        AccountBalanceHelper.Apply(tr.Type, tr.Amount, newFrom, newTo, reverse: false);
-        if (newFrom != null)
-            await _accountManager.UpdateAsync(_mapper.Map<AccountDto>(newFrom), ct);
-        if (newTo != null)
-            await _accountManager.UpdateAsync(_mapper.Map<AccountDto>(newTo), ct);
+        await _accountManager.ApplyBalanceAsync(tr.Type, tr.Amount, newFrom, newTo, false, ct);
 
         var saved = await _ctx.SaveChangesAsync(ct) > 0;
         if (!saved)

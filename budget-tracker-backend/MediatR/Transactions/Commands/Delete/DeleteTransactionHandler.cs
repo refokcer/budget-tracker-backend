@@ -2,9 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Data;
-using budget_tracker_backend.Helpers;
 using budget_tracker_backend.Services.Accounts;
-using budget_tracker_backend.Dto.Accounts;
 
 namespace budget_tracker_backend.MediatR.Transactions.Commands.Delete;
 
@@ -38,25 +36,7 @@ public class DeleteTransactionHandler
             : null;
 
         // Откатить влияние транзакции
-        AccountBalanceHelper.Apply(tr.Type, tr.Amount, fromAcc, toAcc, reverse: true);
-        if (fromAcc != null)
-            await _accountManager.UpdateAsync(new AccountDto
-            {
-                Id = fromAcc.Id,
-                Title = fromAcc.Title,
-                Amount = fromAcc.Amount,
-                CurrencyId = fromAcc.CurrencyId,
-                Description = fromAcc.Description
-            }, ct);
-        if (toAcc != null)
-            await _accountManager.UpdateAsync(new AccountDto
-            {
-                Id = toAcc.Id,
-                Title = toAcc.Title,
-                Amount = toAcc.Amount,
-                CurrencyId = toAcc.CurrencyId,
-                Description = toAcc.Description
-            }, ct);
+        await _accountManager.ApplyBalanceAsync(tr.Type, tr.Amount, fromAcc, toAcc, true, ct);
 
         _ctx.Transactions.Remove(tr);
         var saved = await _ctx.SaveChangesAsync(ct) > 0;
