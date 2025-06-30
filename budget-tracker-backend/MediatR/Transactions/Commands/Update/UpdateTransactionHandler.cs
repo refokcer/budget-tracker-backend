@@ -4,7 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Transactions;
-using budget_tracker_backend.Helpers;
+using budget_tracker_backend.Services.Accounts;
 using budget_tracker_backend.Models;
 using budget_tracker_backend.Models.Enums;
 
@@ -15,11 +15,13 @@ public class UpdateTransactionHandler
 {
     private readonly IApplicationDbContext _ctx;
     private readonly IMapper _mapper;
+    private readonly IAccountManager _accountManager;
 
-    public UpdateTransactionHandler(IApplicationDbContext ctx, IMapper mapper)
+    public UpdateTransactionHandler(IApplicationDbContext ctx, IMapper mapper, IAccountManager accountManager)
     {
         _ctx = ctx;
         _mapper = mapper;
+        _accountManager = accountManager;
     }
 
     public async Task<Result<TransactionDto>> Handle(UpdateTransactionCommand request, CancellationToken ct)
@@ -31,25 +33,25 @@ public class UpdateTransactionHandler
 
         // --- 1) откатываем старые значения ----------------------------------
         var oldFrom = tr.AccountFrom.HasValue
-            ? await _ctx.Accounts.FindAsync(new object[] { tr.AccountFrom.Value }, ct)
+            ? await _accountManager.GetByIdAsync(tr.AccountFrom.Value, ct)
             : null;
 
         var oldTo = tr.AccountTo.HasValue
-            ? await _ctx.Accounts.FindAsync(new object[] { tr.AccountTo.Value }, ct)
+            ? await _accountManager.GetByIdAsync(tr.AccountTo.Value, ct)
             : null;
 
-        AccountBalanceHelper.Apply(tr.Type, tr.Amount, oldFrom, oldTo, reverse: true);
+        await _accountManager.ApplyBalanceAsync(tr.Type, tr.Amount, oldFrom, oldTo, true, ct);
 
         // --- 2) применяем новые значения ------------------------------------
         _mapper.Map(dto, tr);                // копируем поля из DTO → entity
 
         // проверяем / загружаем новые аккаунты
         var newFrom = tr.AccountFrom.HasValue
-            ? await _ctx.Accounts.FindAsync(new object[] { tr.AccountFrom.Value }, ct)
+            ? await _accountManager.GetByIdAsync(tr.AccountFrom.Value, ct)
             : null;
 
         var newTo = tr.AccountTo.HasValue
-            ? await _ctx.Accounts.FindAsync(new object[] { tr.AccountTo.Value }, ct)
+            ? await _accountManager.GetByIdAsync(tr.AccountTo.Value, ct)
             : null;
 
         // если передан несуществующий счёт — вернём ошибку
@@ -58,7 +60,7 @@ public class UpdateTransactionHandler
         if (tr.AccountTo.HasValue && newTo == null)
             return Result.Fail("AccountTo not found");
 
-        AccountBalanceHelper.Apply(tr.Type, tr.Amount, newFrom, newTo, reverse: false);
+        await _accountManager.ApplyBalanceAsync(tr.Type, tr.Amount, newFrom, newTo, false, ct);
 
         var saved = await _ctx.SaveChangesAsync(ct) > 0;
         if (!saved)
