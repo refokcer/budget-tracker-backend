@@ -99,7 +99,7 @@ public class TransactionManager : ITransactionManager
         return entity;
     }
 
-    public async Task<Transaction> UpdateAsync(TransactionDto dto, CancellationToken ct)
+    public async Task<Transaction> UpdateAsync(UpdateTransactionDto dto, CancellationToken ct)
     {
         var entity = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == dto.Id, ct);
         if (entity == null)
@@ -109,7 +109,17 @@ public class TransactionManager : ITransactionManager
         var oldTo = entity.AccountTo.HasValue ? await _accountManager.GetByIdAsync(entity.AccountTo.Value, ct) : null;
         await _accountManager.ApplyBalanceAsync(entity.Type, entity.Amount, oldFrom, oldTo, true, ct);
 
-        _mapper.Map(dto, entity);
+        if (dto.Title != null) entity.Title = dto.Title;
+        if (dto.Amount.HasValue) entity.Amount = dto.Amount.Value;
+        if (dto.AccountFrom.HasValue) entity.AccountFrom = dto.AccountFrom;
+        if (dto.AccountTo.HasValue) entity.AccountTo = dto.AccountTo;
+        if (dto.EventId.HasValue) entity.EventId = dto.EventId;
+        if (dto.BudgetPlanId.HasValue) entity.BudgetPlanId = dto.BudgetPlanId;
+        if (dto.CurrencyId.HasValue) entity.CurrencyId = dto.CurrencyId.Value;
+        if (dto.CategoryId.HasValue) entity.CategoryId = dto.CategoryId;
+        if (dto.Date.HasValue) entity.Date = dto.Date.Value;
+        if (dto.Type.HasValue) entity.Type = dto.Type.Value;
+        if (dto.Description != null) entity.Description = dto.Description;
 
         var newFrom = entity.AccountFrom.HasValue ? await _accountManager.GetByIdAsync(entity.AccountFrom.Value, ct) : null;
         var newTo = entity.AccountTo.HasValue ? await _accountManager.GetByIdAsync(entity.AccountTo.Value, ct) : null;

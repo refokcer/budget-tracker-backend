@@ -13,5 +13,9 @@ public class TransactionProfile : Profile
         CreateMap<CreateTransactionDto, Transaction>();
 
         CreateMap<TransactionDto, Transaction>();
+
+        CreateMap<UpdateTransactionDto, Transaction>()
+            .ForAllMembers(opts => opts.Condition(
+                (src, _ , srcMember) => srcMember != null));
     }
 }
