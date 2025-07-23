@@ -12,6 +12,12 @@ public interface IAccountManager
     Task<Account> CreateAsync(CreateAccountDto dto, CancellationToken cancellationToken);
     Task<Account> UpdateAsync(AccountDto dto, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Adjusts account balances but does not persist changes. Callers
+    /// must invoke <see cref="IApplicationDbContext.SaveChangesAsync"/> to
+    /// commit updates.
+    /// </summary>
     Task ApplyBalanceAsync(
         TransactionCategoryType type,
         decimal amount,

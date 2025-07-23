@@ -114,7 +114,7 @@ public class AccountManager : IAccountManager
         }
     }
 
-    public async Task ApplyBalanceAsync(
+    public Task ApplyBalanceAsync(
         TransactionCategoryType type,
         decimal amount,
         Account? from,
@@ -129,7 +129,10 @@ public class AccountManager : IAccountManager
         if (to != null)
             _dbContext.Accounts.Update(to);
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        // ApplyBalance only updates tracked account entities. Persisting these
+        // changes should be handled by the caller so that several related
+        // updates can be saved in a single transaction.
+        return Task.CompletedTask;
     }
 
     public async Task<Result> HandleTransactionAsync(
