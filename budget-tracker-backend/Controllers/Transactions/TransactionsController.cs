@@ -32,7 +32,7 @@ public class TransactionsController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] TransactionDto dto)
+    public async Task<IActionResult> Update([FromBody] UpdateTransactionDto dto)
     {
         var command = new UpdateTransactionCommand(dto);
         var result = await Mediator.Send(command);

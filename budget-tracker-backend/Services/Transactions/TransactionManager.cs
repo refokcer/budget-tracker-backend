@@ -99,7 +99,7 @@ public class TransactionManager : ITransactionManager
         return entity;
     }
 
-    public async Task<Transaction> UpdateAsync(TransactionDto dto, CancellationToken ct)
+    public async Task<Transaction> UpdateAsync(UpdateTransactionDto dto, CancellationToken ct)
     {
         var entity = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == dto.Id, ct);
         if (entity == null)

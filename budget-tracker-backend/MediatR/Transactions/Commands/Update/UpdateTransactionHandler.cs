@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Dto.Transactions;
 using budget_tracker_backend.Services.Transactions;
-using budget_tracker_backend.Models;
-using budget_tracker_backend.Models.Enums;
 
 namespace budget_tracker_backend.MediatR.Transactions.Commands.Update;
 

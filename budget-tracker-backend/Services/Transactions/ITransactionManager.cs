@@ -17,6 +17,6 @@ public interface ITransactionManager
         int? eventId,
         CancellationToken cancellationToken);
     Task<Transaction> CreateAsync(CreateTransactionDto dto, CancellationToken cancellationToken);
-    Task<Transaction> UpdateAsync(TransactionDto dto, CancellationToken cancellationToken);
+    Task<Transaction> UpdateAsync(UpdateTransactionDto dto, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
 }
