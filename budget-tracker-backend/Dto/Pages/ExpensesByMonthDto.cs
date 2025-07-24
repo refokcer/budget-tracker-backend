@@ -21,6 +21,7 @@ public class ExpenseTxDto
     public string CurrencySymbol { get; set; } = null!;
     public string CategoryTitle { get; set; } = null!;
     public string AccountTitle { get; set; } = null!;
+    public string BudetPlanTitle {  get; set; } = null!;
     public DateTime Date { get; set; }
     public string? Description { get; set; }
 }
