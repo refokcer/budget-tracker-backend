@@ -180,6 +180,7 @@ public class PageManager : IPageManager
             .Include(t => t.Currency)
             .Include(t => t.Category)
             .Include(t => t.FromAccount)
+            .Include(t => t.BudgetPlan)
             .Where(t => t.Type == TransactionCategoryType.Expense && t.Date >= start && t.Date < end)
             .AsNoTracking()
             .ToListAsync(ct);

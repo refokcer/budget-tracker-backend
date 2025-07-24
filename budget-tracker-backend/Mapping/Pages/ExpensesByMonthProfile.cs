@@ -14,7 +14,9 @@ public class ExpensesByMonthProfile : Profile
             .ForMember(d => d.CategoryTitle,
                 m => m.MapFrom(s => s.Category.Title))
             .ForMember(d => d.AccountTitle,
-                m => m.MapFrom(s => s.FromAccount.Title));
+                m => m.MapFrom(s => s.FromAccount.Title))
+            .ForMember(d => d.BudetPlanTitle,
+                m => m.MapFrom(s => s.BudgetPlan.Title));
             
     }
 }
