@@ -8,6 +8,8 @@ using budget_tracker_backend.Controllers.Interfaces;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetTransactions;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetByEvent;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetByBudgetPlan;
+using budget_tracker_backend.MediatR.Transactions.Queries.GetByFilterFull;
+using budget_tracker_backend.Models.Enums;
 
 namespace budget_tracker_backend.Controllers.Transactions;
 
@@ -70,6 +72,28 @@ public class TransactionsController : BaseApiController
     public async Task<IActionResult> GetByBudgetPlan(int planId)
     {
         var query = new GetTransactionsByBudgetPlanIdQuery(planId);
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    [HttpGet("filter")]
+    public async Task<IActionResult> GetByFilter(
+        [FromQuery] TransactionCategoryType? type,
+        [FromQuery] int? categoryId,
+        [FromQuery] DateTime? start,
+        [FromQuery] DateTime? end,
+        [FromQuery] int? budgetPlanId,
+        [FromQuery] int? accountFrom,
+        [FromQuery] int? accountTo)
+    {
+        var query = new GetTransactionsByFilterFullQuery(
+            type,
+            categoryId,
+            start,
+            end,
+            budgetPlanId,
+            accountFrom,
+            accountTo);
         var result = await Mediator.Send(query);
         return HandleResult(result);
     }

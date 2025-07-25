@@ -71,6 +71,42 @@ public class TransactionManager : ITransactionManager
         return await query.AsNoTracking().ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<Transaction>> GetFilteredDetailedAsync(
+        TransactionCategoryType? type,
+        int? categoryId,
+        DateTime? startDate,
+        DateTime? endDate,
+        int? budgetPlanId,
+        int? accountFrom,
+        int? accountTo,
+        CancellationToken cancellationToken)
+    {
+        var query = _context.Transactions
+            .Include(t => t.Currency)
+            .Include(t => t.Category)
+            .Include(t => t.BudgetPlan)
+            .Include(t => t.FromAccount)
+            .Include(t => t.ToAccount)
+            .AsQueryable();
+
+        if (type.HasValue)
+            query = query.Where(t => t.Type == type.Value);
+        if (categoryId.HasValue)
+            query = query.Where(t => t.CategoryId == categoryId.Value);
+        if (startDate.HasValue)
+            query = query.Where(t => t.Date >= startDate.Value);
+        if (endDate.HasValue)
+            query = query.Where(t => t.Date <= endDate.Value);
+        if (budgetPlanId.HasValue)
+            query = query.Where(t => t.BudgetPlanId == budgetPlanId.Value);
+        if (accountFrom.HasValue)
+            query = query.Where(t => t.AccountFrom == accountFrom.Value);
+        if (accountTo.HasValue)
+            query = query.Where(t => t.AccountTo == accountTo.Value);
+
+        return await query.AsNoTracking().ToListAsync(cancellationToken);
+    }
+
     public async Task<Transaction> CreateAsync(CreateTransactionDto dto, CancellationToken token)
     {
         var entity = _mapper.Map<Transaction>(dto) ??

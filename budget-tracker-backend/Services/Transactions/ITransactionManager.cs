@@ -16,6 +16,16 @@ public interface ITransactionManager
         DateTime? endDate,
         int? eventId,
         CancellationToken cancellationToken);
+
+    Task<IEnumerable<Transaction>> GetFilteredDetailedAsync(
+        TransactionCategoryType? type,
+        int? categoryId,
+        DateTime? startDate,
+        DateTime? endDate,
+        int? budgetPlanId,
+        int? accountFrom,
+        int? accountTo,
+        CancellationToken cancellationToken);
     Task<Transaction> CreateAsync(CreateTransactionDto dto, CancellationToken cancellationToken);
     Task<Transaction> UpdateAsync(UpdateTransactionDto dto, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
