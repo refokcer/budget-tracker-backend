@@ -10,9 +10,11 @@ public class TransactionProfile : Profile
     {
         CreateMap<Transaction, TransactionDto>();
 
-        CreateMap<CreateTransactionDto, Transaction>();
+        CreateMap<CreateTransactionDto, Transaction>()
+            .ForMember(d => d.UnicCode, o => o.Ignore());
 
-        CreateMap<TransactionDto, Transaction>();
+        CreateMap<TransactionDto, Transaction>()
+            .ForMember(d => d.UnicCode, o => o.Ignore());
 
         CreateMap<UpdateTransactionDto, Transaction>()
             .ForAllMembers(opts => opts.Condition(
