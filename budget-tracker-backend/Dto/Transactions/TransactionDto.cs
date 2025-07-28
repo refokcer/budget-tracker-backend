@@ -14,6 +14,7 @@ public class TransactionDto
     public int CurrencyId { get; set; }
     public int? CategoryId { get; set; }
     public DateTime Date { get; set; }
+    public string UnicCode { get; set; } = null!;
     public TransactionCategoryType? Type { get; set; }
     public string? Description { get; set; }
 }

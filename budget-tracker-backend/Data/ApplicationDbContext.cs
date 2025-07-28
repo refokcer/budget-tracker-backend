@@ -35,6 +35,13 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             .Property(t => t.Amount)
             .HasColumnType("decimal(18,4)");
 
+        modelBuilder.Entity<Transaction>()
+            .Property(t => t.UnicCode)
+            .HasMaxLength(64);
+
+        modelBuilder.Entity<Transaction>()
+            .HasIndex(t => t.UnicCode);
+
         // 1. Prohibit cascading deletion Event → Transaction
         modelBuilder.Entity<Transaction>()
             .HasOne(t => t.Event)

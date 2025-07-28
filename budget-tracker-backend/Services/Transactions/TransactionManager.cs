@@ -8,6 +8,8 @@ using budget_tracker_backend.Models;
 using budget_tracker_backend.Models.Enums;
 using budget_tracker_backend.Services.Accounts;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 
 public class TransactionManager : ITransactionManager
 {
@@ -117,6 +119,8 @@ public class TransactionManager : ITransactionManager
         if (type == TransactionCategoryType.None)
             throw new CustomException("Transaction type not defined", StatusCodes.Status400BadRequest);
 
+        entity.UnicCode = GenerateUnicCode(entity.Amount, entity.Date);
+
         var result = await _accountManager.HandleTransactionAsync(
             type,
             entity.Amount,
@@ -166,6 +170,8 @@ public class TransactionManager : ITransactionManager
 
         await _accountManager.ApplyBalanceAsync(entity.Type, entity.Amount, newFrom, newTo, false, ct);
 
+        entity.UnicCode = GenerateUnicCode(entity.Amount, entity.Date);
+
         var saved = await _context.SaveChangesAsync(ct) > 0;
         if (!saved)
             throw new CustomException("Failed to update transaction", StatusCodes.Status500InternalServerError);
@@ -189,5 +195,13 @@ public class TransactionManager : ITransactionManager
             throw new CustomException("Failed to delete transaction", StatusCodes.Status500InternalServerError);
 
         return true;
+    }
+
+    private static string GenerateUnicCode(decimal amount, DateTime date)
+    {
+        using var sha = SHA256.Create();
+        var input = $"{amount}-{date:O}";
+        var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
+        return Convert.ToHexString(bytes);
     }
 }
