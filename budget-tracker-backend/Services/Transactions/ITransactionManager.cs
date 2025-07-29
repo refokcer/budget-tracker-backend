@@ -29,4 +29,11 @@ public interface ITransactionManager
     Task<Transaction> CreateAsync(CreateTransactionDto dto, CancellationToken cancellationToken);
     Task<Transaction> UpdateAsync(UpdateTransactionDto dto, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Prepare incoming transactions by filling missing fields.
+    /// </summary>
+    Task<IEnumerable<PreparedTransactionDto>> PrepareAsync(
+        IEnumerable<ImportTransactionDto> source,
+        CancellationToken cancellationToken);
 }
