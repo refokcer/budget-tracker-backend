@@ -14,6 +14,7 @@ public class Transaction
     public int? CategoryId { get; set; }
     public DateTime Date { get; set; }
     public string UnicCode { get; set; } = null!;
+    public string? AuthCode { get; set; }
 
     public int? AccountFrom { get; set; }
     public int? AccountTo { get; set; } 

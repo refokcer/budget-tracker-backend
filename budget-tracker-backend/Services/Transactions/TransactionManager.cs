@@ -119,7 +119,7 @@ public class TransactionManager : ITransactionManager
         if (type == TransactionCategoryType.None)
             throw new CustomException("Transaction type not defined", StatusCodes.Status400BadRequest);
 
-        entity.UnicCode = GenerateUnicCode(entity.Amount, entity.Date);
+        entity.UnicCode = GenerateUnicCode(entity.Amount, entity.Date, entity.AuthCode);
 
         var result = await _accountManager.HandleTransactionAsync(
             type,
@@ -160,6 +160,7 @@ public class TransactionManager : ITransactionManager
         if (dto.Date.HasValue) entity.Date = dto.Date.Value;
         if (dto.Type.HasValue) entity.Type = dto.Type.Value;
         if (dto.Description != null) entity.Description = dto.Description;
+        if (dto.AuthCode != null) entity.AuthCode = dto.AuthCode;
 
         var newFrom = entity.AccountFrom.HasValue ? await _accountManager.GetByIdAsync(entity.AccountFrom.Value, ct) : null;
         var newTo = entity.AccountTo.HasValue ? await _accountManager.GetByIdAsync(entity.AccountTo.Value, ct) : null;
@@ -170,7 +171,7 @@ public class TransactionManager : ITransactionManager
 
         await _accountManager.ApplyBalanceAsync(entity.Type, entity.Amount, newFrom, newTo, false, ct);
 
-        entity.UnicCode = GenerateUnicCode(entity.Amount, entity.Date);
+        entity.UnicCode = GenerateUnicCode(entity.Amount, entity.Date, entity.AuthCode);
 
         var saved = await _context.SaveChangesAsync(ct) > 0;
         if (!saved)
@@ -197,10 +198,12 @@ public class TransactionManager : ITransactionManager
         return true;
     }
 
-    private static string GenerateUnicCode(decimal amount, DateTime date)
+    private static string GenerateUnicCode(decimal amount, DateTime date, string? authCode)
     {
         using var sha = SHA256.Create();
-        var input = $"{amount}-{date:O}";
+        var input = string.IsNullOrWhiteSpace(authCode)
+            ? $"{amount}-{date:O}"
+            : $"{amount}-{date:O}-{authCode}";
         var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(input));
         return Convert.ToHexString(bytes);
     }
