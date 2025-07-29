@@ -15,4 +15,5 @@ public class CreateTransactionDto
     public DateTime Date { get; set; }
     public TransactionCategoryType? Type { get; set; }
     public string? Description { get; set; }
+    public string? AuthCode { get; set; }
 }
