@@ -8,6 +8,7 @@ using budget_tracker_backend.Models;
 using budget_tracker_backend.Models.Enums;
 using budget_tracker_backend.Services.Accounts;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -196,6 +197,56 @@ public class TransactionManager : ITransactionManager
             throw new CustomException("Failed to delete transaction", StatusCodes.Status500InternalServerError);
 
         return true;
+    }
+
+    public async Task<IEnumerable<PreparedTransactionDto>> PrepareAsync(
+        IEnumerable<ImportTransactionDto> source,
+        CancellationToken ct)
+    {
+        var result = new List<PreparedTransactionDto>();
+
+        foreach (var item in source)
+        {
+            var prepared = new PreparedTransactionDto
+            {
+                Title = item.Title,
+                Amount = Math.Abs(item.Amount),
+                AccountFrom = item.AccountFrom,
+                AccountTo = item.AccountTo,
+                Date = item.Date,
+                Type = item.Type,
+                Description = item.Description,
+                AuthCode = item.AuthCode
+            };
+
+            prepared.CurrencyId = await _context.Currencies
+                .Where(c => c.Code == item.Currency)
+                .Select(c => (int?)c.Id)
+                .FirstOrDefaultAsync(ct);
+
+            var last = await _context.Transactions
+                .Where(t => t.Title == item.Title)
+                .OrderByDescending(t => t.Date)
+                .FirstOrDefaultAsync(ct);
+
+            if (last != null)
+            {
+                prepared.EventId = last.EventId;
+                prepared.BudgetPlanId = last.BudgetPlanId;
+                prepared.CategoryId = last.CategoryId;
+            }
+
+            var unic = GenerateUnicCode(prepared.Amount ?? 0m, prepared.Date ?? item.Date, prepared.AuthCode);
+            var exists = await _context.Transactions
+                .AsNoTracking()
+                .AnyAsync(t => t.UnicCode == unic, ct);
+            if (exists)
+                continue;
+
+            result.Add(prepared);
+        }
+
+        return result;
     }
 
     private static string GenerateUnicCode(decimal amount, DateTime date, string? authCode)

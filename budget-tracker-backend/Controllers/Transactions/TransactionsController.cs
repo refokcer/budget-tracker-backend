@@ -10,6 +10,7 @@ using budget_tracker_backend.MediatR.Transactions.Queries.GetByEvent;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetByBudgetPlan;
 using budget_tracker_backend.MediatR.Transactions.Queries.GetByFilterFull;
 using budget_tracker_backend.Models.Enums;
+using budget_tracker_backend.Services.Transactions;
 
 namespace budget_tracker_backend.Controllers.Transactions;
 
@@ -17,6 +18,12 @@ namespace budget_tracker_backend.Controllers.Transactions;
 [ApiController]
 public class TransactionsController : BaseApiController
 {
+    private readonly ITransactionManager _transactionManager;
+
+    public TransactionsController(ITransactionManager transactionManager)
+    {
+        _transactionManager = transactionManager;
+    }
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -96,5 +103,21 @@ public class TransactionsController : BaseApiController
             accountTo);
         var result = await Mediator.Send(query);
         return HandleResult(result);
+    }
+
+    /// <summary>
+    /// Accepts raw transaction data and fills missing fields from the most recent
+    /// transaction with the same title. Returns cleaned transactions without
+    /// duplicates.
+    /// </summary>
+    /// <remarks>
+    /// Request: List&lt;ImportTransactionDto&gt;
+    /// Response: List&lt;PreparedTransactionDto&gt;
+    /// </remarks>
+    [HttpPost("prepare")]
+    public async Task<IActionResult> Prepare([FromBody] List<ImportTransactionDto> items)
+    {
+        var filled = await _transactionManager.PrepareAsync(items, HttpContext.RequestAborted);
+        return Ok(filled);
     }
 }
