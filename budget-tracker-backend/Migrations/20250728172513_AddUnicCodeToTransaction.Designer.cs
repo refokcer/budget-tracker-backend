@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using budget_tracker_backend.Data;
 
@@ -11,9 +12,11 @@ using budget_tracker_backend.Data;
 namespace budget_tracker_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250728172513_AddUnicCodeToTransaction")]
+    partial class AddUnicCodeToTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,8 +236,7 @@ namespace budget_tracker_backend.Migrations
 
                     b.Property<string>("UnicCode")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -249,8 +251,6 @@ namespace budget_tracker_backend.Migrations
                     b.HasIndex("CurrencyId");
 
                     b.HasIndex("EventId");
-
-                    b.HasIndex("UnicCode");
 
                     b.ToTable("Transactions");
                 });
