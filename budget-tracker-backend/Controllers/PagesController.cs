@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.MediatR.Pages.ExpensesByMonth;
 using budget_tracker_backend.MediatR.Pages.IncomesByMonth;
 using budget_tracker_backend.MediatR.Pages.TransfersByMonth;
@@ -9,6 +10,7 @@ using budget_tracker_backend.Controllers.Interfaces;
 
 namespace budget_tracker_backend.Controllers;
 
+[Authorize]
 [Route("api/pages")]
 [ApiController]
 public class PagesController : BaseApiController

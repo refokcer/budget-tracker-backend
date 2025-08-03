@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Dto.Currencies;
 using budget_tracker_backend.MediatR.Currencies.Commands.Create;
 using budget_tracker_backend.MediatR.Currencies.Commands.Delete;
@@ -9,6 +10,7 @@ using budget_tracker_backend.Controllers.Interfaces;
 
 namespace budget_tracker_backend.Controllers;
 
+[Authorize(Roles="Admin")]
 [Route("api/[controller]")]
 [ApiController]
 public class CurrenciesController : BaseApiController

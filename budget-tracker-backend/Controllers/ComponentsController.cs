@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Controllers.Interfaces;
 using budget_tracker_backend.MediatR.Components.IncomeModal;
@@ -10,6 +11,7 @@ using budget_tracker_backend.Models.Enums;
 
 namespace budget_tracker_backend.Controllers;
 
+[Authorize]
 [Route("api/components")]
 [ApiController]
 public class ComponentsController : BaseApiController

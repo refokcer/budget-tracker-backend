@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Dto.Categories;
 using budget_tracker_backend.MediatR.Categories.Commands.Create;
 using budget_tracker_backend.MediatR.Categories.Commands.Delete;
@@ -11,6 +12,7 @@ using budget_tracker_backend.Models.Enums;
 
 namespace budget_tracker_backend.Controllers;
 
+[Authorize(Roles="Admin")]
 [Route("api/[controller]")]
 [ApiController]
 public class CategoriesController : BaseApiController
