@@ -37,24 +37,40 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             b.Property(a => a.Amount).HasColumnType("decimal(18,4)");
             b.HasQueryFilter(a => a.UserId == userId);
             b.HasIndex(a => a.UserId);
+            b.HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Category>(b =>
         {
             b.HasQueryFilter(c => c.UserId == userId);
             b.HasIndex(c => c.UserId);
+            b.HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<BudgetPlan>(b =>
         {
             b.HasQueryFilter(p => p.UserId == userId);
             b.HasIndex(p => p.UserId);
+            b.HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Event>(b =>
         {
             b.HasQueryFilter(e => e.UserId == userId);
             b.HasIndex(e => e.UserId);
+            b.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<BudgetPlanItem>(b =>
@@ -74,6 +90,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             b.HasIndex(t => t.UnicCode);
             b.HasQueryFilter(t => t.UserId == userId);
             b.HasIndex(t => new { t.UserId, t.Date });
+
+            b.HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             b.HasOne(t => t.Event)
                 .WithMany(e => e.Transactions)
