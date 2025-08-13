@@ -5,10 +5,12 @@ using budget_tracker_backend.MediatR.Accounts.Commands.Delete;
 using budget_tracker_backend.MediatR.Accounts.Commands.Update;
 using budget_tracker_backend.MediatR.Accounts.Queries.GetAll;
 using budget_tracker_backend.MediatR.Accounts.Queries.GetById;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace budget_tracker_backend.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class AccountsController : BaseApiController

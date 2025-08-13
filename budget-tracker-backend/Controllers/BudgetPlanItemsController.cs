@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Dto.BudgetPlanItems;
 using budget_tracker_backend.MediatR.BudgetPlanItems.Commands.Create;
 using budget_tracker_backend.MediatR.BudgetPlanItems.Commands.Delete;
@@ -10,6 +11,7 @@ using budget_tracker_backend.MediatR.BudgetPlanItems.Queries.GetByPlanId;
 
 namespace budget_tracker_backend.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class BudgetPlanItemsController : BaseApiController
