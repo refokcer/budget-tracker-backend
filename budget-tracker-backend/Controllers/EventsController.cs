@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Dto.Events;
 using budget_tracker_backend.MediatR.Events.Commands.Create;
 using budget_tracker_backend.MediatR.Events.Commands.Delete;
@@ -10,6 +11,7 @@ using budget_tracker_backend.MediatR.Events.Queries.GetByIdWithTransactions;
 
 namespace budget_tracker_backend.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class EventsController : BaseApiController

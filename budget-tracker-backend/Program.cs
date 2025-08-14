@@ -8,8 +8,13 @@ using budget_tracker_backend.Services.Currencies;
 using budget_tracker_backend.Services.Events;
 using budget_tracker_backend.Services.Pages;
 using budget_tracker_backend.Services.Transactions;
+using budget_tracker_backend.Services.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using System.Text;
 using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,11 +30,35 @@ builder.Services.AddScoped<ICurrencyManager, CurrencyManager>();
 builder.Services.AddScoped<IEventManager, EventManager>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddScoped<IPageManager, PageManager>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 // Ïîäêëþ÷àåì EF Core è MS SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IApplicationDbContext>(sp =>
     sp.GetRequiredService<ApplicationDbContext>());
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+    };
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -56,6 +85,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
@@ -74,6 +104,21 @@ app.UseExceptionHandler(appBuilder =>
         }
         await context.Response.WriteAsync("An unexpected error occurred.");
     });
+});
+
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+    if (response.StatusCode == 401)
+    {
+        response.ContentType = "application/json";
+        await response.WriteAsJsonAsync(new { status = 401, error = "Unauthorized" });
+    }
+    else if (response.StatusCode == 403)
+    {
+        response.ContentType = "application/json";
+        await response.WriteAsJsonAsync(new { status = 403, error = "Forbidden" });
+    }
 });
 
 app.Run();

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace budget_tracker_backend.Models;
 
-public class Transaction
+public class Transaction : IUserOwnedEntity
 {
     public int Id { get; set; }
     public string Title { get; set; } = null!;
@@ -15,9 +15,9 @@ public class Transaction
     public DateTime Date { get; set; }
     public string UnicCode { get; set; } = null!;
     public string? AuthCode { get; set; }
-
+    public string UserId { get; set; } = null!;
     public int? AccountFrom { get; set; }
-    public int? AccountTo { get; set; } 
+    public int? AccountTo { get; set; }
 
     public TransactionCategoryType Type { get; set; }
     public string? Description { get; set; }
@@ -35,4 +35,6 @@ public class Transaction
     public virtual Account? FromAccount { get; set; }
     [JsonIgnore]
     public virtual Account? ToAccount { get; set; }
+    [JsonIgnore]
+    public ApplicationUser? User { get; set; }
 }
