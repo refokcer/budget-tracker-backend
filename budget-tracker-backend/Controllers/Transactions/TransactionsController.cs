@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Dto.Transactions;
 using budget_tracker_backend.MediatR.Transactions.Commands.Delete;
 using budget_tracker_backend.MediatR.Transactions.Commands.Update;
@@ -14,6 +15,7 @@ using budget_tracker_backend.Services.Transactions;
 
 namespace budget_tracker_backend.Controllers.Transactions;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class TransactionsController : BaseApiController
