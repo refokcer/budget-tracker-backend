@@ -12,7 +12,7 @@ using budget_tracker_backend.Data;
 namespace budget_tracker_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250813195128_init")]
+    [Migration("20250902082527_init")]
     partial class init
     {
         /// <inheritdoc />
