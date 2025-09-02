@@ -12,7 +12,7 @@ using budget_tracker_backend.Models.Enums;
 
 namespace budget_tracker_backend.Controllers;
 
-[Authorize(Roles="Admin")]
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class CategoriesController : BaseApiController

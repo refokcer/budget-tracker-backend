@@ -10,7 +10,7 @@ using budget_tracker_backend.Controllers.Interfaces;
 
 namespace budget_tracker_backend.Controllers;
 
-[Authorize(Roles="Admin")]
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class CurrenciesController : BaseApiController
