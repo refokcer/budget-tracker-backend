@@ -18,9 +18,17 @@ public class TokenService : ITokenService
         _config = config;
     }
 
+    private SymmetricSecurityKey GetSigningKey()
+    {
+        var key = _config["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(key) || Encoding.UTF8.GetByteCount(key) < 32)
+            throw new ArgumentOutOfRangeException("Jwt:Key", "JWT key must be at least 32 bytes (256 bits).");
+        return new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+    }
+
     public string CreateAccessToken(ApplicationUser user, IList<string> roles)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
+        var authSigningKey = GetSigningKey();
 
         var authClaims = new List<Claim>
         {
@@ -67,7 +75,7 @@ public class TokenService : ITokenService
             ValidIssuer = _config["Jwt:Issuer"],
             ValidAudience = _config["Jwt:Audience"],
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!)),
+            IssuerSigningKey = GetSigningKey(),
             ValidateLifetime = false
         };
         var tokenHandler = new JwtSecurityTokenHandler();

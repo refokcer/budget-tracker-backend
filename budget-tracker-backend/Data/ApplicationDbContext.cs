@@ -12,6 +12,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 {
     private readonly IHttpContextAccessor _ctx;
 
+    private string? CurrentUserId =>
+        _ctx.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor ctx) : base(options)
     {
         _ctx = ctx;
@@ -30,31 +33,45 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     {
         base.OnModelCreating(modelBuilder);
 
-        var userId = _ctx.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         modelBuilder.Entity<Account>(b =>
         {
             b.Property(a => a.Amount).HasColumnType("decimal(18,4)");
-            b.HasQueryFilter(a => a.UserId == userId);
+            b.HasQueryFilter(a => a.UserId == CurrentUserId);
             b.HasIndex(a => a.UserId);
+            b.HasOne(a => a.User)
+                .WithMany()
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Category>(b =>
         {
-            b.HasQueryFilter(c => c.UserId == userId);
+            b.HasQueryFilter(c => c.UserId == CurrentUserId);
             b.HasIndex(c => c.UserId);
+            b.HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<BudgetPlan>(b =>
         {
-            b.HasQueryFilter(p => p.UserId == userId);
+            b.HasQueryFilter(p => p.UserId == CurrentUserId);
             b.HasIndex(p => p.UserId);
+            b.HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Event>(b =>
         {
-            b.HasQueryFilter(e => e.UserId == userId);
+            b.HasQueryFilter(e => e.UserId == CurrentUserId);
             b.HasIndex(e => e.UserId);
+            b.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<BudgetPlanItem>(b =>
@@ -64,7 +81,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany(p => p.Items)
                 .HasForeignKey(i => i.BudgetPlanId)
                 .OnDelete(DeleteBehavior.Cascade);
-            b.HasQueryFilter(i => i.BudgetPlan!.UserId == userId);
+            b.HasQueryFilter(i => i.BudgetPlan!.UserId == CurrentUserId);
         });
 
         modelBuilder.Entity<Transaction>(b =>
@@ -72,8 +89,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             b.Property(t => t.Amount).HasColumnType("decimal(18,4)");
             b.Property(t => t.UnicCode).HasMaxLength(64);
             b.HasIndex(t => t.UnicCode);
-            b.HasQueryFilter(t => t.UserId == userId);
+            b.HasQueryFilter(t => t.UserId == CurrentUserId);
             b.HasIndex(t => new { t.UserId, t.Date });
+
+            b.HasOne(t => t.User)
+                .WithMany()
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             b.HasOne(t => t.Event)
                 .WithMany(e => e.Transactions)
@@ -104,13 +126,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var userId = _ctx.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
         foreach (var entry in ChangeTracker.Entries<IUserOwnedEntity>().Where(e => e.State == EntityState.Added))
         {
-            if (string.IsNullOrEmpty(entry.Entity.UserId) && userId != null)
+            if (string.IsNullOrEmpty(entry.Entity.UserId) && CurrentUserId != null)
             {
-                entry.Entity.UserId = userId;
+                entry.Entity.UserId = CurrentUserId;
             }
         }
 
