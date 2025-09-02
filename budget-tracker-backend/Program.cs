@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using MediatR;
+using budget_tracker_backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
