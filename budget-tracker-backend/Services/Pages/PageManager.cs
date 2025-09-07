@@ -106,7 +106,7 @@ public class PageManager : IPageManager
         };
     }
 
-    public async Task<BudgetPlanPageDto> GetBudgetPlanPageAsync(int planId, CancellationToken ct)
+    public async Task<BudgetPlanPageDto> GetBudgetPlanPageAsync(int planId, bool includeEvents, CancellationToken ct)
     {
         var plan = await _budgetPlanManager.GetByIdAsync(planId, ct);
         if (plan == null)
@@ -137,6 +137,38 @@ public class PageManager : IPageManager
             itemDto.Spent = spent;
             itemDto.Remaining = item.Amount - spent;
             dto.Items.Add(itemDto);
+        }
+
+        if (includeEvents)
+        {
+            var baseCurrencySymbol = (await _ctx.Currencies.FirstOrDefaultAsync(c => c.IsBase, ct))?.Symbol.ToString() ?? string.Empty;
+
+            var events = await _ctx.BudgetPlans
+                .Where(p => p.ParentId == planId && p.Type == BudgetPlanType.Event)
+                .ToListAsync(ct);
+
+            foreach (var ev in events)
+            {
+                var evItems = await _budgetPlanItemManager.GetByPlanIdAsync(ev.Id, ct);
+                var evCategoryIds = evItems.Select(i => i.CategoryId).ToList();
+                var evTransactions = await _transactionManager.GetByBudgetPlanIdAsync(ev.Id, ct);
+                var evSpent = evTransactions
+                    .Where(t => t.CategoryId != null && evCategoryIds.Contains(t.CategoryId.Value) &&
+                                t.Type == TransactionCategoryType.Expense)
+                    .Sum(t => t.Amount);
+                var evAmount = evItems.Sum(i => i.Amount);
+
+                dto.Items.Add(new BudgetPlanPageItemDto
+                {
+                    Id = ev.Id,
+                    CategoryTitle = ev.Title,
+                    Amount = evAmount,
+                    CurrencySymbol = baseCurrencySymbol,
+                    Spent = evSpent,
+                    Remaining = evAmount - evSpent,
+                    Description = ev.Description
+                });
+            }
         }
 
         return dto;

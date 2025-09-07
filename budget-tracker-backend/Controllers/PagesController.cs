@@ -55,9 +55,9 @@ public class PagesController : BaseApiController
     }
     
     [HttpGet("budgetPlanPage/{planId:int}")]
-    public async Task<IActionResult> BudgetPlanPage(int planId)
+    public async Task<IActionResult> BudgetPlanPage(int planId, [FromQuery] bool includeEvents = false)
     {
-        var query = new GetBudgetPlanPageQuery(planId);
+        var query = new GetBudgetPlanPageQuery(planId, includeEvents);
         var result = await Mediator.Send(query);
         return HandleResult(result);
     }
