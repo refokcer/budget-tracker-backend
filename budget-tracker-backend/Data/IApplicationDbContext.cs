@@ -13,7 +13,6 @@ public interface IApplicationDbContext
     DbSet<BudgetPlan> BudgetPlans { get; }
     DbSet<BudgetPlanItem> BudgetPlanItems { get; }
     DbSet<Currency> Currencies { get; }
-    DbSet<Event> Events { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);

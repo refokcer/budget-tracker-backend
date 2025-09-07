@@ -5,7 +5,9 @@ using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.BudgetPlans;
 using budget_tracker_backend.Exceptions;
 using budget_tracker_backend.Models;
+using budget_tracker_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 public class BudgetPlanManager : IBudgetPlanManager
 {
@@ -35,6 +37,8 @@ public class BudgetPlanManager : IBudgetPlanManager
         var entity = _mapper.Map<BudgetPlan>(dto) ??
             throw new CustomException("Cannot map CreateBudgetPlanDto", StatusCodes.Status400BadRequest);
 
+        entity.ParentId = await ValidateParentAsync(entity.Type, dto.ParentId, cancellationToken);
+
         await _context.BudgetPlans.AddAsync(entity, cancellationToken);
         var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
         if (!saved)
@@ -54,6 +58,7 @@ public class BudgetPlanManager : IBudgetPlanManager
         existing.EndDate = dto.EndDate;
         existing.Type = dto.Type;
         existing.Description = dto.Description;
+        existing.ParentId = await ValidateParentAsync(dto.Type, dto.ParentId, cancellationToken);
 
         _context.BudgetPlans.Update(existing);
         var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
@@ -76,4 +81,26 @@ public class BudgetPlanManager : IBudgetPlanManager
 
         return true;
     }
+
+    private async Task<int?> ValidateParentAsync(BudgetPlanType type, int? parentId, CancellationToken cancellationToken)
+    {
+        if (type == BudgetPlanType.Monthly)
+        {
+            if (parentId.HasValue)
+                throw new CustomException("Monthly plan cannot have parent", StatusCodes.Status400BadRequest);
+            return null;
+        }
+
+        if (!parentId.HasValue)
+            return null;
+
+        var parent = await _context.BudgetPlans
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == parentId.Value, cancellationToken);
+        if (parent == null || parent.Type != BudgetPlanType.Monthly)
+            throw new CustomException("Invalid parent plan", StatusCodes.Status400BadRequest);
+
+        return parentId;
+    }
+
 }

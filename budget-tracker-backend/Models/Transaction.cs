@@ -8,7 +8,6 @@ public class Transaction : IUserOwnedEntity
     public int Id { get; set; }
     public string Title { get; set; } = null!;
     public decimal Amount { get; set; }
-    public int? EventId { get; set; }
     public int? BudgetPlanId { get; set; }
     public int CurrencyId { get; set; }
     public int? CategoryId { get; set; }
@@ -29,8 +28,6 @@ public class Transaction : IUserOwnedEntity
     public virtual Category? Category { get; set; }
     [JsonIgnore]
     public virtual Currency? Currency { get; set; }
-    [JsonIgnore]
-    public virtual Event? Event { get; set; }
     [JsonIgnore]
     public virtual Account? FromAccount { get; set; }
     [JsonIgnore]

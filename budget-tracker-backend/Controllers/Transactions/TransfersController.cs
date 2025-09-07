@@ -48,17 +48,4 @@ public class TransfersController : BaseApiController
         return HandleResult(result);
     }
 
-    [HttpGet("event/{eventId:int}")]
-    public async Task<IActionResult> GetTransfersByEvent(int eventId)
-    {
-        var query = new GetTransactionsQuery(
-            Type: TransactionCategoryType.Transaction,
-            StartDate: null,
-            EndDate: null,
-            EventId: eventId
-        );
-        var result = await Mediator.Send(query);
-        return HandleResult(result);
-    }
-
 }

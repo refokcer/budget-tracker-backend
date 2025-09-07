@@ -49,15 +49,4 @@ public class ExpensesController : BaseApiController
         return HandleResult(result);
     }
 
-    [HttpGet("event/{eventId:int}")]
-    public async Task<IActionResult> GetExpensesByEvent(int eventId)
-    {
-        var query = new GetTransactionsQuery(
-            Type: TransactionCategoryType.Expense,
-            EventId: eventId
-        );
-        var result = await Mediator.Send(query);
-        return HandleResult(result);
-    }
-
 }

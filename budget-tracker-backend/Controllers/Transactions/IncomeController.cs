@@ -46,15 +46,4 @@ public class IncomeController : BaseApiController
         return HandleResult(result);
     }
 
-    [HttpGet("event/{eventId:int}")]
-    public async Task<IActionResult> GetIncomeByEvent(int eventId)
-    {
-        var query = new GetTransactionsQuery(
-            Type: TransactionCategoryType.Income,
-            EventId: eventId
-        );
-        var result = await Mediator.Send(query);
-        return HandleResult(result);
-    }
-
 }

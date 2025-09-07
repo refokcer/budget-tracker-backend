@@ -26,7 +26,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<BudgetPlan> BudgetPlans { get; set; }
     public DbSet<BudgetPlanItem> BudgetPlanItems { get; set; }
     public DbSet<Currency> Currencies { get; set; }
-    public DbSet<Event> Events { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,15 +61,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 .WithMany()
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
-        });
-
-        modelBuilder.Entity<Event>(b =>
-        {
-            b.HasQueryFilter(e => e.UserId == CurrentUserId);
-            b.HasIndex(e => e.UserId);
-            b.HasOne(e => e.User)
+            b.HasOne(p => p.Parent)
                 .WithMany()
-                .HasForeignKey(e => e.UserId)
+                .HasForeignKey(p => p.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
@@ -95,11 +88,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             b.HasOne(t => t.User)
                 .WithMany()
                 .HasForeignKey(t => t.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            b.HasOne(t => t.Event)
-                .WithMany(e => e.Transactions)
-                .HasForeignKey(t => t.EventId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             b.HasOne(t => t.Category)
