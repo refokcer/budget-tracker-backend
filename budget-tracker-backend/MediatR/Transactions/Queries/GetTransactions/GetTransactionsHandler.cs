@@ -25,7 +25,6 @@ public class GetTransactionsHandler : IRequestHandler<GetTransactionsQuery, Resu
             request.Type,
             request.StartDate,
             request.EndDate,
-            request.EventId,
             token);
 
         var dtos = _mapper.Map<IEnumerable<TransactionDto>>(list);

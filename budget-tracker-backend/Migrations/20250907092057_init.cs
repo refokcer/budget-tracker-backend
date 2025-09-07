@@ -183,7 +183,8 @@ namespace budget_tracker_backend.Migrations
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -192,6 +193,12 @@ namespace budget_tracker_backend.Migrations
                         name: "FK_BudgetPlans_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_BudgetPlans_BudgetPlans_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "BudgetPlans",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -273,34 +280,6 @@ namespace budget_tracker_backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Events",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BudgetPlanId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Events", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Events_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Events_BudgetPlans_BudgetPlanId",
-                        column: x => x.BudgetPlanId,
-                        principalTable: "BudgetPlans",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "BudgetPlanItems",
                 columns: table => new
                 {
@@ -343,7 +322,6 @@ namespace budget_tracker_backend.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,4)", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: true),
                     BudgetPlanId = table.Column<int>(type: "int", nullable: true),
                     CurrencyId = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
@@ -392,12 +370,6 @@ namespace budget_tracker_backend.Migrations
                         name: "FK_Transactions_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
                         principalTable: "Currencies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Transactions_Events_EventId",
-                        column: x => x.EventId,
-                        principalTable: "Events",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -467,6 +439,11 @@ namespace budget_tracker_backend.Migrations
                 column: "CurrencyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_BudgetPlans_ParentId",
+                table: "BudgetPlans",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_BudgetPlans_UserId",
                 table: "BudgetPlans",
                 column: "UserId");
@@ -474,16 +451,6 @@ namespace budget_tracker_backend.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_UserId",
                 table: "Categories",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Events_BudgetPlanId",
-                table: "Events",
-                column: "BudgetPlanId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Events_UserId",
-                table: "Events",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -515,11 +482,6 @@ namespace budget_tracker_backend.Migrations
                 name: "IX_Transactions_CurrencyId",
                 table: "Transactions",
                 column: "CurrencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transactions_EventId",
-                table: "Transactions",
-                column: "EventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_UnicCode",
@@ -566,16 +528,13 @@ namespace budget_tracker_backend.Migrations
                 name: "Accounts");
 
             migrationBuilder.DropTable(
+                name: "BudgetPlans");
+
+            migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "Events");
-
-            migrationBuilder.DropTable(
                 name: "Currencies");
-
-            migrationBuilder.DropTable(
-                name: "BudgetPlans");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

@@ -12,7 +12,7 @@ using budget_tracker_backend.Data;
 namespace budget_tracker_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250902082527_init")]
+    [Migration("20250907092057_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -271,6 +271,9 @@ namespace budget_tracker_backend.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -286,6 +289,8 @@ namespace budget_tracker_backend.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("UserId");
 
@@ -383,37 +388,6 @@ namespace budget_tracker_backend.Migrations
                     b.ToTable("Currencies");
                 });
 
-            modelBuilder.Entity("budget_tracker_backend.Models.Event", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BudgetPlanId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BudgetPlanId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Events");
-                });
-
             modelBuilder.Entity("budget_tracker_backend.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -489,9 +463,6 @@ namespace budget_tracker_backend.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EventId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -519,8 +490,6 @@ namespace budget_tracker_backend.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CurrencyId");
-
-                    b.HasIndex("EventId");
 
                     b.HasIndex("UnicCode");
 
@@ -601,11 +570,18 @@ namespace budget_tracker_backend.Migrations
 
             modelBuilder.Entity("budget_tracker_backend.Models.BudgetPlan", b =>
                 {
+                    b.HasOne("budget_tracker_backend.Models.BudgetPlan", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("budget_tracker_backend.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Parent");
 
                     b.Navigation("User");
                 });
@@ -648,25 +624,6 @@ namespace budget_tracker_backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("budget_tracker_backend.Models.Event", b =>
-                {
-                    b.HasOne("budget_tracker_backend.Models.BudgetPlan", "BudgetPlan")
-                        .WithMany()
-                        .HasForeignKey("BudgetPlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("budget_tracker_backend.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("BudgetPlan");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("budget_tracker_backend.Models.RefreshToken", b =>
                 {
                     b.HasOne("budget_tracker_backend.Models.ApplicationUser", null)
@@ -701,11 +658,6 @@ namespace budget_tracker_backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("budget_tracker_backend.Models.Event", "Event")
-                        .WithMany("Transactions")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("budget_tracker_backend.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -717,8 +669,6 @@ namespace budget_tracker_backend.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Currency");
-
-                    b.Navigation("Event");
 
                     b.Navigation("FromAccount");
 
@@ -735,11 +685,6 @@ namespace budget_tracker_backend.Migrations
             modelBuilder.Entity("budget_tracker_backend.Models.BudgetPlan", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("budget_tracker_backend.Models.Event", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }
