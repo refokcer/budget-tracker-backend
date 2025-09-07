@@ -3,6 +3,7 @@ namespace budget_tracker_backend.Services.Pages;
 using AutoMapper;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Pages;
+using budget_tracker_backend.Dto.Transactions;
 using budget_tracker_backend.Services.Accounts;
 using budget_tracker_backend.Services.BudgetPlans;
 using budget_tracker_backend.Services.BudgetPlanItems;
@@ -115,8 +116,9 @@ public class PageManager : IPageManager
         var items = await _budgetPlanItemManager.GetByPlanIdAsync(planId, ct);
 
         var categoryIds = items.Select(i => i.CategoryId).ToList();
-        var transactions = await _transactionManager.GetByBudgetPlanIdAsync(planId, ct);
-        var txSums = transactions
+        var baseTransactions = await _transactionManager.GetByBudgetPlanIdAsync(planId, ct);
+        var allTransactions = baseTransactions.ToList();
+        var txSums = baseTransactions
             .Where(t => t.CategoryId != null && categoryIds.Contains(t.CategoryId.Value) &&
                         t.Type == TransactionCategoryType.Expense)
             .GroupBy(t => t.CategoryId!.Value)
@@ -152,6 +154,7 @@ public class PageManager : IPageManager
                 var evItems = await _budgetPlanItemManager.GetByPlanIdAsync(ev.Id, ct);
                 var evCategoryIds = evItems.Select(i => i.CategoryId).ToList();
                 var evTransactions = await _transactionManager.GetByBudgetPlanIdAsync(ev.Id, ct);
+                allTransactions.AddRange(evTransactions);
                 var evSpent = evTransactions
                     .Where(t => t.CategoryId != null && evCategoryIds.Contains(t.CategoryId.Value) &&
                                 t.Type == TransactionCategoryType.Expense)
@@ -171,6 +174,7 @@ public class PageManager : IPageManager
             }
         }
 
+        dto.Transactions = _mapper.Map<List<TransactionDto>>(allTransactions);
         return dto;
     }
 

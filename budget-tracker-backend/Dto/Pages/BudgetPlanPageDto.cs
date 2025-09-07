@@ -1,11 +1,13 @@
 namespace budget_tracker_backend.Dto.Pages;
 
 using budget_tracker_backend.Dto.BudgetPlans;
+using budget_tracker_backend.Dto.Transactions;
 
 public class BudgetPlanPageDto
 {
     public BudgetPlanDto Plan { get; set; } = null!;
     public List<BudgetPlanPageItemDto> Items { get; set; } = new();
+    public List<TransactionDto> Transactions { get; set; } = new();
 }
 
 public class BudgetPlanPageItemDto
