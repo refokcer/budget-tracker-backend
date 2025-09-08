@@ -4,6 +4,7 @@ using budget_tracker_backend.MediatR.Pages.ExpensesByMonth;
 using budget_tracker_backend.MediatR.Pages.IncomesByMonth;
 using budget_tracker_backend.MediatR.Pages.TransfersByMonth;
 using budget_tracker_backend.MediatR.Pages.BudgetPlanPage;
+using budget_tracker_backend.MediatR.Pages.EventPage;
 using budget_tracker_backend.MediatR.Pages.Dashboard;
 using budget_tracker_backend.MediatR.Pages.MonthlyReport;
 using budget_tracker_backend.Controllers.Interfaces;
@@ -55,9 +56,17 @@ public class PagesController : BaseApiController
     }
     
     [HttpGet("budgetPlanPage/{planId:int}")]
-    public async Task<IActionResult> BudgetPlanPage(int planId)
+    public async Task<IActionResult> BudgetPlanPage(int planId, [FromQuery] bool includeEvents = false)
     {
-        var query = new GetBudgetPlanPageQuery(planId);
+        var query = new GetBudgetPlanPageQuery(planId, includeEvents);
+        var result = await Mediator.Send(query);
+        return HandleResult(result);
+    }
+
+    [HttpGet("eventPage/{eventId:int}")]
+    public async Task<IActionResult> EventPage(int eventId)
+    {
+        var query = new GetEventPageQuery(eventId);
         var result = await Mediator.Send(query);
         return HandleResult(result);
     }
