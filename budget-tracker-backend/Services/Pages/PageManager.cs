@@ -204,6 +204,45 @@ public class PageManager : IPageManager
         return dto;
     }
 
+    public async Task<BudgetPlanEventDto> GetEventPageAsync(int eventId, CancellationToken ct)
+    {
+        var ev = await _budgetPlanManager.GetByIdAsync(eventId, ct);
+        if (ev == null || ev.Type != BudgetPlanType.Event)
+            throw new Exception($"Event {eventId} not found");
+
+        var evItems = await _budgetPlanItemManager.GetByPlanIdAsync(eventId, ct);
+        var evCategoryIds = evItems.Select(i => i.CategoryId).ToList();
+
+        var evTransactions = await _ctx.Transactions
+            .Include(t => t.Currency)
+            .Include(t => t.Category)
+            .Include(t => t.FromAccount)
+            .Include(t => t.ToAccount)
+            .Include(t => t.BudgetPlan)
+            .Where(t => t.BudgetPlanId == eventId)
+            .AsNoTracking()
+            .ToListAsync(ct);
+
+        var evSpent = evTransactions
+            .Where(t => t.CategoryId != null && evCategoryIds.Contains(t.CategoryId.Value) &&
+                        t.Type == TransactionCategoryType.Expense)
+            .Sum(t => t.Amount);
+        var evAmount = evItems.Sum(i => i.Amount);
+        var baseCurrencySymbol = (await _ctx.Currencies.FirstOrDefaultAsync(c => c.IsBase, ct))?.Symbol.ToString() ?? string.Empty;
+
+        return new BudgetPlanEventDto
+        {
+            Id = ev.Id,
+            Title = ev.Title,
+            Description = ev.Description,
+            Amount = evAmount,
+            CurrencySymbol = baseCurrencySymbol,
+            Spent = evSpent,
+            Remaining = evAmount - evSpent,
+            Transactions = _mapper.Map<List<FilteredTxDto>>(evTransactions)
+        };
+    }
+
     public async Task<IncomesByMonthDto> GetIncomesByMonthAsync(int month, int? year, CancellationToken ct)
     {
         if (month is < 1 or > 12)
