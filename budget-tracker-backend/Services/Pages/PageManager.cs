@@ -157,22 +157,10 @@ public class PageManager : IPageManager
 
             foreach (var ev in events)
             {
-                var evItems = await _budgetPlanItemManager.GetByPlanIdAsync(ev.Id, ct);
-                var evCategoryIds = evItems.Select(i => i.CategoryId).ToList();
-                var evTransactions = await _ctx.Transactions
-                    .Include(t => t.Currency)
-                    .Include(t => t.Category)
-                    .Include(t => t.FromAccount)
-                    .Include(t => t.ToAccount)
-                    .Include(t => t.BudgetPlan)
-                    .Where(t => t.BudgetPlanId == ev.Id)
-                    .AsNoTracking()
-                    .ToListAsync(ct);
-                var evSpent = evTransactions
-                    .Where(t => t.CategoryId != null && evCategoryIds.Contains(t.CategoryId.Value) &&
-                                t.Type == TransactionCategoryType.Expense)
-                    .Sum(t => t.Amount);
-                var evAmount = evItems.Sum(i => i.Amount);
+                var eventPage = await GetBudgetPlanPageAsync(ev.Id, false, ct);
+
+                var evAmount = eventPage.Items.Sum(i => i.Amount);
+                var evSpent = eventPage.Items.Sum(i => i.Spent);
 
                 dto.Items.Add(new BudgetPlanPageItemDto
                 {
@@ -185,7 +173,14 @@ public class PageManager : IPageManager
                     Description = ev.Description
                 });
 
-                transactions.AddRange(evTransactions);
+                dto.Events.Add(new BudgetPlanEventDto
+                {
+                    Plan = eventPage.Plan,
+                    Items = eventPage.Items,
+                    Transactions = eventPage.Transactions
+                });
+
+                transactions.AddRange(eventPage.Transactions);
             }
         }
 
