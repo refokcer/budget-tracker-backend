@@ -6,6 +6,7 @@ using budget_tracker_backend.MediatR.BudgetPlans.Commands.Update;
 using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetAll;
 using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetById;
 using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetEvents;
+using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetMonths;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +29,13 @@ public class BudgetPlansController : BaseApiController
     public async Task<IActionResult> GetEvents()
     {
         var result = await Mediator.Send(new GetAllEventsQuery());
+        return HandleResult(result);
+    }
+
+    [HttpGet("months")]
+    public async Task<IActionResult> GetMonthlyPlans()
+    {
+        var result = await Mediator.Send(new GetAllMonthlyPlansQuery());
         return HandleResult(result);
     }
 
