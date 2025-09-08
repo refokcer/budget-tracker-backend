@@ -117,7 +117,6 @@ public class PageManager : IPageManager
 
         var categoryIds = items.Select(i => i.CategoryId).ToList();
         var baseTransactions = await _transactionManager.GetByBudgetPlanIdAsync(planId, ct);
-        var allTransactions = baseTransactions.ToList();
         var txSums = baseTransactions
             .Where(t => t.CategoryId != null && categoryIds.Contains(t.CategoryId.Value) &&
                         t.Type == TransactionCategoryType.Expense)
@@ -129,7 +128,8 @@ public class PageManager : IPageManager
         var dto = new BudgetPlanPageDto
         {
             Plan = _mapper.Map<budget_tracker_backend.Dto.BudgetPlans.BudgetPlanDto>(plan),
-            Items = new()
+            Items = new(),
+            Events = new(),
         };
 
         foreach (var item in items)
@@ -154,27 +154,27 @@ public class PageManager : IPageManager
                 var evItems = await _budgetPlanItemManager.GetByPlanIdAsync(ev.Id, ct);
                 var evCategoryIds = evItems.Select(i => i.CategoryId).ToList();
                 var evTransactions = await _transactionManager.GetByBudgetPlanIdAsync(ev.Id, ct);
-                allTransactions.AddRange(evTransactions);
                 var evSpent = evTransactions
                     .Where(t => t.CategoryId != null && evCategoryIds.Contains(t.CategoryId.Value) &&
                                 t.Type == TransactionCategoryType.Expense)
                     .Sum(t => t.Amount);
                 var evAmount = evItems.Sum(i => i.Amount);
 
-                dto.Items.Add(new BudgetPlanPageItemDto
+                dto.Events.Add(new BudgetPlanEventDto
                 {
                     Id = ev.Id,
-                    CategoryTitle = ev.Title,
+                    Title = ev.Title,
+                    Description = ev.Description,
                     Amount = evAmount,
                     CurrencySymbol = baseCurrencySymbol,
                     Spent = evSpent,
                     Remaining = evAmount - evSpent,
-                    Description = ev.Description
+                    Transactions = _mapper.Map<List<TransactionDto>>(evTransactions)
                 });
             }
         }
 
-        dto.Transactions = _mapper.Map<List<TransactionDto>>(allTransactions);
+        dto.Transactions = _mapper.Map<List<TransactionDto>>(baseTransactions);
         return dto;
     }
 
