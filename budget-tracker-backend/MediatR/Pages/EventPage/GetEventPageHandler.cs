@@ -5,7 +5,7 @@ using budget_tracker_backend.Services.Pages;
 
 namespace budget_tracker_backend.MediatR.Pages.EventPage;
 
-public class GetEventPageHandler : IRequestHandler<GetEventPageQuery, Result<BudgetPlanEventDto>>
+public class GetEventPageHandler : IRequestHandler<GetEventPageQuery, Result<BudgetPlanPageDto>>
 {
     private readonly IPageManager _manager;
 
@@ -14,7 +14,7 @@ public class GetEventPageHandler : IRequestHandler<GetEventPageQuery, Result<Bud
         _manager = manager;
     }
 
-    public async Task<Result<BudgetPlanEventDto>> Handle(GetEventPageQuery rq, CancellationToken ct)
+    public async Task<Result<BudgetPlanPageDto>> Handle(GetEventPageQuery rq, CancellationToken ct)
     {
         var dto = await _manager.GetEventPageAsync(rq.EventId, ct);
         return Result.Ok(dto);
