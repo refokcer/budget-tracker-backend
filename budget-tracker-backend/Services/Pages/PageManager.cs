@@ -116,8 +116,8 @@ public class PageManager : IPageManager
         var items = await _budgetPlanItemManager.GetByPlanIdAsync(planId, ct);
 
         var categoryIds = items.Select(i => i.CategoryId).ToList();
-        var baseTransactions = await _transactionManager.GetByBudgetPlanIdAsync(planId, ct);
-        var txSums = baseTransactions
+        var transactions = (await _transactionManager.GetByBudgetPlanIdAsync(planId, ct)).ToList();
+        var txSums = transactions
             .Where(t => t.CategoryId != null && categoryIds.Contains(t.CategoryId.Value) &&
                         t.Type == TransactionCategoryType.Expense)
             .GroupBy(t => t.CategoryId!.Value)
@@ -153,12 +153,23 @@ public class PageManager : IPageManager
             {
                 var evItems = await _budgetPlanItemManager.GetByPlanIdAsync(ev.Id, ct);
                 var evCategoryIds = evItems.Select(i => i.CategoryId).ToList();
-                var evTransactions = await _transactionManager.GetByBudgetPlanIdAsync(ev.Id, ct);
+                var evTransactions = (await _transactionManager.GetByBudgetPlanIdAsync(ev.Id, ct)).ToList();
                 var evSpent = evTransactions
                     .Where(t => t.CategoryId != null && evCategoryIds.Contains(t.CategoryId.Value) &&
                                 t.Type == TransactionCategoryType.Expense)
                     .Sum(t => t.Amount);
                 var evAmount = evItems.Sum(i => i.Amount);
+
+                dto.Items.Add(new BudgetPlanPageItemDto
+                {
+                    Id = ev.Id,
+                    CategoryTitle = ev.Title,
+                    Amount = evAmount,
+                    CurrencySymbol = baseCurrencySymbol,
+                    Spent = evSpent,
+                    Remaining = evAmount - evSpent,
+                    Description = ev.Description
+                });
 
                 dto.Events.Add(new BudgetPlanEventDto
                 {
@@ -171,10 +182,12 @@ public class PageManager : IPageManager
                     Remaining = evAmount - evSpent,
                     Transactions = _mapper.Map<List<TransactionDto>>(evTransactions)
                 });
+
+                transactions.AddRange(evTransactions);
             }
         }
 
-        dto.Transactions = _mapper.Map<List<TransactionDto>>(baseTransactions);
+        dto.Transactions = _mapper.Map<List<TransactionDto>>(transactions);
         return dto;
     }
 
