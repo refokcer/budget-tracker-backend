@@ -139,6 +139,41 @@ public class PageManager : IPageManager
             dto.Items.Add(itemDto);
         }
 
+        if (includeEvents)
+        {
+            var baseCurrencySymbol = (await _ctx.Currencies.FirstOrDefaultAsync(c => c.IsBase, ct))?.Symbol.ToString() ?? string.Empty;
+
+            var events = await _ctx.BudgetPlans
+                .Where(p => p.ParentId == planId && p.Type == BudgetPlanType.Event)
+                .ToListAsync(ct);
+
+            foreach (var ev in events)
+            {
+                var eventPage = await GetBudgetPlanPageAsync(ev.Id, false, ct);
+
+                var evAmount = eventPage.Items.Sum(i => i.Amount);
+                var evSpent = eventPage.Items.Sum(i => i.Spent);
+
+                dto.Items.Add(new BudgetPlanPageItemDto
+                {
+                    Id = ev.Id,
+                    CategoryTitle = ev.Title,
+                    Amount = evAmount,
+                    CurrencySymbol = baseCurrencySymbol,
+                    Spent = evSpent,
+                    Remaining = evAmount - evSpent,
+                    Description = ev.Description
+                });
+
+                dto.Events.Add(new BudgetPlanEventDto
+                {
+                    Plan = eventPage.Plan,
+                    Items = eventPage.Items,
+                    Transactions = eventPage.Transactions
+                });
+
+            }
+        }
         return dto;
     }
 
