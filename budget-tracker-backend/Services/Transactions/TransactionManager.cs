@@ -37,14 +37,6 @@ public class TransactionManager : ITransactionManager
         return await _context.Transactions.FindAsync(new object[] { id }, cancellationToken);
     }
 
-    public async Task<IEnumerable<Transaction>> GetByEventIdAsync(int eventId, CancellationToken cancellationToken)
-    {
-        return await _context.Transactions
-            .Where(t => t.EventId == eventId)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<IEnumerable<Transaction>> GetByBudgetPlanIdAsync(int planId, CancellationToken cancellationToken)
     {
         return await _context.Transactions
@@ -57,7 +49,6 @@ public class TransactionManager : ITransactionManager
         TransactionCategoryType? type,
         DateTime? startDate,
         DateTime? endDate,
-        int? eventId,
         CancellationToken cancellationToken)
     {
         var query = _context.Transactions.AsQueryable();
@@ -68,8 +59,6 @@ public class TransactionManager : ITransactionManager
             query = query.Where(t => t.Date >= startDate.Value);
         if (endDate.HasValue)
             query = query.Where(t => t.Date <= endDate.Value);
-        if (eventId.HasValue)
-            query = query.Where(t => t.EventId == eventId.Value);
 
         return await query.AsNoTracking().ToListAsync(cancellationToken);
     }
@@ -154,7 +143,6 @@ public class TransactionManager : ITransactionManager
         if (dto.Amount.HasValue) entity.Amount = dto.Amount.Value;
         if (dto.AccountFrom.HasValue) entity.AccountFrom = dto.AccountFrom;
         if (dto.AccountTo.HasValue) entity.AccountTo = dto.AccountTo;
-        if (dto.EventId.HasValue) entity.EventId = dto.EventId;
         if (dto.BudgetPlanId.HasValue) entity.BudgetPlanId = dto.BudgetPlanId;
         if (dto.CurrencyId.HasValue) entity.CurrencyId = dto.CurrencyId.Value;
         if (dto.CategoryId.HasValue) entity.CategoryId = dto.CategoryId;
@@ -231,7 +219,6 @@ public class TransactionManager : ITransactionManager
 
             if (last != null)
             {
-                prepared.EventId = last.EventId;
                 prepared.BudgetPlanId = last.BudgetPlanId;
                 prepared.CategoryId = last.CategoryId;
             }

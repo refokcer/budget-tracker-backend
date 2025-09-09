@@ -8,6 +8,5 @@ namespace budget_tracker_backend.MediatR.Transactions.Queries.GetTransactions;
 public record GetTransactionsQuery(
     TransactionCategoryType? Type = null,
     DateTime? StartDate = null,
-    DateTime? EndDate = null,
-    int? EventId = null
+    DateTime? EndDate = null
 ) : IRequest<Result<IEnumerable<TransactionDto>>>;

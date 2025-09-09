@@ -8,13 +8,11 @@ public interface ITransactionManager
 {
     Task<IEnumerable<Transaction>> GetAllAsync(CancellationToken cancellationToken);
     Task<Transaction?> GetByIdAsync(int id, CancellationToken cancellationToken);
-    Task<IEnumerable<Transaction>> GetByEventIdAsync(int eventId, CancellationToken cancellationToken);
     Task<IEnumerable<Transaction>> GetByBudgetPlanIdAsync(int planId, CancellationToken cancellationToken);
     Task<IEnumerable<Transaction>> GetFilteredAsync(
         TransactionCategoryType? type,
         DateTime? startDate,
         DateTime? endDate,
-        int? eventId,
         CancellationToken cancellationToken);
 
     Task<IEnumerable<Transaction>> GetFilteredDetailedAsync(

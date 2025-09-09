@@ -12,10 +12,13 @@ public class BudgetPlan : IUserOwnedEntity
     public BudgetPlanType Type { get; set; }
     public string? Description { get; set; }
     public string UserId { get; set; } = null!;
+    public int? ParentId { get; set; }
 
     // Navigation properties
     [JsonIgnore]
     public virtual ICollection<BudgetPlanItem>? Items { get; set; }
     [JsonIgnore]
     public ApplicationUser? User { get; set; }
+    [JsonIgnore]
+    public BudgetPlan? Parent { get; set; }
 }

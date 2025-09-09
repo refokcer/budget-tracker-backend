@@ -106,7 +106,7 @@ public class PageManager : IPageManager
         };
     }
 
-    public async Task<BudgetPlanPageDto> GetBudgetPlanPageAsync(int planId, CancellationToken ct)
+    public async Task<BudgetPlanPageDto> GetBudgetPlanPageAsync(int planId, bool includeEvents, CancellationToken ct)
     {
         var plan = await _budgetPlanManager.GetByIdAsync(planId, ct);
         if (plan == null)
@@ -115,7 +115,15 @@ public class PageManager : IPageManager
         var items = await _budgetPlanItemManager.GetByPlanIdAsync(planId, ct);
 
         var categoryIds = items.Select(i => i.CategoryId).ToList();
-        var transactions = await _transactionManager.GetByBudgetPlanIdAsync(planId, ct);
+        var transactions = await _ctx.Transactions
+            .Include(t => t.Currency)
+            .Include(t => t.Category)
+            .Include(t => t.FromAccount)
+            .Include(t => t.ToAccount)
+            .Include(t => t.BudgetPlan)
+            .Where(t => t.BudgetPlanId == planId)
+            .AsNoTracking()
+            .ToListAsync(ct);
         var txSums = transactions
             .Where(t => t.CategoryId != null && categoryIds.Contains(t.CategoryId.Value) &&
                         t.Type == TransactionCategoryType.Expense)
@@ -127,7 +135,7 @@ public class PageManager : IPageManager
         var dto = new BudgetPlanPageDto
         {
             Plan = _mapper.Map<budget_tracker_backend.Dto.BudgetPlans.BudgetPlanDto>(plan),
-            Items = new()
+            Items = new(),
         };
 
         foreach (var item in items)
@@ -175,6 +183,15 @@ public class PageManager : IPageManager
             }
         }
         return dto;
+    }
+
+    public async Task<BudgetPlanPageDto> GetEventPageAsync(int eventId, CancellationToken ct)
+    {
+        var ev = await _budgetPlanManager.GetByIdAsync(eventId, ct);
+        if (ev == null || ev.Type != BudgetPlanType.Event)
+            throw new Exception($"Event {eventId} not found");
+
+        return await GetBudgetPlanPageAsync(eventId, false, ct);
     }
 
     public async Task<IncomesByMonthDto> GetIncomesByMonthAsync(int month, int? year, CancellationToken ct)

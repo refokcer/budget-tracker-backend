@@ -10,4 +10,5 @@ public class BudgetPlanDto
     public DateTime EndDate { get; set; }
     public BudgetPlanType Type { get; set; }
     public string? Description { get; set; }
+    public int? ParentId { get; set; }
 }

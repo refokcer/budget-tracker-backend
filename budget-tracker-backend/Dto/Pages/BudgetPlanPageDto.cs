@@ -6,6 +6,8 @@ public class BudgetPlanPageDto
 {
     public BudgetPlanDto Plan { get; set; } = null!;
     public List<BudgetPlanPageItemDto> Items { get; set; } = new();
+    public List<FilteredTxDto> Transactions { get; set; } = new();
+    public List<BudgetPlanEventDto> Events { get; set; } = new();
 }
 
 public class BudgetPlanPageItemDto
@@ -17,4 +19,11 @@ public class BudgetPlanPageItemDto
     public decimal Spent { get; set; }
     public decimal Remaining { get; set; }
     public string? Description { get; set; }
+}
+
+public class BudgetPlanEventDto
+{
+    public BudgetPlanDto Plan { get; set; } = null!;
+    public List<BudgetPlanPageItemDto> Items { get; set; } = new();
+    public List<FilteredTxDto> Transactions { get; set; } = new();
 }

@@ -18,7 +18,7 @@ public class GetBudgetPlanPageHandler : IRequestHandler<GetBudgetPlanPageQuery, 
 
     public async Task<Result<BudgetPlanPageDto>> Handle(GetBudgetPlanPageQuery rq, CancellationToken ct)
     {
-        var dto = await _manager.GetBudgetPlanPageAsync(rq.PlanId, ct);
+        var dto = await _manager.GetBudgetPlanPageAsync(rq.PlanId, rq.IncludeEvents, ct);
         return Result.Ok(dto);
     }
 }
