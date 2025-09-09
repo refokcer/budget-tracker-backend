@@ -136,6 +136,7 @@ public class PageManager : IPageManager
         {
             Plan = _mapper.Map<budget_tracker_backend.Dto.BudgetPlans.BudgetPlanDto>(plan),
             Items = new(),
+            Transactions = _mapper.Map<List<FilteredTxDto>>(transactions),
         };
 
         foreach (var item in items)
