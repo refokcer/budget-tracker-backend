@@ -18,3 +18,4 @@ dotnet user-secrets set "OpenAI:DefaultModel" "gpt-3.5-turbo"
 ### Usage
 
 After configuring secrets, run the application and call the `POST /api/chatgpt/ask` endpoint via Swagger with a `ChatGptRequest` body to receive a response from ChatGPT.
+If the endpoint returns `429 Too Many Requests`, your API key may have exhausted its quota or you are sending requests too quickly.

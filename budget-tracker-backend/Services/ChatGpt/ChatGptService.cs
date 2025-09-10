@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using budget_tracker_backend.Dto.ChatGpt;
+using budget_tracker_backend.Exceptions;
 
 namespace budget_tracker_backend.Services.ChatGpt;
 
@@ -44,8 +45,14 @@ public class ChatGptService : IChatGptService
 
         var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
         var response = await _httpClient.PostAsync(endpoint, content, cancellationToken);
-        response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadAsStringAsync(cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorMessage = TryParseError(body) ?? response.ReasonPhrase ?? "OpenAI API error";
+            throw new CustomException(errorMessage, (int)response.StatusCode);
+        }
+
         using var document = JsonDocument.Parse(body);
         var message = document.RootElement
             .GetProperty("choices")[0]
@@ -62,14 +69,31 @@ public class ChatGptService : IChatGptService
         {
             builder.AppendLine().Append("Данные: ").AppendLine(request.Data);
         }
-        if (request.Keywords != null && request.Keywords.Any())
+        if (request.Keywords != null)
         {
-            builder.AppendLine().Append("Ключевые слова: ").Append(string.Join(", ", request.Keywords));
+            var keywords = request.Keywords.Where(k => !string.IsNullOrWhiteSpace(k)).ToArray();
+            if (keywords.Any())
+            {
+                builder.AppendLine().Append("Ключевые слова: ").Append(string.Join(", ", keywords));
+            }
         }
         if (!string.IsNullOrWhiteSpace(request.ResponseFormat))
         {
             builder.AppendLine().Append("Ответь в формате: ").Append(request.ResponseFormat);
         }
         return builder.ToString();
+    }
+
+    private static string? TryParseError(string body)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(body);
+            return doc.RootElement.GetProperty("error").GetProperty("message").GetString();
+        }
+        catch
+        {
+            return null;
+        }
     }
 }
