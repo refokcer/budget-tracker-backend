@@ -8,6 +8,7 @@ using budget_tracker_backend.Services.Currencies;
 using budget_tracker_backend.Services.Pages;
 using budget_tracker_backend.Services.Transactions;
 using budget_tracker_backend.Services.Auth;
+using budget_tracker_backend.Services.ChatGpt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ using MediatR;
 using budget_tracker_backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddUserSecrets<Program>(optional: true);
 var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
 
@@ -31,6 +33,7 @@ builder.Services.AddScoped<ICurrencyManager, CurrencyManager>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddScoped<IPageManager, PageManager>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddHttpClient<IChatGptService, ChatGptService>();
 // Ïîäêëþ÷àåì EF Core è MS SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
