@@ -1,8 +1,10 @@
 using System.Text;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using UglyToad.PdfPig;
 
 namespace budget_tracker_backend.Controllers;
 
@@ -23,11 +25,15 @@ public class PdfController : ControllerBase
         await file.CopyToAsync(stream);
         stream.Position = 0;
 
-        using var document = PdfDocument.Open(stream);
         var text = new StringBuilder();
-        foreach (var page in document.GetPages())
+        using var reader = new PdfReader(stream);
+        using var document = new PdfDocument(reader);
+
+        for (int i = 1; i <= document.GetNumberOfPages(); i++)
         {
-            text.AppendLine(page.Text);
+            var page = document.GetPage(i);
+            var strategy = new SimpleTextExtractionStrategy();
+            text.AppendLine(PdfTextExtractor.GetTextFromPage(page, strategy));
         }
 
         return Ok(text.ToString());
