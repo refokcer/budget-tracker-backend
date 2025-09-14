@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>budget_tracker_backend</RootNamespace>
+    <UserSecretsId>48534ebf-7bd5-43e3-af0b-074358e039b8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
