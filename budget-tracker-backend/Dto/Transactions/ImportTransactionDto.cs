@@ -15,6 +15,8 @@ public class ImportTransactionDto
     public int? AccountTo { get; set; }
     public DateTime Date { get; set; }
     public TransactionCategoryType Type { get; set; }
+    /// <summary>Category title to match existing user categories.</summary>
+    public string? Category { get; set; }
     public string? Description { get; set; }
     public string? AuthCode { get; set; }
 }
