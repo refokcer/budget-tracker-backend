@@ -83,11 +83,9 @@ public class PdfController : ControllerBase
 
         var statementText = text.ToString();
 
-        var expensesTask = _categoryManager.GetByTypeAsync(TransactionCategoryType.Expense, ct);
-        var incomesTask = _categoryManager.GetByTypeAsync(TransactionCategoryType.Income, ct);
-        var transfersTask = _categoryManager.GetByTypeAsync(TransactionCategoryType.Transaction, ct);
-
-        await Task.WhenAll(expensesTask, incomesTask, transfersTask);
+        var expenses = await _categoryManager.GetByTypeAsync(TransactionCategoryType.Expense, ct);
+        var incomes = await _categoryManager.GetByTypeAsync(TransactionCategoryType.Income, ct);
+        var transfers = await _categoryManager.GetByTypeAsync(TransactionCategoryType.Transaction, ct);
 
         var instruction = """
 Ты финансовый ассистент, который превращает текст банковской выписки в структурированные данные пользователя.
@@ -109,9 +107,9 @@ public class PdfController : ControllerBase
 """;
 
         var dataBuilder = new StringBuilder();
-        AppendCategoryList(dataBuilder, "Категории расходов", expensesTask.Result);
-        AppendCategoryList(dataBuilder, "Категории доходов", incomesTask.Result);
-        AppendCategoryList(dataBuilder, "Категории переводов", transfersTask.Result);
+        AppendCategoryList(dataBuilder, "Категории расходов", expenses);
+        AppendCategoryList(dataBuilder, "Категории доходов", incomes);
+        AppendCategoryList(dataBuilder, "Категории переводов", transfers);
         dataBuilder.AppendLine("Текст выписки:").AppendLine(statementText);
 
         var chatRequest = new ChatGptRequest
