@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using budget_tracker_backend.Dto.ChatGpt;
 
 namespace budget_tracker_backend.Controllers;
 
