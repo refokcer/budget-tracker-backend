@@ -212,6 +212,14 @@ public class TransactionManager : ITransactionManager
                 .Select(c => (int?)c.Id)
                 .FirstOrDefaultAsync(ct);
 
+            if (!string.IsNullOrWhiteSpace(item.Category))
+            {
+                prepared.CategoryId = await _context.Categories
+                    .Where(c => c.Title == item.Category)
+                    .Select(c => (int?)c.Id)
+                    .FirstOrDefaultAsync(ct);
+            }
+
             var last = await _context.Transactions
                 .Where(t => t.Title == item.Title)
                 .OrderByDescending(t => t.Date)
@@ -220,7 +228,8 @@ public class TransactionManager : ITransactionManager
             if (last != null)
             {
                 prepared.BudgetPlanId = last.BudgetPlanId;
-                prepared.CategoryId = last.CategoryId;
+                if (!prepared.CategoryId.HasValue)
+                    prepared.CategoryId = last.CategoryId;
             }
 
             var unic = GenerateUnicCode(prepared.Amount ?? 0m, prepared.Date ?? item.Date, prepared.AuthCode);

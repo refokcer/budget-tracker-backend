@@ -114,20 +114,6 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
-app.UseCors("AllowReact"); // Âêëþ÷àåì CORS
-
 app.UseExceptionHandler(appBuilder =>
 {
     appBuilder.Run(async context =>
@@ -142,6 +128,19 @@ app.UseExceptionHandler(appBuilder =>
         await context.Response.WriteAsync("An unexpected error occurred.");
     });
 });
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+app.UseCors("AllowReact"); // Âêëþ÷àåì CORS
 
 app.UseStatusCodePages(async context =>
 {
