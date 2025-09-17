@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UglyToad.PdfPig;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 using UglyToad.PdfPig.Exceptions;
 
 namespace budget_tracker_backend.Controllers;
@@ -115,7 +116,12 @@ public class ChatGptController : ControllerBase
                 builder.AppendLine().AppendLine($"--- page {page.Number} ---");
             }
 
-            builder.AppendLine(page.Text);
+            var orderedText = ContentOrderTextExtractor.GetText(page);
+            var pageText = string.IsNullOrWhiteSpace(orderedText) ? page.Text : orderedText;
+            if (!string.IsNullOrWhiteSpace(pageText))
+            {
+                builder.AppendLine(pageText.TrimEnd());
+            }
         }
 
         return builder.ToString();
