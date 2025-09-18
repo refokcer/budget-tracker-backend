@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UglyToad.PdfPig;
-using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
+using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Exceptions;
 
 namespace budget_tracker_backend.Controllers;
@@ -116,12 +116,71 @@ public class ChatGptController : ControllerBase
                 builder.AppendLine().AppendLine($"--- page {page.Number} ---");
             }
 
-            var orderedText = ContentOrderTextExtractor.GetText(page);
-            var pageText = string.IsNullOrWhiteSpace(orderedText) ? page.Text : orderedText;
+            var pageText = ExtractTextFromPage(page);
             if (!string.IsNullOrWhiteSpace(pageText))
             {
                 builder.AppendLine(pageText.TrimEnd());
             }
+        }
+
+        return builder.ToString();
+    }
+
+    private static string ExtractTextFromPage(Page page)
+    {
+        var directText = page.Text;
+        if (!string.IsNullOrWhiteSpace(directText))
+        {
+            return directText;
+        }
+
+        var letters = page.Letters;
+        if (letters == null || letters.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        const double lineHeightThreshold = 5d;
+        var orderedLetters = letters
+            .OrderByDescending(l => l.StartBaseLine.Y)
+            .ThenBy(l => l.StartBaseLine.X)
+            .ToList();
+
+        var builder = new StringBuilder();
+        double? currentLineY = null;
+        double? lastLetterEndX = null;
+
+        foreach (var letter in orderedLetters)
+        {
+            var value = letter.Value;
+            if (char.IsControl(value))
+            {
+                continue;
+            }
+
+            var y = letter.StartBaseLine.Y;
+            if (currentLineY == null)
+            {
+                currentLineY = y;
+            }
+            else if (Math.Abs(y - currentLineY.Value) > lineHeightThreshold)
+            {
+                builder.AppendLine();
+                currentLineY = y;
+                lastLetterEndX = null;
+            }
+            else if (lastLetterEndX.HasValue)
+            {
+                var gap = letter.StartBaseLine.X - lastLetterEndX.Value;
+                var averageWidth = Math.Max(letter.Width, 1d);
+                if (gap > averageWidth * 0.6)
+                {
+                    builder.Append(' ');
+                }
+            }
+
+            builder.Append(value);
+            lastLetterEndX = letter.StartBaseLine.X + letter.Width;
         }
 
         return builder.ToString();
