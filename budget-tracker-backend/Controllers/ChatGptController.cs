@@ -11,9 +11,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using UglyToad.PdfPig;
-using UglyToad.PdfPig.Content;
-using UglyToad.PdfPig.Exceptions;
+using iText.Kernel.Exceptions;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Pdf.Canvas.Parser.Listener;
 
 namespace budget_tracker_backend.Controllers;
 
@@ -63,7 +64,7 @@ public class ChatGptController : ControllerBase
         {
             rawText = await ExtractPdfTextAsync(pdf, cancellationToken);
         }
-        catch (Exception ex) when (ex is PdfDocumentException or InvalidOperationException or IOException)
+        catch (Exception ex) when (ex is PdfException or InvalidOperationException or IOException)
         {
             return BadRequest("Не удалось прочитать содержимое PDF файла.");
         }
@@ -104,83 +105,29 @@ public class ChatGptController : ControllerBase
     {
         await using var memory = new MemoryStream();
         await file.CopyToAsync(memory, cancellationToken);
-        memory.Position = 0;
 
-        using var document = PdfDocument.Open(memory);
+        var pdfBytes = memory.ToArray();
+        using var pdfStream = new MemoryStream(pdfBytes, writable: false);
+        using var reader = new PdfReader(pdfStream);
+        reader.SetUnethicalReading(true);
+        using var document = new PdfDocument(reader);
+
         var builder = new StringBuilder();
 
-        foreach (var page in document.GetPages())
+        for (var pageNumber = 1; pageNumber <= document.GetNumberOfPages(); pageNumber++)
         {
             if (builder.Length > 0)
             {
-                builder.AppendLine().AppendLine($"--- page {page.Number} ---");
+                builder.AppendLine().AppendLine($"--- page {pageNumber} ---");
             }
 
-            var pageText = ExtractTextFromPage(page);
+            var strategy = new LocationTextExtractionStrategy();
+            var page = document.GetPage(pageNumber);
+            var pageText = PdfTextExtractor.GetTextFromPage(page, strategy);
             if (!string.IsNullOrWhiteSpace(pageText))
             {
                 builder.AppendLine(pageText.TrimEnd());
             }
-        }
-
-        return builder.ToString();
-    }
-
-    private static string ExtractTextFromPage(Page page)
-    {
-        var directText = page.Text;
-        if (!string.IsNullOrWhiteSpace(directText))
-        {
-            return directText;
-        }
-
-        var letters = page.Letters;
-        if (letters == null || letters.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        const double lineHeightThreshold = 5d;
-        var orderedLetters = letters
-            .OrderByDescending(l => l.StartBaseLine.Y)
-            .ThenBy(l => l.StartBaseLine.X)
-            .ToList();
-
-        var builder = new StringBuilder();
-        double? currentLineY = null;
-        double? lastLetterEndX = null;
-
-        foreach (var letter in orderedLetters)
-        {
-            var value = letter.Value;
-            if (char.IsControl(value))
-            {
-                continue;
-            }
-
-            var y = letter.StartBaseLine.Y;
-            if (currentLineY == null)
-            {
-                currentLineY = y;
-            }
-            else if (Math.Abs(y - currentLineY.Value) > lineHeightThreshold)
-            {
-                builder.AppendLine();
-                currentLineY = y;
-                lastLetterEndX = null;
-            }
-            else if (lastLetterEndX.HasValue)
-            {
-                var gap = letter.StartBaseLine.X - lastLetterEndX.Value;
-                var averageWidth = Math.Max(letter.Width, 1d);
-                if (gap > averageWidth * 0.6)
-                {
-                    builder.Append(' ');
-                }
-            }
-
-            builder.Append(value);
-            lastLetterEndX = letter.StartBaseLine.X + letter.Width;
         }
 
         return builder.ToString();
