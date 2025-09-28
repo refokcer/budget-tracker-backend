@@ -46,7 +46,6 @@ public class ChatGptController : ControllerBase
     }
 
     [HttpPost("parse-transactions")]
-    [Authorize]
     [Consumes("multipart/form-data")]
     public async Task<ActionResult<string>> ParseTransactionsFromPdf([FromForm] ParseTransactionsRequest form, CancellationToken cancellationToken)
     {
