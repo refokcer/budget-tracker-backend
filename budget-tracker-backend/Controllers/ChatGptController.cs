@@ -16,6 +16,7 @@ using iText.Kernel.Exceptions;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
+using Microsoft.Extensions.Logging;
 
 namespace budget_tracker_backend.Controllers;
 
@@ -39,11 +40,13 @@ public class ChatGptController : ControllerBase
 
     private readonly IChatGptService _chatGptService;
     private readonly IApplicationDbContext _dbContext;
+    private readonly ILogger<ChatGptController> _logger;
 
-    public ChatGptController(IChatGptService chatGptService, IApplicationDbContext dbContext)
+    public ChatGptController(IChatGptService chatGptService, IApplicationDbContext dbContext, ILogger<ChatGptController> logger)
     {
         _chatGptService = chatGptService;
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     [HttpPost("ask")]
@@ -75,6 +78,7 @@ public class ChatGptController : ControllerBase
         }
         catch (Exception ex) when (ex is PdfException or InvalidOperationException or IOException)
         {
+            _logger.LogError(ex, "Failed to extract text from PDF {FileName}", form.Pdf.FileName);
             return BadRequest("Не удалось прочитать содержимое PDF файла.");
         }
 
@@ -114,8 +118,9 @@ public class ChatGptController : ControllerBase
             var envelope = JsonSerializer.Deserialize<TransactionsEnvelope>(response, JsonOptions);
             transactions = envelope?.Transactions ?? throw new JsonException("transactions");
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
+            _logger.LogError(ex, "Failed to deserialize ChatGPT response: {Response}", response);
             return BadRequest("Ответ ChatGPT имеет неверный формат. Ожидается JSON с массивом transactions.");
         }
 
@@ -268,18 +273,21 @@ public class ChatGptController : ControllerBase
         return """
 Ты финансовый ассистент. Тебе передают текст банковских и платежных выписок вместе со справочными данными пользователя (списки его счетов, валют, категорий, бюджетных планов). Справочная информация находится в объекте userContext: accounts (счета пользователя), currencies (валюты), categories (подмассивы expense/income/transfer/uncategorized), budgetPlans и budgetPlanItems. Сам документ передан в объекте document: текст в поле text, имя файла в поле name. Проанализируй данные и выдели только реальные финансовые операции пользователя.
 
-Верни результат строго в виде корректного JSON без каких-либо пояснений вне JSON. Корневой объект должен иметь единственное поле "transactions" с массивом транзакций. Каждая транзакция обязана соответствовать полям DTO PreparedTransactionDto:
-- "title" — 1-4 слова, коротко описывающих операцию. Всегда включай конкретное название магазина/получателя/организации, если оно присутствует в документе, и при необходимости добавь тип операции (например, продукты, техника, услуги, перевод). Не используй лишние символы и избегай общего слова "Покупка" без уточнений, если есть данные.
-- "amount" — положительное десятичное число с точкой в качестве разделителя.
-- "currencyId" — идентификатор валюты из userContext.currencies. Используй только существующие ID.
-- "accountFrom" — ID счёта из userContext.accounts, с которого списаны деньги. Для расходов и трансферов обязателен, для доходов всегда null.
-- "accountTo" — ID счёта из userContext.accounts, на который зачислены деньги. Для доходов и трансферов обязателен, для расходов всегда null.
-- "budgetPlanId" — ID бюджета, если операция явно относится к одному из userContext.budgetPlans или логично совпадает с userContext.budgetPlanItems, иначе null.
-- "categoryId" — ID категории из подходящей группы: расходы берут ID из userContext.categories.expense, доходы — из userContext.categories.income, трансферы — из userContext.categories.transfer. Если категория очевидна или можно обоснованно предположить соответствие по назначению/описанию операции, подставь подходящий ID. Оставляй null только когда данных недостаточно даже для приблизительного сопоставления.
-- "date" — дата операции в формате ISO 8601 YYYY-MM-DDTHH:MM:SS (используй 00:00:00 если времени нет).
-- "type" — строго одно из значений: "Expense", "Income" или "Transaction". Expense = расход, Income = доход, Transaction = перевод между счетами пользователя.
-- "description" — краткий текст до 1-2 предложений, поясняющий операцию. Если нечего добавить — null.
-- "authCode" — код авторизации платежа или аналогичный уникальный идентификатор из документа, если он есть. Иначе null.
+Ответ формируй строго как корректный JSON-документ UTF-8 без BOM, без предваряющего текста и комментариев. Корневой объект должен содержать единственное поле "transactions". Значение — массив объектов, каждый объект представляет PreparedTransactionDto с полями и типами:
+{
+  "title": string (1-4 слова, обязательно включи название магазина/получателя и, если возможно, уточнение типа операции: продукты, услуги, техника, подписка и т.д.; избегай общих формулировок вроде "Покупка" без уточнения),
+  "amount": number (положительное десятичное число, разделитель — точка, не заключать в кавычки),
+  "currencyId": integer (используй существующие ID из userContext.currencies),
+  "accountFrom": integer | null (обязателен для расходов и переводов, для доходов всегда null),
+  "accountTo": integer | null (обязателен для доходов и переводов, для расходов всегда null),
+  "budgetPlanId": integer | null (используй ID из userContext.budgetPlans, иначе null),
+  "categoryId": integer | null (для расходов — ID из userContext.categories.expense, для доходов — из income, для переводов — из transfer; заполняй ID при любой разумной уверенности, null только при полном отсутствии данных),
+  "date": string (формат ISO 8601 YYYY-MM-DDTHH:MM:SS; если время отсутствует, ставь 00:00:00),
+  "type": string (строго одно из: "Expense", "Income", "Transaction"),
+  "description": string | null (до 1-2 предложений, null если нечего добавить),
+  "authCode": string | null (укажи код авторизации/уникальный идентификатор, если есть, иначе null)
+}
+Все поля в каждом объекте должны присутствовать. Используй только двойные кавычки, не оставляй лишних запятых. Значения null пиши без кавычек. Не добавляй другие поля.
 
 Правила обработки:
 1. Опираться на сведения из userContext для сопоставления валют, счетов, категорий, бюджетов. Не выдумывай новые значения и не создавай новые категории.
@@ -291,9 +299,10 @@ public class ChatGptController : ControllerBase
 7. Расположи транзакции в хронологическом порядке (от ранних к поздним).
 8. Если транзакций нет, верни {"transactions":[]}.
 
-Ответ должен быть строго JSON, без комментариев и пояснений. Пример структуры:
-{"transactions":[{"title":"Оплата кафе","amount":123.45,"currencyId":1,"accountFrom":2,"accountTo":null,"budgetPlanId":null,"categoryId":5,"date":"2024-01-15T00:00:00","type":"Expense","description":"ужин в кафе","authCode":"123456"}]}
+Строго придерживайся структуры. Пример допустимого ответа:
+{"transactions":[{"title":"Продукты Магнит","amount":1234.56,"currencyId":1,"accountFrom":2,"accountTo":null,"budgetPlanId":null,"categoryId":5,"date":"2024-01-15T00:00:00","type":"Expense","description":"Покупка продуктов в Магните","authCode":"123456"}]}
 """;
+
     }
 
     private static int CalculateMaxTokens(string text)
