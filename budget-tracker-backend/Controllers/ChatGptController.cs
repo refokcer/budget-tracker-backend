@@ -47,14 +47,15 @@ public class ChatGptController : ControllerBase
 
     [HttpPost("parse-transactions")]
     [Authorize]
-    public async Task<ActionResult<string>> ParseTransactionsFromPdf([FromForm] IFormFile pdf, CancellationToken cancellationToken)
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<string>> ParseTransactionsFromPdf([FromForm] ParseTransactionsRequest form, CancellationToken cancellationToken)
     {
-        if (pdf == null || pdf.Length == 0)
+        if (form.Pdf == null || form.Pdf.Length == 0)
         {
             return BadRequest("Файл PDF не передан или пуст.");
         }
 
-        if (!pdf.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+        if (!form.Pdf.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
         {
             return BadRequest("Ожидается файл с расширением .pdf.");
         }
@@ -62,7 +63,7 @@ public class ChatGptController : ControllerBase
         string rawText;
         try
         {
-            rawText = await ExtractPdfTextAsync(pdf, cancellationToken);
+            rawText = await ExtractPdfTextAsync(form.Pdf, cancellationToken);
         }
         catch (Exception ex) when (ex is PdfException or InvalidOperationException or IOException)
         {
@@ -82,7 +83,7 @@ public class ChatGptController : ControllerBase
         {
             document = new
             {
-                name = pdf.FileName,
+                name = form.Pdf.FileName,
                 text = normalizedText
             },
             userContext
@@ -118,8 +119,10 @@ public class ChatGptController : ControllerBase
         {
             if (builder.Length > 0)
             {
-                builder.AppendLine().AppendLine($"--- page {pageNumber} ---");
+                builder.AppendLine();
             }
+
+            builder.AppendLine($"--- page {pageNumber} ---");
 
             var strategy = new LocationTextExtractionStrategy();
             var page = document.GetPage(pageNumber);
@@ -249,8 +252,8 @@ public class ChatGptController : ControllerBase
 - "title" — 1-4 слова, коротко описывающих операцию. Не используй лишние символы.
 - "amount" — положительное десятичное число с точкой в качестве разделителя.
 - "currencyId" — идентификатор валюты из userContext.currencies. Используй только существующие ID.
-- "accountFrom" — ID счёта, с которого списаны деньги. Для расходов и трансферов обязателен, для доходов всегда null.
-- "accountTo" — ID счёта, на который зачислены деньги. Для доходов и трансферов обязателен, для расходов всегда null.
+- "accountFrom" — ID счёта из userContext.accounts, с которого списаны деньги. Для расходов и трансферов обязателен, для доходов всегда null.
+- "accountTo" — ID счёта из userContext.accounts, на который зачислены деньги. Для доходов и трансферов обязателен, для расходов всегда null.
 - "budgetPlanId" — ID бюджета, если операция явно относится к одному из userContext.budgetPlans или логично совпадает с userContext.budgetPlanItems, иначе null.
 - "categoryId" — ID категории из подходящей группы: расходы берут ID из userContext.categories.expense, доходы — из userContext.categories.income, трансферы — из userContext.categories.transfer. Если нет точного соответствия, укажи null.
 - "date" — дата операции в формате ISO 8601 YYYY-MM-DDTHH:MM:SS (используй 00:00:00 если времени нет).
