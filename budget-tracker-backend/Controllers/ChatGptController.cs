@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.ChatGpt;
 using budget_tracker_backend.Models.Enums;
+using budget_tracker_backend.Dto.Transactions;
 using budget_tracker_backend.Services.ChatGpt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,7 @@ public class ChatGptController : ControllerBase
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
@@ -48,7 +50,7 @@ public class ChatGptController : ControllerBase
     [HttpPost("parse-transactions")]
     [Authorize]
     [Consumes("multipart/form-data")]
-    public async Task<ActionResult<string>> ParseTransactionsFromPdf([FromForm] ParseTransactionsRequest form, CancellationToken cancellationToken)
+    public async Task<ActionResult<PreparedTransactionDto[]>> ParseTransactionsFromPdf([FromForm] ParseTransactionsRequest form, CancellationToken cancellationToken)
     {
         if (form.Pdf == null || form.Pdf.Length == 0)
         {
@@ -99,7 +101,19 @@ public class ChatGptController : ControllerBase
         };
 
         var response = await _chatGptService.AskAsync(request, cancellationToken);
-        return Ok(response);
+
+        PreparedTransactionDto[] transactions;
+        try
+        {
+            var envelope = JsonSerializer.Deserialize<TransactionsEnvelope>(response, JsonOptions);
+            transactions = envelope?.Transactions ?? throw new JsonException("transactions");
+        }
+        catch (JsonException)
+        {
+            return BadRequest("Ответ ChatGPT имеет неверный формат. Ожидается JSON с массивом transactions.");
+        }
+
+        return Ok(transactions);
     }
 
     private static async Task<string> ExtractPdfTextAsync(IFormFile file, CancellationToken cancellationToken)
@@ -314,4 +328,6 @@ public class ChatGptController : ControllerBase
     private sealed record BudgetPlanPromptItem(int Id, string Title, string Type, DateTime StartDate, DateTime EndDate, int? ParentId);
 
     private sealed record BudgetPlanItemPromptItem(int Id, int BudgetPlanId, int CategoryId, int CurrencyId, decimal Amount, string? Description);
+
+    private sealed record TransactionsEnvelope(PreparedTransactionDto[] Transactions);
 }
