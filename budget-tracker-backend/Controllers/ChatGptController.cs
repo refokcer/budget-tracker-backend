@@ -106,7 +106,7 @@ public class ChatGptController : ControllerBase
             Instruction = instruction,
             Data = JsonSerializer.Serialize(payload, JsonOptions),
             ResponseFormat = "json",
-            Temperature = 0.5,
+            Temperature = 0.3,
             MaxTokens = CalculateMaxTokens(normalizedText)
         };
 
