@@ -23,12 +23,19 @@ namespace budget_tracker_backend.Controllers;
 [Route("api/[controller]")]
 public class ChatGptController : ControllerBase
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
+    private static readonly JsonSerializerOptions JsonOptions;
+
+    static ChatGptController()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-    };
+        JsonOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        JsonOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
+    }
 
     private readonly IChatGptService _chatGptService;
     private readonly IApplicationDbContext _dbContext;
