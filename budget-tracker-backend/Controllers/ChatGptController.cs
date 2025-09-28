@@ -102,7 +102,7 @@ public class ChatGptController : ControllerBase
             Instruction = instruction,
             Data = JsonSerializer.Serialize(payload, JsonOptions),
             ResponseFormat = "json",
-            Temperature = 0,
+            Temperature = 0.5,
             MaxTokens = CalculateMaxTokens(normalizedText)
         };
 
@@ -299,7 +299,7 @@ public class ChatGptController : ControllerBase
     private static int CalculateMaxTokens(string text)
     {
         const int minTokens = 1024;
-        const int maxTokens = 4000;
+        const int maxTokens = 400000;
 
         if (string.IsNullOrWhiteSpace(text))
         {
