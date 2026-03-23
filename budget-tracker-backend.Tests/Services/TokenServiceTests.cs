@@ -66,7 +66,7 @@ public class TokenServiceTests
     }
 
     [Test]
-    public void GetPrincipalFromExpiredToken_WhenTokenSignedWithDifferentAlgorithm_ThrowsSecurityTokenException()
+    public void GetPrincipalFromExpiredToken_WhenTokenSignatureValidationFails_ThrowsSecurityTokenException()
     {
         var config = CreateConfiguration();
         var service = new TokenService(config);
@@ -81,7 +81,7 @@ public class TokenServiceTests
         var serialized = new JwtSecurityTokenHandler().WriteToken(token);
 
         Assert.That(() => service.GetPrincipalFromExpiredToken(serialized),
-            Throws.TypeOf<SecurityTokenException>());
+            Throws.InstanceOf<SecurityTokenException>());
     }
 
     [Test]
