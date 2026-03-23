@@ -70,7 +70,7 @@ public class TokenServiceTests
     {
         var config = CreateConfiguration();
         var service = new TokenService(config);
-        var signingKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("0123456789abcdef0123456789abcdef"));
+        var signingKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"));
         var token = new JwtSecurityToken(
             issuer: "budget-tracker-tests",
             audience: "budget-tracker-clients",

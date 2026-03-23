@@ -171,7 +171,7 @@ public class TransactionManager : ITransactionManager
 
     public async Task<bool> DeleteAsync(int id, CancellationToken ct)
     {
-        var entity = await _context.Transactions.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id, ct);
+        var entity = await _context.Transactions.FirstOrDefaultAsync(t => t.Id == id, ct);
         if (entity == null)
             throw new CustomException("Transaction not found", StatusCodes.Status404NotFound);
 
