@@ -10,6 +10,10 @@ public class AccountProfile : Profile
     {
         CreateMap<Account, AccountDto>();
 
-        CreateMap<CreateAccountDto, Account>();
+        CreateMap<CreateAccountDto, Account>()
+            .ForMember(d => d.Id, o => o.Ignore())
+            .ForMember(d => d.UserId, o => o.Ignore())
+            .ForMember(d => d.Currency, o => o.Ignore())
+            .ForMember(d => d.User, o => o.Ignore());
     }
 }

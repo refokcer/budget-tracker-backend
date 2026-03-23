@@ -5,12 +5,18 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "budget-tracker-backend", "budget-tracker-backend\budget-tracker-backend.csproj", "{71A9583B-106C-45BC-9108-D989FEB40D2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "budget-tracker-backend.Tests", "budget-tracker-backend.Tests\budget-tracker-backend.Tests.csproj", "{A6C26680-88BD-4B51-926F-CC5A37D4408A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A6C26680-88BD-4B51-926F-CC5A37D4408A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6C26680-88BD-4B51-926F-CC5A37D4408A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6C26680-88BD-4B51-926F-CC5A37D4408A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6C26680-88BD-4B51-926F-CC5A37D4408A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{71A9583B-106C-45BC-9108-D989FEB40D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{71A9583B-106C-45BC-9108-D989FEB40D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71A9583B-106C-45BC-9108-D989FEB40D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU

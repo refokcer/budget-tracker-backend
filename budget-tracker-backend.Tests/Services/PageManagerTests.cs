@@ -1,0 +1,125 @@
+using budget_tracker_backend.Tests.Common;
+
+namespace budget_tracker_backend.Tests.Services;
+
+[TestFixture]
+public class PageManagerTests
+{
+    private static PageManager CreateManager(ApplicationDbContext context)
+    {
+        var mapper = TestInfrastructure.CreateMapper();
+        var accountManager = new AccountManager(context, mapper);
+        var budgetPlanManager = new BudgetPlanManager(context, mapper);
+        var budgetPlanItemManager = new BudgetPlanItemManager(context, mapper);
+        var transactionManager = new TransactionManager(context, mapper, accountManager);
+
+        return new PageManager(context, mapper, accountManager, budgetPlanManager, budgetPlanItemManager, transactionManager);
+    }
+
+    [Test]
+    public async Task GetDashboardAsync_ReturnsBalanceTopCategoriesAndLargestTransaction()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var manager = CreateManager(context);
+
+        var result = await manager.GetDashboardAsync(CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.TotalBalance, Is.EqualTo(1700m));
+            Assert.That(result.TopExpenses.First().CategoryTitle, Is.EqualTo("Groceries"));
+            Assert.That(result.TopExpenses.First().Amount, Is.EqualTo(160m));
+            Assert.That(result.TopIncomes.First().Amount, Is.EqualTo(2500m));
+            Assert.That(result.BiggestTransaction!.Title, Is.EqualTo("Salary payment"));
+        });
+    }
+
+    [Test]
+    public async Task GetBudgetPlanPageAsync_WhenIncludingEvents_AddsEventSummariesAndTransactions()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var manager = CreateManager(context);
+
+        var result = await manager.GetBudgetPlanPageAsync(1, includeEvents: true, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Plan.Title, Is.EqualTo("March Plan"));
+            Assert.That(result.Items.Select(i => i.CategoryTitle), Does.Contain("Groceries"));
+            Assert.That(result.Items.Select(i => i.CategoryTitle), Does.Contain("Birthday Event"));
+            Assert.That(result.Items.First(i => i.CategoryTitle == "Groceries").Spent, Is.EqualTo(120m));
+            Assert.That(result.Events, Has.Count.EqualTo(1));
+            Assert.That(result.Events[0].Plan.Title, Is.EqualTo("Birthday Event"));
+            Assert.That(result.Events[0].Items.First().Remaining, Is.EqualTo(110m));
+        });
+    }
+
+    [Test]
+    public async Task GetEventPageAsync_WhenPlanIsNotEvent_ThrowsException()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var manager = CreateManager(context);
+
+        Assert.That(async () => await manager.GetEventPageAsync(1, CancellationToken.None),
+            Throws.TypeOf<Exception>().With.Message.EqualTo("Event 1 not found"));
+    }
+
+    [TestCase(0)]
+    [TestCase(13)]
+    public void MonthlyPageMethods_WhenMonthOutOfRange_ThrowException(int month)
+    {
+        using var context = TestInfrastructure.CreateContext();
+        var manager = CreateManager(context);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(async () => await manager.GetIncomesByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<Exception>());
+            Assert.That(async () => await manager.GetExpensesByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<Exception>());
+            Assert.That(async () => await manager.GetTransfersByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<Exception>());
+            Assert.That(async () => await manager.GetMonthlyReportAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<Exception>());
+        });
+    }
+
+    [Test]
+    public async Task GetIncomesExpensesTransfersByMonthAsync_ReturnOnlyTransactionsForRequestedMonthAndType()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var manager = CreateManager(context);
+
+        var incomes = await manager.GetIncomesByMonthAsync(TestInfrastructure.CurrentMonthStart.Month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None);
+        var expenses = await manager.GetExpensesByMonthAsync(TestInfrastructure.CurrentMonthStart.Month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None);
+        var transfers = await manager.GetTransfersByMonthAsync(TestInfrastructure.CurrentMonthStart.Month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(incomes.Transactions.Select(t => t.Title), Is.EquivalentTo(new[] { "Salary payment" }));
+            Assert.That(expenses.Transactions.Select(t => t.Title), Is.EquivalentTo(new[] { "Weekly groceries", "Event groceries" }));
+            Assert.That(transfers.Transactions.Select(t => t.Title), Is.EquivalentTo(new[] { "Move to savings" }));
+        });
+    }
+
+    [Test]
+    public async Task GetMonthlyReportAsync_AggregatesTotalsCategoriesAccountsAndTopExpense()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var manager = CreateManager(context);
+
+        var report = await manager.GetMonthlyReportAsync(TestInfrastructure.CurrentMonthStart.Month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(report.TotalExp, Is.EqualTo(160m));
+            Assert.That(report.TotalInc, Is.EqualTo(2500m));
+            Assert.That(report.Balance, Is.EqualTo(2340m));
+            Assert.That(report.DefaultCurrency, Is.EqualTo("USD"));
+            Assert.That(report.TopExpenseCategories.First().Percent, Is.EqualTo("100%"));
+            Assert.That(report.ExpensesByAccount.Single().Label, Is.EqualTo("Cash"));
+            Assert.That(report.TopExpenseTransaction!.Title, Is.EqualTo("Weekly groceries"));
+        });
+    }
+}
