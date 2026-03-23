@@ -10,8 +10,13 @@ public class CategoryProfile : Profile
     {
         CreateMap<Category, CategoryDto>();
 
-        CreateMap<CreateCategoryDto, Category>();
+        CreateMap<CreateCategoryDto, Category>()
+            .ForMember(d => d.Id, o => o.Ignore())
+            .ForMember(d => d.UserId, o => o.Ignore())
+            .ForMember(d => d.User, o => o.Ignore());
 
-        CreateMap<CategoryDto, Category>();
+        CreateMap<CategoryDto, Category>()
+            .ForMember(d => d.UserId, o => o.Ignore())
+            .ForMember(d => d.User, o => o.Ignore());
     }
 }

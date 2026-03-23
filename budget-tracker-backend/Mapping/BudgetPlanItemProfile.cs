@@ -10,8 +10,15 @@ public class BudgetPlanItemProfile : Profile
     {
         CreateMap<BudgetPlanItem, BudgetPlanItemDto>();
 
-        CreateMap<CreateBudgetPlanItemDto, BudgetPlanItem>();
+        CreateMap<CreateBudgetPlanItemDto, BudgetPlanItem>()
+            .ForMember(d => d.Id, o => o.Ignore())
+            .ForMember(d => d.BudgetPlan, o => o.Ignore())
+            .ForMember(d => d.Category, o => o.Ignore())
+            .ForMember(d => d.Currency, o => o.Ignore());
 
-        CreateMap<BudgetPlanItemDto, BudgetPlanItem>();
+        CreateMap<BudgetPlanItemDto, BudgetPlanItem>()
+            .ForMember(d => d.BudgetPlan, o => o.Ignore())
+            .ForMember(d => d.Category, o => o.Ignore())
+            .ForMember(d => d.Currency, o => o.Ignore());
     }
 }
