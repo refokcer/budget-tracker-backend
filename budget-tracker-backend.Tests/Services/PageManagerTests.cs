@@ -32,7 +32,37 @@ public class PageManagerTests
             Assert.That(result.TopExpenses.First().Amount, Is.EqualTo(160m));
             Assert.That(result.TopIncomes.First().Amount, Is.EqualTo(2500m));
             Assert.That(result.BiggestTransaction!.Title, Is.EqualTo("Salary payment"));
+            Assert.That(result.FinancialStability.Index, Is.InRange(0, 100));
+            Assert.That(result.FinancialStability.Level, Is.Not.Empty);
+            Assert.That(result.FinancialStability.Metrics.GoalAchievementIndex, Is.InRange(0m, 1m));
+            Assert.That(result.FinancialStability.Recommendations, Is.Not.Empty);
         });
+    }
+
+    [Test]
+    public async Task GetDashboardAsync_ReducesGoalAchievementIndexWhenCategoryBudgetIsOverspent()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        await context.Transactions.AddAsync(new Transaction
+        {
+            Title = "Extra groceries",
+            Amount = 480m,
+            CategoryId = 2,
+            CurrencyId = 1,
+            BudgetPlanId = 1,
+            Date = TestInfrastructure.CurrentMonthStart.AddDays(12),
+            Type = TransactionCategoryType.Expense,
+            AccountFrom = 1,
+            UserId = TestInfrastructure.UserId,
+            UnicCode = "extra-groceries"
+        });
+        await context.SaveChangesAsync(CancellationToken.None);
+        var manager = CreateManager(context);
+
+        var result = await manager.GetDashboardAsync(CancellationToken.None);
+
+        Assert.That(result.FinancialStability.Metrics.GoalAchievementIndex, Is.LessThan(1m));
     }
 
     [Test]

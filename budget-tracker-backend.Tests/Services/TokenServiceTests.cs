@@ -41,6 +41,22 @@ public class TokenServiceTests
     }
 
     [Test]
+    public void CreateAccessToken_HasOneDayLifetime()
+    {
+        var service = new TokenService(CreateConfiguration());
+        var createdAt = DateTime.UtcNow;
+
+        var token = service.CreateAccessToken(new ApplicationUser { Id = "user-1", UserName = "demo-user" }, []);
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(jwt.ValidTo, Is.GreaterThan(createdAt.AddHours(23).AddMinutes(59)));
+            Assert.That(jwt.ValidTo, Is.LessThanOrEqualTo(createdAt.AddDays(1).AddMinutes(1)));
+        });
+    }
+
+    [Test]
     public void CreateAccessToken_WhenKeyTooShort_ThrowsArgumentOutOfRangeException()
     {
         var service = new TokenService(CreateConfiguration("short-key"));
