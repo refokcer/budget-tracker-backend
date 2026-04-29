@@ -1,4 +1,5 @@
 using budget_tracker_backend.Tests.Common;
+using budget_tracker_backend.Models.Enums;
 
 namespace budget_tracker_backend.Tests.Services;
 
@@ -17,6 +18,7 @@ public class AccountManagerTests
             Title = "Brokerage",
             Amount = 1250m,
             CurrencyId = 1,
+            Type = AccountType.Investment,
             Description = "Investments"
         }, CancellationToken.None);
 
@@ -27,6 +29,31 @@ public class AccountManagerTests
             Assert.That(created.UserId, Is.EqualTo(TestInfrastructure.UserId));
             Assert.That(stored!.Title, Is.EqualTo("Brokerage"));
             Assert.That(stored.Amount, Is.EqualTo(1250m));
+            Assert.That(stored.Type, Is.EqualTo(AccountType.Investment));
+        });
+    }
+
+    [Test]
+    public async Task CreateAsync_WhenTypeIsNotSpecified_SetsOther()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var manager = new AccountManager(context, TestInfrastructure.CreateMapper());
+
+        var created = await manager.CreateAsync(new CreateAccountDto
+        {
+            Title = "Spare Account",
+            Amount = 50m,
+            CurrencyId = 1,
+            Description = "No explicit type"
+        }, CancellationToken.None);
+
+        var stored = await context.Accounts.FindAsync(created.Id);
+        Assert.Multiple(() =>
+        {
+            Assert.That(stored, Is.Not.Null);
+            Assert.That(created.Type, Is.EqualTo(AccountType.Other));
+            Assert.That(stored!.Type, Is.EqualTo(AccountType.Other));
         });
     }
 
@@ -43,6 +70,7 @@ public class AccountManagerTests
             Title = "Cash Wallet",
             Amount = 888m,
             CurrencyId = 2,
+            Type = AccountType.EWallet,
             Description = "Updated"
         }, CancellationToken.None);
 
@@ -51,6 +79,7 @@ public class AccountManagerTests
             Assert.That(updated.Title, Is.EqualTo("Cash Wallet"));
             Assert.That(updated.Amount, Is.EqualTo(888m));
             Assert.That(updated.CurrencyId, Is.EqualTo(2));
+            Assert.That(updated.Type, Is.EqualTo(AccountType.EWallet));
             Assert.That(updated.Description, Is.EqualTo("Updated"));
         });
     }

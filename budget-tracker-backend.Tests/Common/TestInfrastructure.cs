@@ -4,6 +4,7 @@ using System.Text;
 using AutoMapper;
 using budget_tracker_backend.Mapping;
 using budget_tracker_backend.Mapping.Pages;
+using budget_tracker_backend.Models.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace budget_tracker_backend.Tests.Common;
@@ -84,9 +85,9 @@ internal static class TestInfrastructure
             new Category { Id = 4, Title = "Bonus", Type = TransactionCategoryType.Income, UserId = UserId });
 
         await context.Accounts.AddRangeAsync(
-            new Account { Id = 1, Title = "Cash", Amount = 1000m, CurrencyId = 1, UserId = UserId },
-            new Account { Id = 2, Title = "Savings", Amount = 500m, CurrencyId = 1, UserId = UserId },
-            new Account { Id = 3, Title = "Travel", Amount = 200m, CurrencyId = 2, UserId = UserId });
+            new Account { Id = 1, Title = "Cash", Amount = 1000m, CurrencyId = 1, Type = AccountType.Cash, UserId = UserId },
+            new Account { Id = 2, Title = "Savings", Amount = 500m, CurrencyId = 1, Type = AccountType.Savings, UserId = UserId },
+            new Account { Id = 3, Title = "Travel", Amount = 200m, CurrencyId = 2, Type = AccountType.Investment, UserId = UserId });
 
         await context.BudgetPlans.AddRangeAsync(
             new BudgetPlan

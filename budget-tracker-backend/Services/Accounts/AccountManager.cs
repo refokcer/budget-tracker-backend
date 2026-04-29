@@ -58,6 +58,7 @@ public class AccountManager : IAccountManager
         existing.Title = dto.Title;
         existing.Amount = dto.Amount;
         existing.CurrencyId = dto.CurrencyId;
+        existing.Type = dto.Type;
         existing.Description = dto.Description;
 
         _dbContext.Accounts.Update(existing);

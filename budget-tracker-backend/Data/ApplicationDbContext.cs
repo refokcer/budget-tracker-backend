@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Models;
+using budget_tracker_backend.Models.Enums;
 using System.Security.Claims;
 using System.Linq;
 using System.Threading;
@@ -35,6 +36,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         modelBuilder.Entity<Account>(b =>
         {
             b.Property(a => a.Amount).HasColumnType("decimal(18,4)");
+            b.Property(a => a.Type)
+                .HasConversion<string>()
+                .HasMaxLength(32)
+                .HasDefaultValue(AccountType.Other);
             b.HasQueryFilter(a => a.UserId == CurrentUserId);
             b.HasIndex(a => a.UserId);
             b.HasOne(a => a.User)
