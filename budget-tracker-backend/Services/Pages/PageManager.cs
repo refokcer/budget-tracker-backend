@@ -177,7 +177,7 @@ public class PageManager : IPageManager
             .Sum(t => t.Amount);
 
         var savingsAccountIds = accounts
-            .Where(a => IsSavingsAccount(a.Title))
+            .Where(IsSavingsAccount)
             .Select(a => a.Id)
             .ToHashSet();
 
@@ -399,11 +399,11 @@ public class PageManager : IPageManager
         return "High";
     }
 
-    private static bool IsSavingsAccount(string title)
+    private static bool IsSavingsAccount(Account account)
     {
-        return title.Contains("saving", StringComparison.OrdinalIgnoreCase)
-            || title.Contains("reserve", StringComparison.OrdinalIgnoreCase)
-            || title.Contains("deposit", StringComparison.OrdinalIgnoreCase);
+        return account.Type is AccountType.Savings
+            or AccountType.Deposit
+            or AccountType.Investment;
     }
 
     private static decimal Clamp(decimal value)

@@ -66,6 +66,37 @@ public class PageManagerTests
     }
 
     [Test]
+    public async Task GetDashboardAsync_UsesAccountTypeToDetectSavingsAccounts()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+
+        var savingsAccount = await context.Accounts.FindAsync(2);
+        Assert.That(savingsAccount, Is.Not.Null);
+        savingsAccount!.Title = "Family Buffer";
+
+        await context.Transactions.AddAsync(new Transaction
+        {
+            Title = "Large monthly expense",
+            Amount = 2400m,
+            CategoryId = 2,
+            CurrencyId = 1,
+            Date = TestInfrastructure.CurrentMonthStart.AddDays(15),
+            Type = TransactionCategoryType.Expense,
+            AccountFrom = 1,
+            UserId = TestInfrastructure.UserId,
+            UnicCode = "large-monthly-expense"
+        });
+
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var manager = CreateManager(context);
+        var result = await manager.GetDashboardAsync(CancellationToken.None);
+
+        Assert.That(result.FinancialStability.Metrics.SavingsShare, Is.EqualTo(0.12m));
+    }
+
+    [Test]
     public async Task GetBudgetPlanPageAsync_WhenIncludingEvents_AddsEventSummariesAndTransactions()
     {
         await using var context = TestInfrastructure.CreateContext();
