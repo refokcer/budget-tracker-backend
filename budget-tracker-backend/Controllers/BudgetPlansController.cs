@@ -1,6 +1,7 @@
 ﻿using budget_tracker_backend.Controllers.Interfaces;
 using budget_tracker_backend.Dto.BudgetPlans;
 using budget_tracker_backend.MediatR.BudgetPlans.Commands.Create;
+using budget_tracker_backend.MediatR.BudgetPlans.Commands.CreateAutoMonthly;
 using budget_tracker_backend.MediatR.BudgetPlans.Commands.Delete;
 using budget_tracker_backend.MediatR.BudgetPlans.Commands.Update;
 using budget_tracker_backend.MediatR.BudgetPlans.Queries.GetAll;
@@ -52,6 +53,13 @@ public class BudgetPlansController : BaseApiController
     public async Task<IActionResult> PostBudgetPlan([FromBody] CreateBudgetPlanDto dto)
     {
         var result = await Mediator.Send(new CreateBudgetPlanCommand(dto));
+        return HandleResult(result);
+    }
+
+    [HttpPost("auto-monthly")]
+    public async Task<IActionResult> CreateAutoMonthlyPlan([FromBody] AutoBudgetPlanRequestDto dto)
+    {
+        var result = await Mediator.Send(new CreateAutoMonthlyBudgetPlanCommand(dto));
         return HandleResult(result);
     }
 

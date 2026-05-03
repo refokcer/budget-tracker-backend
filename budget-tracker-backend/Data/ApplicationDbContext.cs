@@ -24,6 +24,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Category> Categories { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<Account> Accounts { get; set; }
+    public DbSet<FinancialGoal> FinancialGoals { get; set; }
     public DbSet<BudgetPlan> BudgetPlans { get; set; }
     public DbSet<BudgetPlanItem> BudgetPlanItems { get; set; }
     public DbSet<Currency> Currencies { get; set; }
@@ -69,6 +70,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             b.HasOne(p => p.Parent)
                 .WithMany()
                 .HasForeignKey(p => p.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<FinancialGoal>(b =>
+        {
+            b.Property(g => g.TargetAmount).HasColumnType("decimal(18,4)");
+            b.Property(g => g.InitialAmount).HasColumnType("decimal(18,4)");
+            b.HasQueryFilter(g => g.UserId == CurrentUserId);
+            b.HasIndex(g => g.UserId);
+            b.HasIndex(g => g.TargetDate);
+            b.HasOne(g => g.User)
+                .WithMany()
+                .HasForeignKey(g => g.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(g => g.LinkedAccount)
+                .WithMany()
+                .HasForeignKey(g => g.LinkedAccountId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 

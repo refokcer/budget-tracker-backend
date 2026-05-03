@@ -10,10 +10,12 @@ public interface IApplicationDbContext
     DbSet<Category> Categories { get; }
     DbSet<Transaction> Transactions { get; }
     DbSet<Account> Accounts { get; }
+    DbSet<FinancialGoal> FinancialGoals { get; }
     DbSet<BudgetPlan> BudgetPlans { get; }
     DbSet<BudgetPlanItem> BudgetPlanItems { get; }
     DbSet<Currency> Currencies { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<ApplicationUser> Users { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

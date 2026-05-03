@@ -7,6 +7,7 @@ using budget_tracker_backend.Models;
 using budget_tracker_backend.Services.Accounts;
 using budget_tracker_backend.Services.BudgetPlans;
 using budget_tracker_backend.Services.BudgetPlanItems;
+using budget_tracker_backend.Services.FinancialGoals;
 using budget_tracker_backend.Services.Transactions;
 using budget_tracker_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ public class PageManager : IPageManager
     private readonly IBudgetPlanManager _budgetPlanManager;
     private readonly IBudgetPlanItemManager _budgetPlanItemManager;
     private readonly ITransactionManager _transactionManager;
+    private readonly IFinancialGoalManager _financialGoalManager;
 
     public PageManager(
         IApplicationDbContext ctx,
@@ -26,7 +28,8 @@ public class PageManager : IPageManager
         IAccountManager accountManager,
         IBudgetPlanManager budgetPlanManager,
         IBudgetPlanItemManager budgetPlanItemManager,
-        ITransactionManager transactionManager)
+        ITransactionManager transactionManager,
+        IFinancialGoalManager financialGoalManager)
     {
         _ctx = ctx;
         _mapper = mapper;
@@ -34,6 +37,7 @@ public class PageManager : IPageManager
         _budgetPlanManager = budgetPlanManager;
         _budgetPlanItemManager = budgetPlanItemManager;
         _transactionManager = transactionManager;
+        _financialGoalManager = financialGoalManager;
     }
 
     public async Task<DashboardDto> GetDashboardAsync(CancellationToken ct)
@@ -98,6 +102,7 @@ public class PageManager : IPageManager
         }
 
         var financialStability = await CalculateFinancialStabilityAsync(accounts, totalBalance, start, ct);
+        var financialGoals = await GetDashboardFinancialGoalsAsync(ct);
 
         return new DashboardDto
         {
@@ -106,8 +111,40 @@ public class PageManager : IPageManager
             TopExpenses = expDtos,
             TopIncomes = incDtos,
             BiggestTransaction = bigDto,
-            FinancialStability = financialStability
+            FinancialStability = financialStability,
+            FinancialGoals = financialGoals
         };
+    }
+
+    private async Task<List<DashboardFinancialGoalDto>> GetDashboardFinancialGoalsAsync(CancellationToken ct)
+    {
+        var goals = await _ctx.FinancialGoals
+            .AsNoTracking()
+            .OrderBy(g => g.TargetDate)
+            .Take(5)
+            .ToListAsync(ct);
+
+        var dashboardGoals = new List<DashboardFinancialGoalDto>(goals.Count);
+        foreach (var goal in goals)
+        {
+            var forecast = await _financialGoalManager.GetForecastAsync(goal.Id, ct);
+            dashboardGoals.Add(new DashboardFinancialGoalDto
+            {
+                Id = goal.Id,
+                Title = goal.Title,
+                TargetAmount = forecast.TargetAmount,
+                CurrentSavedAmount = forecast.CurrentSavedAmount,
+                RemainingAmount = forecast.RemainingAmount,
+                ProgressRatio = forecast.ProgressRatio,
+                RequiredMonthlyContribution = forecast.RequiredMonthlyContribution,
+                IsAchievable = forecast.IsAchievable,
+                IsOffTrack = forecast.IsOffTrack,
+                RiskLevel = forecast.RiskLevel,
+                TargetDate = goal.TargetDate
+            });
+        }
+
+        return dashboardGoals;
     }
 
     private async Task<FinancialStabilityDto> CalculateFinancialStabilityAsync(

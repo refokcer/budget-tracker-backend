@@ -24,6 +24,7 @@ internal static class TestInfrastructure
             cfg.AddProfile<BudgetPlanProfile>();
             cfg.AddProfile<CategoryProfile>();
             cfg.AddProfile<CurrencyProfile>();
+            cfg.AddProfile<FinancialGoalProfile>();
             cfg.AddProfile<TransactionProfile>();
             cfg.AddProfile<BudgetPlanPageProfile>();
             cfg.AddProfile<DashboardProfile>();
@@ -69,8 +70,21 @@ internal static class TestInfrastructure
 
     public static async Task SeedReferenceDataAsync(ApplicationDbContext context)
     {
+        if (!await context.Users.AnyAsync(u => u.Id == UserId))
+        {
+            await context.Users.AddAsync(new ApplicationUser
+            {
+                Id = UserId,
+                UserName = "unit@test.local",
+                NormalizedUserName = "UNIT@TEST.LOCAL",
+                Email = "unit@test.local",
+                NormalizedEmail = "UNIT@TEST.LOCAL"
+            });
+        }
+
         if (await context.Currencies.AnyAsync())
         {
+            await context.SaveChangesAsync(CancellationToken.None);
             return;
         }
 

@@ -9,6 +9,8 @@ using budget_tracker_backend.Services.Pages;
 using budget_tracker_backend.Services.Transactions;
 using budget_tracker_backend.Services.Auth;
 using budget_tracker_backend.Services.ChatGpt;
+using budget_tracker_backend.Services.FinancialGoals;
+using budget_tracker_backend.Services.UserSettings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -33,6 +35,8 @@ builder.Services.AddScoped<ICurrencyManager, CurrencyManager>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddScoped<IPageManager, PageManager>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IFinancialGoalManager, FinancialGoalManager>();
+builder.Services.AddScoped<IUserSettingsManager, UserSettingsManager>();
 builder.Services.AddHttpClient<IChatGptService, ChatGptService>();
 // Ïîäêëþ÷àåì EF Core è MS SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

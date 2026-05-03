@@ -12,8 +12,16 @@ public class PageManagerTests
         var budgetPlanManager = new BudgetPlanManager(context, mapper);
         var budgetPlanItemManager = new BudgetPlanItemManager(context, mapper);
         var transactionManager = new TransactionManager(context, mapper, accountManager);
+        var financialGoalManager = new FinancialGoalManager(context, mapper);
 
-        return new PageManager(context, mapper, accountManager, budgetPlanManager, budgetPlanItemManager, transactionManager);
+        return new PageManager(
+            context,
+            mapper,
+            accountManager,
+            budgetPlanManager,
+            budgetPlanItemManager,
+            transactionManager,
+            financialGoalManager);
     }
 
     [Test]
@@ -94,6 +102,37 @@ public class PageManagerTests
         var result = await manager.GetDashboardAsync(CancellationToken.None);
 
         Assert.That(result.FinancialStability.Metrics.SavingsShare, Is.EqualTo(0.12m));
+    }
+
+    [Test]
+    public async Task GetDashboardAsync_IncludesFinancialGoalsSummary()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+
+        await context.FinancialGoals.AddAsync(new FinancialGoal
+        {
+            Title = "Vacation",
+            TargetAmount = 1000m,
+            InitialAmount = 100m,
+            TargetDate = DateTime.UtcNow.AddMonths(4),
+            CreatedAt = DateTime.UtcNow.AddMonths(-1),
+            LinkedAccountId = 2,
+            Description = "Summer vacation",
+            UserId = TestInfrastructure.UserId
+        });
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var manager = CreateManager(context);
+        var result = await manager.GetDashboardAsync(CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.FinancialGoals, Has.Count.EqualTo(1));
+            Assert.That(result.FinancialGoals[0].Title, Is.EqualTo("Vacation"));
+            Assert.That(result.FinancialGoals[0].CurrentSavedAmount, Is.GreaterThan(0m));
+            Assert.That(result.FinancialGoals[0].RiskLevel, Is.Not.Empty);
+        });
     }
 
     [Test]

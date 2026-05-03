@@ -8,6 +8,7 @@ public class DashboardDto
     public List<DashboardCategoryDto> TopIncomes { get; set; } = new();
     public DashboardTransactionDto? BiggestTransaction { get; set; }
     public FinancialStabilityDto FinancialStability { get; set; } = new();
+    public List<DashboardFinancialGoalDto> FinancialGoals { get; set; } = new();
 }
 
 public class DashboardAccountDto
@@ -51,4 +52,19 @@ public class FinancialStabilityMetricsDto
     public decimal GoalAchievementIndex { get; set; }
     public decimal AverageMonthlyIncome { get; set; }
     public decimal AverageMonthlyExpenses { get; set; }
+}
+
+public class DashboardFinancialGoalDto
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = null!;
+    public decimal TargetAmount { get; set; }
+    public decimal CurrentSavedAmount { get; set; }
+    public decimal RemainingAmount { get; set; }
+    public decimal ProgressRatio { get; set; }
+    public decimal RequiredMonthlyContribution { get; set; }
+    public bool IsAchievable { get; set; }
+    public bool IsOffTrack { get; set; }
+    public string RiskLevel { get; set; } = null!;
+    public DateTime TargetDate { get; set; }
 }
