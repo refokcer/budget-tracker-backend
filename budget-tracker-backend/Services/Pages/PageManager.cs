@@ -456,7 +456,11 @@ public class PageManager : IPageManager
 
         var items = await _budgetPlanItemManager.GetByPlanIdAsync(planId, ct);
 
-        var categoryIds = items.Select(i => i.CategoryId).ToList();
+        var otherItems = items.Where(IsOtherBudgetItem).ToList();
+        var plannedCategoryIds = items
+            .Where(i => !IsOtherBudgetItem(i))
+            .Select(i => i.CategoryId)
+            .ToHashSet();
         var transactions = await _ctx.Transactions
             .Include(t => t.Currency)
             .Include(t => t.Category)
@@ -467,12 +471,16 @@ public class PageManager : IPageManager
             .AsNoTracking()
             .ToListAsync(ct);
         var txSums = transactions
-            .Where(t => t.CategoryId != null && categoryIds.Contains(t.CategoryId.Value) &&
+            .Where(t => t.CategoryId != null && plannedCategoryIds.Contains(t.CategoryId.Value) &&
                         t.Type == TransactionCategoryType.Expense)
             .GroupBy(t => t.CategoryId!.Value)
             .Select(g => new { CatId = g.Key, Sum = g.Sum(x => x.Amount) })
             .ToList();
         var spentByCat = txSums.ToDictionary(x => x.CatId, x => x.Sum);
+        var otherSpent = transactions
+            .Where(t => t.Type == TransactionCategoryType.Expense)
+            .Where(t => t.CategoryId == null || !plannedCategoryIds.Contains(t.CategoryId.Value))
+            .Sum(t => t.Amount);
 
         var dto = new BudgetPlanPageDto
         {
@@ -484,10 +492,34 @@ public class PageManager : IPageManager
         foreach (var item in items)
         {
             var itemDto = _mapper.Map<BudgetPlanPageItemDto>(item);
-            var spent = spentByCat.TryGetValue(item.CategoryId, out var s) ? s : 0m;
+            var isOther = IsOtherBudgetItem(item);
+            var spent = isOther
+                ? otherSpent
+                : spentByCat.TryGetValue(item.CategoryId, out var s) ? s : 0m;
             itemDto.Spent = spent;
             itemDto.Remaining = item.Amount - spent;
+            itemDto.IsOther = isOther;
             dto.Items.Add(itemDto);
+        }
+
+        if (otherItems.Count == 0)
+        {
+            var baseCurrency = await _ctx.Currencies.AsNoTracking().FirstOrDefaultAsync(c => c.IsBase, ct);
+            dto.Items.Add(new BudgetPlanPageItemDto
+            {
+                Id = -plan.Id,
+                BudgetPlanId = plan.Id,
+                CategoryId = 0,
+                CategoryTitle = "Other",
+                Amount = 0m,
+                CurrencyId = baseCurrency?.Id ?? 0,
+                CurrencySymbol = baseCurrency?.Symbol.ToString() ?? string.Empty,
+                Spent = otherSpent,
+                Remaining = -otherSpent,
+                Description = otherSpent > 0m ? "Expenses from categories not included in this plan" : null,
+                IsOther = true,
+                IsVirtual = true
+            });
         }
 
         if (includeEvents)
@@ -513,7 +545,8 @@ public class PageManager : IPageManager
                     CurrencySymbol = baseCurrencySymbol,
                     Spent = evSpent,
                     Remaining = evAmount - evSpent,
-                    Description = ev.Description
+                    Description = ev.Description,
+                    IsEventSummary = true
                 });
 
                 dto.Events.Add(new BudgetPlanEventDto
@@ -526,6 +559,20 @@ public class PageManager : IPageManager
             }
         }
         return dto;
+    }
+
+    private static bool IsOtherBudgetItem(BudgetPlanItem item)
+    {
+        return IsOtherBudgetCategoryTitle(item.Category?.Title);
+    }
+
+    private static bool IsOtherBudgetCategoryTitle(string? title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+            return false;
+
+        var normalized = title.Trim().ToLowerInvariant();
+        return normalized is "other" or "others" or "другие" or "другое" or "інше" or "інші";
     }
 
     public async Task<BudgetPlanPageDto> GetEventPageAsync(int eventId, CancellationToken ct)

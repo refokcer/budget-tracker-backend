@@ -4,4 +4,6 @@ using MediatR;
 
 namespace budget_tracker_backend.MediatR.FinancialGoals.Commands.ApplyBudgetAdjustments;
 
-public record ApplyBudgetAdjustmentsCommand(int GoalId) : IRequest<Result<ApplyBudgetAdjustmentsResultDto>>;
+public record ApplyBudgetAdjustmentsCommand(
+    int GoalId,
+    ApplyBudgetAdjustmentsRequestDto? Dto) : IRequest<Result<ApplyBudgetAdjustmentsResultDto>>;

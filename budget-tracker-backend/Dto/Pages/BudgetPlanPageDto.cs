@@ -13,12 +13,18 @@ public class BudgetPlanPageDto
 public class BudgetPlanPageItemDto
 {
     public int Id { get; set; }
+    public int BudgetPlanId { get; set; }
+    public int CategoryId { get; set; }
     public string CategoryTitle { get; set; } = null!;
     public decimal Amount { get; set; }
+    public int CurrencyId { get; set; }
     public string CurrencySymbol { get; set; } = null!;
     public decimal Spent { get; set; }
     public decimal Remaining { get; set; }
     public string? Description { get; set; }
+    public bool IsOther { get; set; }
+    public bool IsVirtual { get; set; }
+    public bool IsEventSummary { get; set; }
 }
 
 public class BudgetPlanEventDto

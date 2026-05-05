@@ -13,7 +13,9 @@ public class FinancialGoalManager : IFinancialGoalManager
 {
     private const int ForecastWindowMonths = 6;
     private const int AdjustmentWindowMonths = 3;
-    private const decimal MaxCategoryReductionShare = 0.35m;
+    private const decimal MaxSpendingReductionShare = 0.35m;
+    private const decimal MaxBudgetLimitReductionShare = 0.30m;
+    private const string AppliedAdjustmentClaimPrefix = "budget-adjustment-applied";
 
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -102,12 +104,16 @@ public class FinancialGoalManager : IFinancialGoalManager
         return await BuildForecastAsync(goal, cancellationToken);
     }
 
-    public async Task<ApplyBudgetAdjustmentsResultDto> ApplyBudgetAdjustmentsAsync(int id, CancellationToken cancellationToken)
+    public async Task<ApplyBudgetAdjustmentsResultDto> ApplyBudgetAdjustmentsAsync(
+        int id,
+        ApplyBudgetAdjustmentsRequestDto? dto,
+        CancellationToken cancellationToken)
     {
         var goal = await GetRequiredGoalAsync(id, cancellationToken);
         var forecast = await BuildForecastAsync(goal, cancellationToken);
+        var hasCustomAdjustments = dto?.Adjustments != null;
 
-        if (forecast.SuggestedBudgetAdjustments.Count == 0)
+        if (!hasCustomAdjustments && forecast.SuggestedBudgetAdjustments.Count == 0)
         {
             return new ApplyBudgetAdjustmentsResultDto
             {
@@ -122,34 +128,55 @@ public class FinancialGoalManager : IFinancialGoalManager
         var currentMonthStart = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var currentMonthEnd = currentMonthStart.AddMonths(1);
 
-        var activePlan = await _context.BudgetPlans
-            .Include(p => p.Items)
-            .FirstOrDefaultAsync(p => p.Type == BudgetPlanType.Monthly
-                && p.StartDate < currentMonthEnd
-                && p.EndDate >= currentMonthStart, cancellationToken);
+        var activePlan = await GetActiveMonthlyPlanAsync(currentMonthStart, currentMonthEnd, cancellationToken);
         if (activePlan == null)
             throw new CustomException("No active monthly budget plan found for adaptive adjustments", StatusCodes.Status400BadRequest);
 
-        var baseCurrencyId = await ResolveBaseCurrencyIdAsync(cancellationToken);
-        foreach (var suggestion in forecast.SuggestedBudgetAdjustments)
+        var adjustmentsToApply = hasCustomAdjustments
+            ? ResolveRequestedBudgetAdjustments(forecast.SuggestedBudgetAdjustments, dto!.Adjustments!)
+            : forecast.SuggestedBudgetAdjustments;
+
+        if (adjustmentsToApply.Count == 0)
+        {
+            return new ApplyBudgetAdjustmentsResultDto
+            {
+                GoalId = id,
+                BudgetPlanId = activePlan.Id,
+                AppliedAdjustmentsCount = 0,
+                Forecast = forecast
+            };
+        }
+
+        var appliedSuggestions = new List<BudgetAdjustmentSuggestionDto>();
+        foreach (var suggestion in adjustmentsToApply)
         {
             var existingItem = activePlan.Items?.FirstOrDefault(i => i.CategoryId == suggestion.CategoryId);
-            if (existingItem != null)
-            {
-                existingItem.Amount = suggestion.RecommendedBudgetLimit;
+            if (existingItem == null)
                 continue;
-            }
 
-            var item = new BudgetPlanItem
+            if (await HasAppliedAdjustmentAsync(activePlan.UserId, activePlan.Id, suggestion.CategoryId, cancellationToken))
+                continue;
+
+            existingItem.Amount = suggestion.RecommendedBudgetLimit;
+            await _context.UserClaims.AddAsync(new Microsoft.AspNetCore.Identity.IdentityUserClaim<string>
             {
-                BudgetPlanId = activePlan.Id,
-                CategoryId = suggestion.CategoryId,
-                Amount = suggestion.RecommendedBudgetLimit,
-                CurrencyId = baseCurrencyId,
-                Description = $"Adaptive limit for financial goal \"{goal.Title}\""
-            };
+                UserId = activePlan.UserId,
+                ClaimType = GetAppliedAdjustmentClaimType(activePlan.Id, suggestion.CategoryId),
+                ClaimValue = $"{goal.Id}|{suggestion.SuggestedReduction:0.##}|{DateTime.UtcNow:O}"
+            }, cancellationToken);
 
-            await _context.BudgetPlanItems.AddAsync(item, cancellationToken);
+            appliedSuggestions.Add(suggestion);
+        }
+
+        if (appliedSuggestions.Count == 0)
+        {
+            return new ApplyBudgetAdjustmentsResultDto
+            {
+                GoalId = id,
+                BudgetPlanId = activePlan.Id,
+                AppliedAdjustmentsCount = 0,
+                Forecast = forecast
+            };
         }
 
         var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
@@ -160,10 +187,54 @@ public class FinancialGoalManager : IFinancialGoalManager
         {
             GoalId = id,
             BudgetPlanId = activePlan.Id,
-            AppliedAdjustmentsCount = forecast.SuggestedBudgetAdjustments.Count,
-            AppliedAdjustments = forecast.SuggestedBudgetAdjustments,
+            AppliedAdjustmentsCount = appliedSuggestions.Count,
+            AppliedAdjustments = appliedSuggestions,
             Forecast = forecast
         };
+    }
+
+    private static List<BudgetAdjustmentSuggestionDto> ResolveRequestedBudgetAdjustments(
+        List<BudgetAdjustmentSuggestionDto> allowedSuggestions,
+        List<BudgetAdjustmentSuggestionDto> requestedSuggestions)
+    {
+        if (requestedSuggestions.Count == 0)
+            return new List<BudgetAdjustmentSuggestionDto>();
+
+        var allowedByCategory = allowedSuggestions.ToDictionary(s => s.CategoryId);
+        var requestedCategoryIds = new HashSet<int>();
+        var resolved = new List<BudgetAdjustmentSuggestionDto>();
+
+        foreach (var requested in requestedSuggestions)
+        {
+            if (!requestedCategoryIds.Add(requested.CategoryId))
+                throw new CustomException("Duplicate budget adjustment category", StatusCodes.Status400BadRequest);
+
+            if (!allowedByCategory.TryGetValue(requested.CategoryId, out var allowed))
+                throw new CustomException("Budget adjustment is no longer available", StatusCodes.Status400BadRequest);
+
+            var requestedLimit = Math.Round(requested.RecommendedBudgetLimit, 2);
+            var minimumAllowedLimit = Math.Round(allowed.RecommendedBudgetLimit, 2);
+            var currentLimit = Math.Round(allowed.CurrentBudgetLimit, 2);
+
+            if (requestedLimit < minimumAllowedLimit || requestedLimit > currentLimit)
+                throw new CustomException("Budget adjustment is outside allowed limits", StatusCodes.Status400BadRequest);
+
+            var requestedReduction = Math.Round(currentLimit - requestedLimit, 2);
+            if (requestedReduction <= 0m)
+                continue;
+
+            resolved.Add(new BudgetAdjustmentSuggestionDto
+            {
+                CategoryId = allowed.CategoryId,
+                CategoryTitle = allowed.CategoryTitle,
+                AverageMonthlySpending = allowed.AverageMonthlySpending,
+                CurrentBudgetLimit = currentLimit,
+                RecommendedBudgetLimit = requestedLimit,
+                SuggestedReduction = requestedReduction
+            });
+        }
+
+        return resolved;
     }
 
     private async Task<FinancialGoal> GetRequiredGoalAsync(int id, CancellationToken cancellationToken)
@@ -247,6 +318,7 @@ public class FinancialGoalManager : IFinancialGoalManager
         var isOffTrack = currentSavedAmount + 0.01m < expectedSavedAmountByNow;
 
         var suggestions = await BuildBudgetAdjustmentSuggestionsAsync(
+            goal,
             contributionGap,
             currentMonthStart,
             currentMonthEnd,
@@ -282,6 +354,7 @@ public class FinancialGoalManager : IFinancialGoalManager
     }
 
     private async Task<List<BudgetAdjustmentSuggestionDto>> BuildBudgetAdjustmentSuggestionsAsync(
+        FinancialGoal goal,
         decimal contributionGap,
         DateTime currentMonthStart,
         DateTime currentMonthEnd,
@@ -292,34 +365,60 @@ public class FinancialGoalManager : IFinancialGoalManager
         if (contributionGap <= 0m)
             return new List<BudgetAdjustmentSuggestionDto>();
 
-        var activePlan = await _context.BudgetPlans
-            .Include(p => p.Items)
-            .FirstOrDefaultAsync(p => p.Type == BudgetPlanType.Monthly
-                && p.StartDate < currentMonthEnd
-                && p.EndDate >= currentMonthStart, cancellationToken);
+        var activePlan = await GetActiveMonthlyPlanAsync(currentMonthStart, currentMonthEnd, cancellationToken);
+        if (activePlan?.Items == null)
+            return new List<BudgetAdjustmentSuggestionDto>();
 
-        var mandatoryCategoryIds = activePlan?.Items?
-            .Select(i => i.CategoryId)
-            .ToHashSet() ?? new HashSet<int>();
+        var alreadyAdjustedCategoryIds = await GetAppliedAdjustmentCategoryIdsAsync(
+            activePlan.UserId,
+            activePlan.Id,
+            cancellationToken);
 
-        var candidateCategories = transactions
+        var expenseStatsByCategory = transactions
             .Where(t => t.Type == TransactionCategoryType.Expense
                 && t.Date >= adjustmentWindowStart
                 && t.Date < currentMonthEnd
-                && t.CategoryId != null
-                && !mandatoryCategoryIds.Contains(t.CategoryId.Value))
-            .GroupBy(t => new { CategoryId = t.CategoryId!.Value, CategoryTitle = t.Category!.Title })
-            .Select(g => new
+                && t.CategoryId != null)
+            .GroupBy(t => t.CategoryId!.Value)
+            .ToDictionary(
+                g => g.Key,
+                g => new
+                {
+                    AverageMonthlySpending = g.Sum(t => t.Amount) / AdjustmentWindowMonths,
+                    CurrentMonthSpending = g.Where(t => t.Date >= currentMonthStart && t.Date < currentMonthEnd).Sum(t => t.Amount)
+                });
+
+        var candidateCategories = activePlan.Items
+            .Where(i => i.Category != null)
+            .Where(i => !alreadyAdjustedCategoryIds.Contains(i.CategoryId))
+            .Where(i => !IsProtectedBudgetCategory(i.Category!.Title))
+            .Select(i =>
             {
-                g.Key.CategoryId,
-                g.Key.CategoryTitle,
-                AverageMonthlySpending = g.Sum(t => t.Amount) / AdjustmentWindowMonths,
-                CurrentMonthSpending = g.Where(t => t.Date >= currentMonthStart && t.Date < currentMonthEnd).Sum(t => t.Amount),
-                CurrentBudgetLimit = activePlan?.Items?.FirstOrDefault(i => i.CategoryId == g.Key.CategoryId)?.Amount
-                    ?? g.Sum(t => t.Amount) / AdjustmentWindowMonths
+                expenseStatsByCategory.TryGetValue(i.CategoryId, out var stats);
+                var averageMonthlySpending = stats?.AverageMonthlySpending ?? 0m;
+                var currentMonthSpending = stats?.CurrentMonthSpending ?? 0m;
+                var currentBudgetLimit = Math.Round(i.Amount, 2);
+                var spendingBaseline = averageMonthlySpending > 0m
+                    ? averageMonthlySpending
+                    : currentBudgetLimit;
+                var maxReducible = Math.Min(
+                    Math.Round(spendingBaseline * MaxSpendingReductionShare, 2),
+                    Math.Round(currentBudgetLimit * MaxBudgetLimitReductionShare, 2));
+                maxReducible = Math.Min(maxReducible, Math.Max(0m, currentBudgetLimit - currentMonthSpending));
+
+                return new
+                {
+                    i.CategoryId,
+                    CategoryTitle = i.Category!.Title,
+                    AverageMonthlySpending = averageMonthlySpending,
+                    CurrentMonthSpending = currentMonthSpending,
+                    CurrentBudgetLimit = currentBudgetLimit,
+                    MaxReducible = maxReducible
+                };
             })
-            .Where(x => x.AverageMonthlySpending > 0m)
-            .OrderByDescending(x => x.CurrentMonthSpending)
+            .Where(x => x.CurrentBudgetLimit > 0m && x.MaxReducible > 0m)
+            .OrderByDescending(x => x.MaxReducible)
+            .ThenByDescending(x => x.CurrentMonthSpending)
             .ThenByDescending(x => x.AverageMonthlySpending)
             .ToList();
 
@@ -331,20 +430,20 @@ public class FinancialGoalManager : IFinancialGoalManager
             if (remainingGap <= 0m)
                 break;
 
-            var maxReducible = Math.Round(category.AverageMonthlySpending * MaxCategoryReductionShare, 2);
-            var suggestedReduction = Math.Min(maxReducible, remainingGap);
+            var suggestedReduction = Math.Min(category.MaxReducible, remainingGap);
             if (suggestedReduction <= 0m)
                 continue;
 
-            var currentBudgetLimit = Math.Round(category.CurrentBudgetLimit, 2);
-            var recommendedBudgetLimit = Math.Max(0m, currentBudgetLimit - suggestedReduction);
+            var recommendedBudgetLimit = Math.Max(
+                category.CurrentMonthSpending,
+                category.CurrentBudgetLimit - suggestedReduction);
 
             suggestions.Add(new BudgetAdjustmentSuggestionDto
             {
                 CategoryId = category.CategoryId,
                 CategoryTitle = category.CategoryTitle,
                 AverageMonthlySpending = Math.Round(category.AverageMonthlySpending, 2),
-                CurrentBudgetLimit = currentBudgetLimit,
+                CurrentBudgetLimit = category.CurrentBudgetLimit,
                 RecommendedBudgetLimit = Math.Round(recommendedBudgetLimit, 2),
                 SuggestedReduction = Math.Round(suggestedReduction, 2)
             });
@@ -355,21 +454,77 @@ public class FinancialGoalManager : IFinancialGoalManager
         return suggestions;
     }
 
-    private async Task<int> ResolveBaseCurrencyIdAsync(CancellationToken cancellationToken)
+    private Task<BudgetPlan?> GetActiveMonthlyPlanAsync(
+        DateTime currentMonthStart,
+        DateTime currentMonthEnd,
+        CancellationToken cancellationToken)
     {
-        var currencyId = await _context.Currencies
-            .Where(c => c.IsBase)
-            .Select(c => (int?)c.Id)
+        return _context.BudgetPlans
+            .Include(p => p.Items)!
+                .ThenInclude(i => i.Category)
+            .Where(p => p.Type == BudgetPlanType.Monthly
+                && p.StartDate < currentMonthEnd
+                && p.EndDate >= currentMonthStart)
+            .OrderByDescending(p => p.StartDate)
+            .ThenByDescending(p => p.Id)
             .FirstOrDefaultAsync(cancellationToken);
+    }
 
-        if (currencyId.HasValue)
-            return currencyId.Value;
+    private async Task<HashSet<int>> GetAppliedAdjustmentCategoryIdsAsync(
+        string userId,
+        int budgetPlanId,
+        CancellationToken cancellationToken)
+    {
+        var prefix = GetAppliedAdjustmentClaimTypePrefix(budgetPlanId);
+        var claimTypes = await _context.UserClaims
+            .AsNoTracking()
+            .Where(c => c.UserId == userId && c.ClaimType != null && c.ClaimType.StartsWith(prefix))
+            .Select(c => c.ClaimType!)
+            .ToListAsync(cancellationToken);
 
-        currencyId = await _context.Currencies
-            .Select(c => (int?)c.Id)
-            .FirstOrDefaultAsync(cancellationToken);
+        return claimTypes
+            .Select(type => int.TryParse(type[prefix.Length..], out var categoryId) ? categoryId : (int?)null)
+            .Where(categoryId => categoryId.HasValue)
+            .Select(categoryId => categoryId!.Value)
+            .ToHashSet();
+    }
 
-        return currencyId ?? throw new CustomException("No currencies available to create adaptive budget limit", StatusCodes.Status400BadRequest);
+    private async Task<bool> HasAppliedAdjustmentAsync(
+        string userId,
+        int budgetPlanId,
+        int categoryId,
+        CancellationToken cancellationToken)
+    {
+        var claimType = GetAppliedAdjustmentClaimType(budgetPlanId, categoryId);
+        return await _context.UserClaims
+            .AsNoTracking()
+            .AnyAsync(c => c.UserId == userId && c.ClaimType == claimType, cancellationToken);
+    }
+
+    private static string GetAppliedAdjustmentClaimType(int budgetPlanId, int categoryId)
+    {
+        return $"{GetAppliedAdjustmentClaimTypePrefix(budgetPlanId)}{categoryId}";
+    }
+
+    private static string GetAppliedAdjustmentClaimTypePrefix(int budgetPlanId)
+    {
+        return $"{AppliedAdjustmentClaimPrefix}:{budgetPlanId}:";
+    }
+
+    private static bool IsProtectedBudgetCategory(string title)
+    {
+        var normalized = title.Trim().ToLowerInvariant();
+        var protectedKeywords = new[]
+        {
+            "rent", "mortgage", "loan", "debt", "insurance", "tax",
+            "utility", "utilities", "heating", "electric", "water", "gas",
+            "communal", "medical", "health", "medicine", "tuition",
+            "оренда", "аренда", "ипотека", "іпотека", "кредит", "долг", "борг",
+            "страхов", "налог", "подат", "коммун", "комун", "отоп", "елект",
+            "элект", "вода", "газ", "медиц", "ліки", "лекар", "навчан"
+        };
+
+        return protectedKeywords.Any(normalized.Contains);
     }
 
     private async Task ValidateLinkedAccountAsync(int? linkedAccountId, CancellationToken cancellationToken)

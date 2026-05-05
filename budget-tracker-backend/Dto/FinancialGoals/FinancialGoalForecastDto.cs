@@ -32,6 +32,11 @@ public class BudgetAdjustmentSuggestionDto
     public decimal SuggestedReduction { get; set; }
 }
 
+public class ApplyBudgetAdjustmentsRequestDto
+{
+    public List<BudgetAdjustmentSuggestionDto>? Adjustments { get; set; }
+}
+
 public class ApplyBudgetAdjustmentsResultDto
 {
     public int GoalId { get; set; }

@@ -14,6 +14,9 @@ public class BudgetPlanPageProfile : Profile
             .ForMember(d => d.CurrencySymbol,
                 m => m.MapFrom(s => s.Currency.Symbol))
             .ForMember(d => d.Spent, m => m.Ignore())
-            .ForMember(d => d.Remaining, m => m.Ignore());
+            .ForMember(d => d.Remaining, m => m.Ignore())
+            .ForMember(d => d.IsOther, m => m.Ignore())
+            .ForMember(d => d.IsVirtual, m => m.Ignore())
+            .ForMember(d => d.IsEventSummary, m => m.Ignore());
     }
 }

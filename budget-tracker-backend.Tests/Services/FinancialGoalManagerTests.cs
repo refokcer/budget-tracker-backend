@@ -87,6 +87,8 @@ public class FinancialGoalManagerTests
             Assert.That(forecast.SuggestedBudgetAdjustments, Is.Not.Empty);
             Assert.That(forecast.SuggestedBudgetAdjustments.Select(x => x.CategoryTitle),
                 Does.Contain("Entertainment").And.Contain("Dining Out"));
+            Assert.That(forecast.SuggestedBudgetAdjustments.All(x => x.SuggestedReduction <= Math.Round(x.CurrentBudgetLimit * 0.30m, 2)), Is.True);
+            Assert.That(forecast.SuggestedBudgetAdjustments.All(x => x.RecommendedBudgetLimit >= 0m), Is.True);
             Assert.That(forecast.Warnings, Is.Not.Empty);
         });
     }
@@ -113,17 +115,162 @@ public class FinancialGoalManagerTests
         await context.FinancialGoals.AddAsync(goal);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        var result = await manager.ApplyBudgetAdjustmentsAsync(goal.Id, CancellationToken.None);
+        var entertainmentItemBefore = await context.BudgetPlanItems
+            .FirstAsync(i => i.BudgetPlanId == 1 && i.CategoryId == 5);
+        var entertainmentAmountBefore = entertainmentItemBefore.Amount;
+
+        var result = await manager.ApplyBudgetAdjustmentsAsync(goal.Id, null, CancellationToken.None);
         var currentPlan = await context.BudgetPlans.Include(p => p.Items).FirstAsync(p => p.Id == 1);
         var planItems = currentPlan.Items ?? throw new AssertionException("Expected current plan items to be loaded.");
+        var entertainmentItemAfter = planItems.First(i => i.CategoryId == 5);
 
         Assert.Multiple(() =>
         {
             Assert.That(result.BudgetPlanId, Is.EqualTo(1));
             Assert.That(result.AppliedAdjustmentsCount, Is.GreaterThan(0));
-            Assert.That(planItems.Any(i => i.CategoryId == 5), Is.True);
-            Assert.That(planItems.Any(i => i.CategoryId == 6), Is.True);
+            Assert.That(entertainmentItemAfter.Amount, Is.LessThan(entertainmentAmountBefore));
+            Assert.That(planItems.Count(i => i.CategoryId == 5), Is.EqualTo(1));
         });
+    }
+
+    [Test]
+    public async Task ApplyBudgetAdjustmentsAsync_WhenCategoryAlreadyAdjusted_DoesNotSuggestItAgain()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        await SeedForecastScenarioAsync(context);
+        var manager = CreateManager(context);
+
+        var goal = new FinancialGoal
+        {
+            Title = "No duplicate adjustment",
+            TargetAmount = 2000m,
+            InitialAmount = 0m,
+            TargetDate = DateTime.UtcNow.AddMonths(2),
+            CreatedAt = DateTime.UtcNow.AddMonths(-1),
+            LinkedAccountId = 2,
+            UserId = TestInfrastructure.UserId
+        };
+
+        await context.FinancialGoals.AddAsync(goal);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var firstResult = await manager.ApplyBudgetAdjustmentsAsync(goal.Id, null, CancellationToken.None);
+        var secondForecast = await manager.GetForecastAsync(goal.Id, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(firstResult.AppliedAdjustmentsCount, Is.GreaterThan(0));
+            Assert.That(
+                secondForecast.SuggestedBudgetAdjustments.Select(s => s.CategoryId)
+                    .Intersect(firstResult.AppliedAdjustments.Select(a => a.CategoryId)),
+                Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task ApplyBudgetAdjustmentsAsync_WhenRequestEditsAndRemovesSuggestions_AppliesEditedRowsOnly()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        await SeedForecastScenarioAsync(context);
+        var manager = CreateManager(context);
+
+        var goal = new FinancialGoal
+        {
+            Title = "Editable adjustment",
+            TargetAmount = 2000m,
+            InitialAmount = 0m,
+            TargetDate = DateTime.UtcNow.AddMonths(2),
+            CreatedAt = DateTime.UtcNow.AddMonths(-1),
+            LinkedAccountId = 2,
+            UserId = TestInfrastructure.UserId
+        };
+
+        await context.FinancialGoals.AddAsync(goal);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var forecast = await manager.GetForecastAsync(goal.Id, CancellationToken.None);
+        var firstSuggestion = forecast.SuggestedBudgetAdjustments.First();
+        var removedSuggestion = forecast.SuggestedBudgetAdjustments.Skip(1).First();
+        var editedReduction = Math.Round(firstSuggestion.SuggestedReduction / 2m, 2);
+        var editedLimit = Math.Round(firstSuggestion.CurrentBudgetLimit - editedReduction, 2);
+        var removedItemBefore = await context.BudgetPlanItems
+            .AsNoTracking()
+            .FirstAsync(i => i.BudgetPlanId == 1 && i.CategoryId == removedSuggestion.CategoryId);
+
+        var result = await manager.ApplyBudgetAdjustmentsAsync(
+            goal.Id,
+            new ApplyBudgetAdjustmentsRequestDto
+            {
+                Adjustments = new List<BudgetAdjustmentSuggestionDto>
+                {
+                    new()
+                    {
+                        CategoryId = firstSuggestion.CategoryId,
+                        RecommendedBudgetLimit = editedLimit
+                    }
+                }
+            },
+            CancellationToken.None);
+
+        var editedItemAfter = await context.BudgetPlanItems
+            .AsNoTracking()
+            .FirstAsync(i => i.BudgetPlanId == 1 && i.CategoryId == firstSuggestion.CategoryId);
+        var removedItemAfter = await context.BudgetPlanItems
+            .AsNoTracking()
+            .FirstAsync(i => i.BudgetPlanId == 1 && i.CategoryId == removedSuggestion.CategoryId);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.AppliedAdjustmentsCount, Is.EqualTo(1));
+            Assert.That(result.AppliedAdjustments.Single().SuggestedReduction, Is.EqualTo(editedReduction));
+            Assert.That(editedItemAfter.Amount, Is.EqualTo(editedLimit));
+            Assert.That(removedItemAfter.Amount, Is.EqualTo(removedItemBefore.Amount));
+        });
+    }
+
+    [Test]
+    public async Task ApplyBudgetAdjustmentsAsync_WhenRequestExceedsAllowedReduction_ThrowsCustomException()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        await SeedForecastScenarioAsync(context);
+        var manager = CreateManager(context);
+
+        var goal = new FinancialGoal
+        {
+            Title = "Unsafe adjustment",
+            TargetAmount = 2000m,
+            InitialAmount = 0m,
+            TargetDate = DateTime.UtcNow.AddMonths(2),
+            CreatedAt = DateTime.UtcNow.AddMonths(-1),
+            LinkedAccountId = 2,
+            UserId = TestInfrastructure.UserId
+        };
+
+        await context.FinancialGoals.AddAsync(goal);
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var forecast = await manager.GetForecastAsync(goal.Id, CancellationToken.None);
+        var suggestion = forecast.SuggestedBudgetAdjustments.First();
+        var tooAggressiveLimit = Math.Round(suggestion.RecommendedBudgetLimit - 1m, 2);
+
+        Assert.That(async () => await manager.ApplyBudgetAdjustmentsAsync(
+            goal.Id,
+            new ApplyBudgetAdjustmentsRequestDto
+            {
+                Adjustments = new List<BudgetAdjustmentSuggestionDto>
+                {
+                    new()
+                    {
+                        CategoryId = suggestion.CategoryId,
+                        RecommendedBudgetLimit = tooAggressiveLimit
+                    }
+                }
+            },
+            CancellationToken.None),
+            Throws.TypeOf<CustomException>().With.Property(nameof(CustomException.StatusCode)).EqualTo(StatusCodes.Status400BadRequest));
     }
 
     private static async Task SeedForecastScenarioAsync(ApplicationDbContext context)
@@ -226,6 +373,38 @@ public class FinancialGoalManagerTests
         var savings = await context.Accounts.FindAsync(2);
         Assert.That(savings, Is.Not.Null);
         savings!.Amount = 500m;
+
+        if (!await context.BudgetPlanItems.AnyAsync(i => i.BudgetPlanId == 1 && i.CategoryId == 5))
+        {
+            await context.BudgetPlanItems.AddRangeAsync(
+                new BudgetPlanItem
+                {
+                    Id = 5,
+                    BudgetPlanId = 1,
+                    CategoryId = 5,
+                    Amount = 800m,
+                    CurrencyId = 1,
+                    Description = "Entertainment limit"
+                },
+                new BudgetPlanItem
+                {
+                    Id = 6,
+                    BudgetPlanId = 1,
+                    CategoryId = 6,
+                    Amount = 600m,
+                    CurrencyId = 1,
+                    Description = "Dining limit"
+                },
+                new BudgetPlanItem
+                {
+                    Id = 7,
+                    BudgetPlanId = 1,
+                    CategoryId = 7,
+                    Amount = 500m,
+                    CurrencyId = 1,
+                    Description = "Shopping limit"
+                });
+        }
 
         await context.SaveChangesAsync(CancellationToken.None);
     }

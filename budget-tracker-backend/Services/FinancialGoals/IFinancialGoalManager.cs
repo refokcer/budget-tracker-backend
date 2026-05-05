@@ -11,5 +11,8 @@ public interface IFinancialGoalManager
     Task<FinancialGoal> UpdateAsync(FinancialGoalDto dto, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
     Task<FinancialGoalForecastDto> GetForecastAsync(int id, CancellationToken cancellationToken);
-    Task<ApplyBudgetAdjustmentsResultDto> ApplyBudgetAdjustmentsAsync(int id, CancellationToken cancellationToken);
+    Task<ApplyBudgetAdjustmentsResultDto> ApplyBudgetAdjustmentsAsync(
+        int id,
+        ApplyBudgetAdjustmentsRequestDto? dto,
+        CancellationToken cancellationToken);
 }

@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using budget_tracker_backend.Models;
 
@@ -16,6 +17,7 @@ public interface IApplicationDbContext
     DbSet<Currency> Currencies { get; }
     DbSet<RefreshToken> RefreshTokens { get; }
     DbSet<ApplicationUser> Users { get; }
+    DbSet<IdentityUserClaim<string>> UserClaims { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

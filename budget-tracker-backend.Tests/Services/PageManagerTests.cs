@@ -157,6 +157,110 @@ public class PageManagerTests
     }
 
     [Test]
+    public async Task GetBudgetPlanPageAsync_GroupsUnplannedCategoryExpensesIntoOtherRow()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+
+        await context.Categories.AddAsync(new Category
+        {
+            Id = 10,
+            Title = "Entertainment",
+            Type = TransactionCategoryType.Expense,
+            UserId = TestInfrastructure.UserId
+        });
+        await context.Transactions.AddAsync(new Transaction
+        {
+            Id = 20,
+            Title = "Movie tickets",
+            Amount = 75m,
+            CategoryId = 10,
+            CurrencyId = 1,
+            BudgetPlanId = 1,
+            Date = TestInfrastructure.CurrentMonthStart.AddDays(14),
+            Type = TransactionCategoryType.Expense,
+            AccountFrom = 1,
+            UserId = TestInfrastructure.UserId,
+            UnicCode = "movie-tickets"
+        });
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var manager = CreateManager(context);
+        var result = await manager.GetBudgetPlanPageAsync(1, includeEvents: false, CancellationToken.None);
+        var other = result.Items.Single(i => i.IsOther);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Items.First(i => i.CategoryTitle == "Groceries").Spent, Is.EqualTo(120m));
+            Assert.That(other.CategoryTitle, Is.EqualTo("Other"));
+            Assert.That(other.IsVirtual, Is.True);
+            Assert.That(other.Amount, Is.EqualTo(0m));
+            Assert.That(other.Spent, Is.EqualTo(75m));
+            Assert.That(other.Remaining, Is.EqualTo(-75m));
+        });
+    }
+
+    [Test]
+    public async Task GetBudgetPlanPageAsync_WhenOtherBudgetExists_UsesItAsUnplannedCategoryLimit()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+
+        await context.Categories.AddRangeAsync(
+            new Category
+            {
+                Id = 10,
+                Title = "Entertainment",
+                Type = TransactionCategoryType.Expense,
+                UserId = TestInfrastructure.UserId
+            },
+            new Category
+            {
+                Id = 11,
+                Title = "Other",
+                Type = TransactionCategoryType.Expense,
+                UserId = TestInfrastructure.UserId
+            });
+        await context.BudgetPlanItems.AddAsync(new BudgetPlanItem
+        {
+            Id = 12,
+            BudgetPlanId = 1,
+            CategoryId = 11,
+            Amount = 100m,
+            CurrencyId = 1,
+            Description = "Flexible category bucket"
+        });
+        await context.Transactions.AddAsync(new Transaction
+        {
+            Id = 20,
+            Title = "Movie tickets",
+            Amount = 75m,
+            CategoryId = 10,
+            CurrencyId = 1,
+            BudgetPlanId = 1,
+            Date = TestInfrastructure.CurrentMonthStart.AddDays(14),
+            Type = TransactionCategoryType.Expense,
+            AccountFrom = 1,
+            UserId = TestInfrastructure.UserId,
+            UnicCode = "movie-tickets"
+        });
+        await context.SaveChangesAsync(CancellationToken.None);
+
+        var manager = CreateManager(context);
+        var result = await manager.GetBudgetPlanPageAsync(1, includeEvents: false, CancellationToken.None);
+        var other = result.Items.Single(i => i.IsOther);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(other.Id, Is.EqualTo(12));
+            Assert.That(other.IsVirtual, Is.False);
+            Assert.That(other.Amount, Is.EqualTo(100m));
+            Assert.That(other.Spent, Is.EqualTo(75m));
+            Assert.That(other.Remaining, Is.EqualTo(25m));
+        });
+    }
+
+    [Test]
     public async Task GetEventPageAsync_WhenPlanIsNotEvent_ThrowsException()
     {
         await using var context = TestInfrastructure.CreateContext();

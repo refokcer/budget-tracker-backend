@@ -151,4 +151,30 @@ public class CrudManagersTests
             Assert.That(updated.Description, Is.EqualTo("Revised budget"));
         });
     }
+
+    [Test]
+    public async Task BudgetPlanItemManager_CreateAsync_WithZeroCategoryId_CreatesOtherBudgetItem()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var manager = new BudgetPlanItemManager(context, TestInfrastructure.CreateMapper());
+
+        var created = await manager.CreateAsync(new CreateBudgetPlanItemDto
+        {
+            BudgetPlanId = 1,
+            CategoryId = 0,
+            Amount = 100m,
+            CurrencyId = 1,
+            Description = "Flexible budget"
+        }, CancellationToken.None);
+
+        var category = await context.Categories.FirstAsync(c => c.Id == created.CategoryId);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(category.Title, Is.EqualTo("Other"));
+            Assert.That(category.Type, Is.EqualTo(TransactionCategoryType.Expense));
+            Assert.That(created.Amount, Is.EqualTo(100m));
+        });
+    }
 }

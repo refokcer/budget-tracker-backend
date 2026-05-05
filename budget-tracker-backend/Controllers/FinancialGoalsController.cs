@@ -53,9 +53,11 @@ public class FinancialGoalsController : BaseApiController
     }
 
     [HttpPost("{id:int}/apply-budget-adjustments")]
-    public async Task<IActionResult> ApplyBudgetAdjustments(int id)
+    public async Task<IActionResult> ApplyBudgetAdjustments(
+        int id,
+        [FromBody] ApplyBudgetAdjustmentsRequestDto? dto = null)
     {
-        var result = await Mediator.Send(new ApplyBudgetAdjustmentsCommand(id));
+        var result = await Mediator.Send(new ApplyBudgetAdjustmentsCommand(id, dto));
         return HandleResult(result);
     }
 
