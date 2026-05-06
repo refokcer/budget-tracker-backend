@@ -9,6 +9,7 @@ public class Category : IUserOwnedEntity
     public string Title { get; set; } = null!;
     public TransactionCategoryType Type { get; set; }
     public string? Description { get; set; }
+    public string? Color { get; set; }
     public string UserId { get; set; } = null!;
     [JsonIgnore]
     public ApplicationUser? User { get; set; }

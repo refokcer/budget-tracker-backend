@@ -19,12 +19,14 @@ public class LabelAmountPercentDto
     public string Label { get; set; } = null!;
     public decimal Amount { get; set; }
     public string Percent { get; set; } = null!;
+    public string? Color { get; set; }
 }
 
 public class LabelValueDto
 {
     public string Label { get; set; } = null!;
     public decimal Value { get; set; }
+    public string? Color { get; set; }
 }
 
 public class MonthlyReportTxDto

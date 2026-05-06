@@ -34,7 +34,11 @@ public class BudgetPlanManagerTests
             Assert.That(groceries.SpentAmount, Is.EqualTo(120m));
             Assert.That(groceries.RemainingAmount, Is.EqualTo(180m));
             Assert.That(groceries.CarryAdjustment, Is.EqualTo(-45m));
-            Assert.That(groceries.RecommendedAmount, Is.EqualTo(255m));
+            Assert.That(groceries.HistoryAverageAmount, Is.EqualTo(95m));
+            Assert.That(groceries.Priority, Is.EqualTo("Essential"));
+            Assert.That(groceries.RecommendedAmount, Is.EqualTo(215m));
+            Assert.That(result.AverageMonthlyIncome, Is.EqualTo(2500m));
+            Assert.That(result.IncomeEnvelopeMultiplier, Is.EqualTo(1m));
         });
     }
 
@@ -73,7 +77,8 @@ public class BudgetPlanManagerTests
             Assert.That(groceries.SpentAmount, Is.EqualTo(360m));
             Assert.That(groceries.OverspentAmount, Is.EqualTo(60m));
             Assert.That(groceries.CarryAdjustment, Is.EqualTo(30m));
-            Assert.That(groceries.RecommendedAmount, Is.EqualTo(330m));
+            Assert.That(groceries.HistoryAverageAmount, Is.EqualTo(215m));
+            Assert.That(groceries.RecommendedAmount, Is.EqualTo(301.25m));
         });
     }
 
@@ -196,6 +201,112 @@ public class BudgetPlanManagerTests
             Assert.That(utilities.SeasonalityMultiplier, Is.EqualTo(0.8m));
             Assert.That(utilities.RecommendedAmount, Is.EqualTo(100m));
             Assert.That(utilities.Description, Is.EqualTo("Lower because winter season ended."));
+        });
+    }
+
+    [Test]
+    public async Task CreateAutoMonthlyPlanAsync_WhenFinancialStateDeclines_CutsDiscretionaryCategoriesMore()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        await context.Categories.AddAsync(new Category
+        {
+            Id = 10,
+            Title = "Entertainment",
+            Type = TransactionCategoryType.Expense,
+            UserId = TestInfrastructure.UserId
+        });
+        await context.BudgetPlanItems.AddAsync(new BudgetPlanItem
+        {
+            Id = 10,
+            BudgetPlanId = 1,
+            CategoryId = 10,
+            Amount = 1000m,
+            CurrencyId = 1
+        });
+        await context.Transactions.AddAsync(new Transaction
+        {
+            Title = "Big entertainment month",
+            Amount = 1000m,
+            CategoryId = 10,
+            CurrencyId = 1,
+            BudgetPlanId = 1,
+            Date = TestInfrastructure.CurrentMonthStart.AddDays(18),
+            Type = TransactionCategoryType.Expense,
+            AccountFrom = 1,
+            UserId = TestInfrastructure.UserId,
+            UnicCode = "big-entertainment-month"
+        });
+        await context.SaveChangesAsync(CancellationToken.None);
+        var manager = CreateManager(context);
+        var targetStart = TestInfrastructure.CurrentMonthStart.AddMonths(1);
+
+        var result = await manager.CreateAutoMonthlyPlanAsync(new AutoBudgetPlanRequestDto
+        {
+            Month = targetStart.Month,
+            Year = targetStart.Year
+        }, CancellationToken.None);
+
+        var groceries = result.Items.Single(i => i.CategoryTitle == "Groceries");
+        var entertainment = result.Items.Single(i => i.CategoryTitle == "Entertainment");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.FinancialStateTrend, Is.LessThan(0m));
+            Assert.That(entertainment.Priority, Is.EqualTo("Discretionary"));
+            Assert.That(entertainment.FinancialStateMultiplier, Is.LessThan(groceries.FinancialStateMultiplier));
+            Assert.That(entertainment.Description, Does.Contain("financial stability declined"));
+        });
+    }
+
+    [Test]
+    public async Task CreateAutoMonthlyPlanAsync_WhenGoalNeedsReserve_AppliesIncomeEnvelope()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        await context.Categories.AddAsync(new Category
+        {
+            Id = 10,
+            Title = "Entertainment",
+            Type = TransactionCategoryType.Expense,
+            UserId = TestInfrastructure.UserId
+        });
+        await context.BudgetPlanItems.AddAsync(new BudgetPlanItem
+        {
+            Id = 10,
+            BudgetPlanId = 1,
+            CategoryId = 10,
+            Amount = 2000m,
+            CurrencyId = 1
+        });
+        await context.FinancialGoals.AddAsync(new FinancialGoal
+        {
+            Title = "Urgent goal",
+            TargetAmount = 2000m,
+            InitialAmount = 0m,
+            TargetDate = TestInfrastructure.CurrentMonthStart.AddMonths(1).AddDays(15),
+            CreatedAt = TestInfrastructure.CurrentMonthStart,
+            UserId = TestInfrastructure.UserId
+        });
+        await context.SaveChangesAsync(CancellationToken.None);
+        var manager = CreateManager(context);
+        var targetStart = TestInfrastructure.CurrentMonthStart.AddMonths(1);
+
+        var result = await manager.CreateAutoMonthlyPlanAsync(new AutoBudgetPlanRequestDto
+        {
+            Month = targetStart.Month,
+            Year = targetStart.Year
+        }, CancellationToken.None);
+
+        var entertainment = result.Items.Single(i => i.CategoryTitle == "Entertainment");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.GoalReserve, Is.EqualTo(2000m));
+            Assert.That(result.ExpenseEnvelope, Is.LessThan(result.NewTotal + result.GoalReserve));
+            Assert.That(result.IncomeEnvelopeMultiplier, Is.LessThan(1m));
+            Assert.That(entertainment.IncomeEnvelopeMultiplier, Is.LessThan(1m));
+            Assert.That(entertainment.Description, Does.Contain("financial goals"));
         });
     }
 }

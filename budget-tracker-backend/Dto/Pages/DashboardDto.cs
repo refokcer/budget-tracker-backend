@@ -8,6 +8,7 @@ public class DashboardDto
     public List<DashboardCategoryDto> TopIncomes { get; set; } = new();
     public DashboardTransactionDto? BiggestTransaction { get; set; }
     public FinancialStabilityDto FinancialStability { get; set; } = new();
+    public BehavioralScoreDto BehavioralScore { get; set; } = new();
     public List<DashboardFinancialGoalDto> FinancialGoals { get; set; } = new();
 }
 
@@ -24,6 +25,7 @@ public class DashboardCategoryDto
     public string CategoryTitle { get; set; } = null!;
     public decimal Amount { get; set; }
     public string Percent { get; set; } = null!;
+    public string? Color { get; set; }
 }
 
 public class DashboardTransactionDto
@@ -52,6 +54,30 @@ public class FinancialStabilityMetricsDto
     public decimal GoalAchievementIndex { get; set; }
     public decimal AverageMonthlyIncome { get; set; }
     public decimal AverageMonthlyExpenses { get; set; }
+}
+
+public class BehavioralScoreDto
+{
+    public int Score { get; set; }
+    public string Level { get; set; } = null!;
+    public BehavioralScoreMetricsDto Metrics { get; set; } = new();
+    public List<string> Insights { get; set; } = new();
+}
+
+public class BehavioralScoreMetricsDto
+{
+    public decimal LimitAdherence { get; set; }
+    public decimal ImpulseControl { get; set; }
+    public decimal SavingsRegularity { get; set; }
+    public decimal WarningResponse { get; set; }
+    public int PlannedCategoriesChecked { get; set; }
+    public int OverspentCategories { get; set; }
+    public int ImpulsiveTransactions { get; set; }
+    public decimal ImpulsiveAmountShare { get; set; }
+    public int SavingMonths { get; set; }
+    public int ActiveIncomeMonths { get; set; }
+    public int WarningEvents { get; set; }
+    public int ResolvedWarningEvents { get; set; }
 }
 
 public class DashboardFinancialGoalDto

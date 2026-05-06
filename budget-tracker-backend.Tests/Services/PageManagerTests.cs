@@ -44,6 +44,13 @@ public class PageManagerTests
             Assert.That(result.FinancialStability.Level, Is.Not.Empty);
             Assert.That(result.FinancialStability.Metrics.GoalAchievementIndex, Is.InRange(0m, 1m));
             Assert.That(result.FinancialStability.Recommendations, Is.Not.Empty);
+            Assert.That(result.BehavioralScore.Score, Is.InRange(0, 100));
+            Assert.That(result.BehavioralScore.Level, Is.Not.Empty);
+            Assert.That(result.BehavioralScore.Metrics.LimitAdherence, Is.InRange(0m, 1m));
+            Assert.That(result.BehavioralScore.Metrics.ImpulseControl, Is.InRange(0m, 1m));
+            Assert.That(result.BehavioralScore.Metrics.SavingsRegularity, Is.InRange(0m, 1m));
+            Assert.That(result.BehavioralScore.Metrics.WarningResponse, Is.InRange(0m, 1m));
+            Assert.That(result.BehavioralScore.Insights, Is.Not.Empty);
         });
     }
 
@@ -70,7 +77,49 @@ public class PageManagerTests
 
         var result = await manager.GetDashboardAsync(CancellationToken.None);
 
-        Assert.That(result.FinancialStability.Metrics.GoalAchievementIndex, Is.LessThan(1m));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.FinancialStability.Metrics.GoalAchievementIndex, Is.LessThan(1m));
+            Assert.That(result.BehavioralScore.Metrics.LimitAdherence, Is.LessThan(1m));
+            Assert.That(result.BehavioralScore.Metrics.OverspentCategories, Is.GreaterThan(0));
+        });
+    }
+
+    [Test]
+    public async Task GetDashboardAsync_MarksLargeUnplannedExpenseAsImpulsiveBehavior()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        await context.Categories.AddAsync(new Category
+        {
+            Id = 10,
+            Title = "Gadgets",
+            Type = TransactionCategoryType.Expense,
+            UserId = TestInfrastructure.UserId
+        });
+        await context.Transactions.AddAsync(new Transaction
+        {
+            Title = "Impulse headphones",
+            Amount = 700m,
+            CategoryId = 10,
+            CurrencyId = 1,
+            Date = TestInfrastructure.CurrentMonthStart.AddDays(18),
+            Type = TransactionCategoryType.Expense,
+            AccountFrom = 1,
+            UserId = TestInfrastructure.UserId,
+            UnicCode = "impulse-headphones"
+        });
+        await context.SaveChangesAsync(CancellationToken.None);
+        var manager = CreateManager(context);
+
+        var result = await manager.GetDashboardAsync(CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.BehavioralScore.Metrics.ImpulsiveTransactions, Is.GreaterThan(0));
+            Assert.That(result.BehavioralScore.Metrics.ImpulseControl, Is.LessThan(1m));
+            Assert.That(result.BehavioralScore.Metrics.ImpulsiveAmountShare, Is.GreaterThan(0m));
+        });
     }
 
     [Test]

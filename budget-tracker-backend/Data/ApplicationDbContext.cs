@@ -51,6 +51,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         modelBuilder.Entity<Category>(b =>
         {
+            b.Property(c => c.Color).HasMaxLength(7);
             b.HasQueryFilter(c => c.UserId == CurrentUserId);
             b.HasIndex(c => c.UserId);
             b.HasOne(c => c.User)

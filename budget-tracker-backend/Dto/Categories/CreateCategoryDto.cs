@@ -5,4 +5,5 @@ public class CreateCategoryDto
     public string Title { get; set; } = null!;
     public int Type { get; set; }
     public string? Description { get; set; }
+    public string? Color { get; set; }
 }

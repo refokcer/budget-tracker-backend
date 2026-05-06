@@ -108,7 +108,8 @@ public class BudgetPlanItemManager : IBudgetPlanItemManager
         {
             Title = "Other",
             Type = TransactionCategoryType.Expense,
-            Description = "Budget bucket for expenses from categories not explicitly included in a plan"
+            Description = "Budget bucket for expenses from categories not explicitly included in a plan",
+            Color = "#94A3B8"
         };
 
         await _context.Categories.AddAsync(otherCategory, cancellationToken);

@@ -1,0 +1,5120 @@
+{
+  "clearExisting": true,
+  "data": {
+    "currencies": [
+      {
+        "key": "usd",
+        "code": "USD",
+        "title": "US Dollar",
+        "symbol": "$",
+        "isBase": true
+      },
+      {
+        "key": "eur",
+        "code": "EUR",
+        "title": "Euro",
+        "symbol": "E",
+        "isBase": false
+      }
+    ],
+    "categories": [
+      {
+        "key": "salary",
+        "title": "Salary",
+        "type": "Income"
+      },
+      {
+        "key": "freelance",
+        "title": "Freelance",
+        "type": "Income"
+      },
+      {
+        "key": "bonus",
+        "title": "Bonus",
+        "type": "Income"
+      },
+      {
+        "key": "rent",
+        "title": "Rent",
+        "type": "Expense",
+        "description": "Fixed housing payment"
+      },
+      {
+        "key": "supermarket",
+        "title": "Supermarket",
+        "type": "Expense",
+        "description": "Groceries and home basics"
+      },
+      {
+        "key": "utilities",
+        "title": "Utilities",
+        "type": "Expense",
+        "description": "Electricity, heating, water, internet"
+      },
+      {
+        "key": "transport",
+        "title": "Transport",
+        "type": "Expense"
+      },
+      {
+        "key": "fuel",
+        "title": "Fuel",
+        "type": "Expense"
+      },
+      {
+        "key": "health",
+        "title": "Health",
+        "type": "Expense"
+      },
+      {
+        "key": "subscriptions",
+        "title": "Subscriptions",
+        "type": "Expense"
+      },
+      {
+        "key": "entertainment",
+        "title": "Entertainment",
+        "type": "Expense"
+      },
+      {
+        "key": "delivery",
+        "title": "Delivery food",
+        "type": "Expense"
+      },
+      {
+        "key": "fastfood",
+        "title": "Fast food",
+        "type": "Expense"
+      },
+      {
+        "key": "coffee",
+        "title": "Coffee",
+        "type": "Expense"
+      },
+      {
+        "key": "shopping",
+        "title": "Shopping",
+        "type": "Expense"
+      },
+      {
+        "key": "gifts",
+        "title": "Gifts",
+        "type": "Expense"
+      },
+      {
+        "key": "travel",
+        "title": "Travel",
+        "type": "Expense"
+      },
+      {
+        "key": "education",
+        "title": "Education",
+        "type": "Expense"
+      },
+      {
+        "key": "pet",
+        "title": "Pet",
+        "type": "Expense"
+      },
+      {
+        "key": "repairs",
+        "title": "Repairs",
+        "type": "Expense"
+      },
+      {
+        "key": "other",
+        "title": "Other",
+        "type": "Expense",
+        "description": "Unplanned expenses"
+      },
+      {
+        "key": "savings-transfer",
+        "title": "Savings transfer",
+        "type": "Transaction"
+      },
+      {
+        "key": "investment-transfer",
+        "title": "Investment transfer",
+        "type": "Transaction"
+      }
+    ],
+    "accounts": [
+      {
+        "key": "checking",
+        "title": "Main checking",
+        "amount": 2600,
+        "currencyKey": "usd",
+        "type": "Checking"
+      },
+      {
+        "key": "cash",
+        "title": "Cash wallet",
+        "amount": 700,
+        "currencyKey": "usd",
+        "type": "Cash"
+      },
+      {
+        "key": "savings",
+        "title": "Goal savings",
+        "amount": 3800,
+        "currencyKey": "usd",
+        "type": "Savings"
+      },
+      {
+        "key": "credit",
+        "title": "Credit card",
+        "amount": -350,
+        "currencyKey": "usd",
+        "type": "CreditCard"
+      },
+      {
+        "key": "investment",
+        "title": "Investment account",
+        "amount": 1200,
+        "currencyKey": "usd",
+        "type": "Investment"
+      }
+    ],
+    "budgetPlans": [
+      {
+        "key": "plan-2025-11",
+        "title": "November 2025 seasonal",
+        "startDate": "2025-11-01T00:00:00Z",
+        "endDate": "2025-11-30T00:00:00Z",
+        "type": "Monthly",
+        "description": "Stable monthly plan for behavior and forecast baselines.",
+        "items": [
+          {
+            "categoryKey": "rent",
+            "amount": 1050,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "supermarket",
+            "amount": 880,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "utilities",
+            "amount": 220,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "transport",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fuel",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "health",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "subscriptions",
+            "amount": 95,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "entertainment",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "delivery",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fastfood",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "coffee",
+            "amount": 90,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "shopping",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "gifts",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "travel",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "education",
+            "amount": 110,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "pet",
+            "amount": 85,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "repairs",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "other",
+            "amount": 180,
+            "currencyKey": "usd",
+            "description": null
+          }
+        ]
+      },
+      {
+        "key": "plan-2025-12",
+        "title": "December 2025 seasonal",
+        "startDate": "2025-12-01T00:00:00Z",
+        "endDate": "2025-12-31T00:00:00Z",
+        "type": "Monthly",
+        "description": "Includes holiday gifts and winter utility growth.",
+        "items": [
+          {
+            "categoryKey": "rent",
+            "amount": 1050,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "supermarket",
+            "amount": 880,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "utilities",
+            "amount": 360,
+            "currencyKey": "usd",
+            "description": "Higher winter utility coefficient"
+          },
+          {
+            "categoryKey": "transport",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fuel",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "health",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "subscriptions",
+            "amount": 95,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "entertainment",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "delivery",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fastfood",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "coffee",
+            "amount": 90,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "shopping",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "gifts",
+            "amount": 620,
+            "currencyKey": "usd",
+            "description": "December holiday gifts coefficient"
+          },
+          {
+            "categoryKey": "travel",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "education",
+            "amount": 110,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "pet",
+            "amount": 85,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "repairs",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "other",
+            "amount": 180,
+            "currencyKey": "usd",
+            "description": null
+          }
+        ]
+      },
+      {
+        "key": "plan-2026-01",
+        "title": "January 2026 seasonal",
+        "startDate": "2026-01-01T00:00:00Z",
+        "endDate": "2026-01-31T00:00:00Z",
+        "type": "Monthly",
+        "description": "Stable monthly plan for behavior and forecast baselines.",
+        "items": [
+          {
+            "categoryKey": "rent",
+            "amount": 1050,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "supermarket",
+            "amount": 880,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "utilities",
+            "amount": 360,
+            "currencyKey": "usd",
+            "description": "Higher winter utility coefficient"
+          },
+          {
+            "categoryKey": "transport",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fuel",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "health",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "subscriptions",
+            "amount": 95,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "entertainment",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "delivery",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fastfood",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "coffee",
+            "amount": 90,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "shopping",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "gifts",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "travel",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "education",
+            "amount": 110,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "pet",
+            "amount": 85,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "repairs",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "other",
+            "amount": 180,
+            "currencyKey": "usd",
+            "description": null
+          }
+        ]
+      },
+      {
+        "key": "plan-2026-02",
+        "title": "February 2026 seasonal",
+        "startDate": "2026-02-01T00:00:00Z",
+        "endDate": "2026-02-28T00:00:00Z",
+        "type": "Monthly",
+        "description": "Stable monthly plan for behavior and forecast baselines.",
+        "items": [
+          {
+            "categoryKey": "rent",
+            "amount": 1050,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "supermarket",
+            "amount": 880,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "utilities",
+            "amount": 360,
+            "currencyKey": "usd",
+            "description": "Higher winter utility coefficient"
+          },
+          {
+            "categoryKey": "transport",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fuel",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "health",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "subscriptions",
+            "amount": 95,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "entertainment",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "delivery",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fastfood",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "coffee",
+            "amount": 90,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "shopping",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "gifts",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "travel",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "education",
+            "amount": 110,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "pet",
+            "amount": 85,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "repairs",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "other",
+            "amount": 180,
+            "currencyKey": "usd",
+            "description": null
+          }
+        ]
+      },
+      {
+        "key": "plan-2026-03",
+        "title": "March 2026 seasonal",
+        "startDate": "2026-03-01T00:00:00Z",
+        "endDate": "2026-03-31T00:00:00Z",
+        "type": "Monthly",
+        "description": "Utilities reduced after winter; travel reserve appears.",
+        "items": [
+          {
+            "categoryKey": "rent",
+            "amount": 1050,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "supermarket",
+            "amount": 880,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "utilities",
+            "amount": 220,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "transport",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fuel",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "health",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "subscriptions",
+            "amount": 95,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "entertainment",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "delivery",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fastfood",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "coffee",
+            "amount": 90,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "shopping",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "gifts",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "travel",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "education",
+            "amount": 110,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "pet",
+            "amount": 85,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "repairs",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "other",
+            "amount": 180,
+            "currencyKey": "usd",
+            "description": null
+          }
+        ]
+      },
+      {
+        "key": "plan-2026-04",
+        "title": "April 2026 seasonal",
+        "startDate": "2026-04-01T00:00:00Z",
+        "endDate": "2026-04-30T00:00:00Z",
+        "type": "Monthly",
+        "description": "Utilities reduced after winter; travel reserve appears.",
+        "items": [
+          {
+            "categoryKey": "rent",
+            "amount": 1050,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "supermarket",
+            "amount": 880,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "utilities",
+            "amount": 220,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "transport",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fuel",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "health",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "subscriptions",
+            "amount": 95,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "entertainment",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "delivery",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fastfood",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "coffee",
+            "amount": 90,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "shopping",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "gifts",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "travel",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "education",
+            "amount": 110,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "pet",
+            "amount": 85,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "repairs",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "other",
+            "amount": 180,
+            "currencyKey": "usd",
+            "description": null
+          }
+        ]
+      },
+      {
+        "key": "plan-2026-05",
+        "title": "May 2026 seasonal",
+        "startDate": "2026-05-01T00:00:00Z",
+        "endDate": "2026-05-31T00:00:00Z",
+        "type": "Monthly",
+        "description": "Utilities reduced after winter; travel reserve appears.",
+        "items": [
+          {
+            "categoryKey": "rent",
+            "amount": 1050,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "supermarket",
+            "amount": 880,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "utilities",
+            "amount": 220,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "transport",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fuel",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "health",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "subscriptions",
+            "amount": 95,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "entertainment",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "delivery",
+            "amount": 210,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "fastfood",
+            "amount": 150,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "coffee",
+            "amount": 90,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "shopping",
+            "amount": 260,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "gifts",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "travel",
+            "amount": 360,
+            "currencyKey": "usd",
+            "description": "Warm-season trip reserve"
+          },
+          {
+            "categoryKey": "education",
+            "amount": 110,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "pet",
+            "amount": 85,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "repairs",
+            "amount": 120,
+            "currencyKey": "usd",
+            "description": null
+          },
+          {
+            "categoryKey": "other",
+            "amount": 180,
+            "currencyKey": "usd",
+            "description": null
+          }
+        ]
+      },
+      {
+        "key": "event-holidays-2025",
+        "title": "Holiday gifts 2025",
+        "startDate": "2025-12-10T00:00:00Z",
+        "endDate": "2025-12-31T00:00:00Z",
+        "type": "Event",
+        "parentKey": "plan-2025-12",
+        "description": "Separate December gift pressure event.",
+        "items": [
+          {
+            "categoryKey": "gifts",
+            "amount": 900,
+            "currencyKey": "usd",
+            "description": "Family gifts and parties"
+          },
+          {
+            "categoryKey": "travel",
+            "amount": 380,
+            "currencyKey": "usd",
+            "description": "Holiday travel"
+          }
+        ]
+      }
+    ],
+    "transactions": [
+      {
+        "title": "Salary 2025-11",
+        "amount": 3900,
+        "type": "Income",
+        "date": "2025-11-02T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "salary",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Freelance 2025-11",
+        "amount": 450,
+        "type": "Income",
+        "date": "2025-11-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "freelance",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Rent 2025-11 #1",
+        "amount": 560.28,
+        "type": "Expense",
+        "date": "2025-11-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Rent 2025-11 #2",
+        "amount": 405.72,
+        "type": "Expense",
+        "date": "2025-11-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2025-11 #1",
+        "amount": 267.34,
+        "type": "Expense",
+        "date": "2025-11-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2025-11 #2",
+        "amount": 232.85,
+        "type": "Expense",
+        "date": "2025-11-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2025-11 #3",
+        "amount": 189.73,
+        "type": "Expense",
+        "date": "2025-11-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2025-11 #4",
+        "amount": 172.48,
+        "type": "Expense",
+        "date": "2025-11-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2025-11 #1",
+        "amount": 132.7,
+        "type": "Expense",
+        "date": "2025-11-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2025-11 #2",
+        "amount": 96.1,
+        "type": "Expense",
+        "date": "2025-11-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2025-11 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2025-11-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2025-11 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2025-11-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2025-11 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2025-11-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2025-11 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2025-11-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2025-11 #1",
+        "amount": 100.92,
+        "type": "Expense",
+        "date": "2025-11-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2025-11 #2",
+        "amount": 73.08,
+        "type": "Expense",
+        "date": "2025-11-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2025-11 #1",
+        "amount": 64.03,
+        "type": "Expense",
+        "date": "2025-11-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2025-11 #2",
+        "amount": 46.37,
+        "type": "Expense",
+        "date": "2025-11-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2025-11 #1",
+        "amount": 54,
+        "type": "Expense",
+        "date": "2025-11-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2025-11 #2",
+        "amount": 39.1,
+        "type": "Expense",
+        "date": "2025-11-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2025-11 #1",
+        "amount": 121.68,
+        "type": "Expense",
+        "date": "2025-11-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2025-11 #2",
+        "amount": 86.53,
+        "type": "Expense",
+        "date": "2025-11-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2025-11 #3",
+        "amount": 62.19,
+        "type": "Expense",
+        "date": "2025-11-14T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2025-11 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2025-11-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2025-11 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2025-11-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2025-11 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2025-11-17T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2025-11 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2025-11-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2025-11 #1",
+        "amount": 53.94,
+        "type": "Expense",
+        "date": "2025-11-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2025-11 #2",
+        "amount": 46.98,
+        "type": "Expense",
+        "date": "2025-11-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2025-11 #3",
+        "amount": 38.28,
+        "type": "Expense",
+        "date": "2025-11-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2025-11 #4",
+        "amount": 34.8,
+        "type": "Expense",
+        "date": "2025-11-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2025-11 #1",
+        "amount": 25.67,
+        "type": "Expense",
+        "date": "2025-11-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2025-11 #2",
+        "amount": 22.36,
+        "type": "Expense",
+        "date": "2025-11-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2025-11 #3",
+        "amount": 18.22,
+        "type": "Expense",
+        "date": "2025-11-23T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2025-11 #4",
+        "amount": 16.55,
+        "type": "Expense",
+        "date": "2025-11-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2025-11 #1",
+        "amount": 114.66,
+        "type": "Expense",
+        "date": "2025-11-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2025-11 #2",
+        "amount": 81.54,
+        "type": "Expense",
+        "date": "2025-11-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2025-11 #3",
+        "amount": 58.6,
+        "type": "Expense",
+        "date": "2025-11-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2025-11 #1",
+        "amount": 56.16,
+        "type": "Expense",
+        "date": "2025-11-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2025-11 #2",
+        "amount": 39.94,
+        "type": "Expense",
+        "date": "2025-11-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2025-11 #3",
+        "amount": 28.7,
+        "type": "Expense",
+        "date": "2025-11-05T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2025-11 #1",
+        "amount": 76.56,
+        "type": "Expense",
+        "date": "2025-11-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2025-11 #2",
+        "amount": 55.44,
+        "type": "Expense",
+        "date": "2025-11-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2025-11 #1",
+        "amount": 74.01,
+        "type": "Expense",
+        "date": "2025-11-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2025-11 #2",
+        "amount": 53.59,
+        "type": "Expense",
+        "date": "2025-11-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2025-11 #1",
+        "amount": 45.36,
+        "type": "Expense",
+        "date": "2025-11-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2025-11 #2",
+        "amount": 32.84,
+        "type": "Expense",
+        "date": "2025-11-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2025-11 #1",
+        "amount": 68.21,
+        "type": "Expense",
+        "date": "2025-11-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2025-11 #2",
+        "amount": 49.39,
+        "type": "Expense",
+        "date": "2025-11-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2025-11 #1",
+        "amount": 84.24,
+        "type": "Expense",
+        "date": "2025-11-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2025-11 #2",
+        "amount": 59.9,
+        "type": "Expense",
+        "date": "2025-11-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2025-11 #3",
+        "amount": 43.06,
+        "type": "Expense",
+        "date": "2025-11-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2025-11",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Savings transfer 2025-11",
+        "amount": 520,
+        "type": "Transaction",
+        "date": "2025-11-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "savings-transfer",
+        "accountFromKey": "checking",
+        "accountToKey": "savings",
+        "description": "Imported scenario transfer"
+      },
+      {
+        "title": "Salary 2025-12",
+        "amount": 3900,
+        "type": "Income",
+        "date": "2025-12-02T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "salary",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Freelance 2025-12",
+        "amount": 900,
+        "type": "Income",
+        "date": "2025-12-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "freelance",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Annual bonus 2025",
+        "amount": 1400,
+        "type": "Income",
+        "date": "2025-12-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "bonus",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Rent 2025-12 #1",
+        "amount": 560.28,
+        "type": "Expense",
+        "date": "2025-12-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Rent 2025-12 #2",
+        "amount": 405.72,
+        "type": "Expense",
+        "date": "2025-12-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2025-12 #1",
+        "amount": 267.34,
+        "type": "Expense",
+        "date": "2025-12-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2025-12 #2",
+        "amount": 232.85,
+        "type": "Expense",
+        "date": "2025-12-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2025-12 #3",
+        "amount": 189.73,
+        "type": "Expense",
+        "date": "2025-12-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2025-12 #4",
+        "amount": 172.48,
+        "type": "Expense",
+        "date": "2025-12-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2025-12 #1",
+        "amount": 250.56,
+        "type": "Expense",
+        "date": "2025-12-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2025-12 #2",
+        "amount": 181.44,
+        "type": "Expense",
+        "date": "2025-12-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2025-12 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2025-12-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2025-12 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2025-12-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2025-12 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2025-12-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2025-12 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2025-12-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2025-12 #1",
+        "amount": 100.92,
+        "type": "Expense",
+        "date": "2025-12-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2025-12 #2",
+        "amount": 73.08,
+        "type": "Expense",
+        "date": "2025-12-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2025-12 #1",
+        "amount": 64.03,
+        "type": "Expense",
+        "date": "2025-12-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2025-12 #2",
+        "amount": 46.37,
+        "type": "Expense",
+        "date": "2025-12-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2025-12 #1",
+        "amount": 54,
+        "type": "Expense",
+        "date": "2025-12-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2025-12 #2",
+        "amount": 39.1,
+        "type": "Expense",
+        "date": "2025-12-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2025-12 #1",
+        "amount": 121.68,
+        "type": "Expense",
+        "date": "2025-12-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2025-12 #2",
+        "amount": 86.53,
+        "type": "Expense",
+        "date": "2025-12-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2025-12 #3",
+        "amount": 62.19,
+        "type": "Expense",
+        "date": "2025-12-14T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2025-12 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2025-12-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2025-12 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2025-12-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2025-12 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2025-12-17T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2025-12 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2025-12-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2025-12 #1",
+        "amount": 53.94,
+        "type": "Expense",
+        "date": "2025-12-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2025-12 #2",
+        "amount": 46.98,
+        "type": "Expense",
+        "date": "2025-12-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2025-12 #3",
+        "amount": 38.28,
+        "type": "Expense",
+        "date": "2025-12-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2025-12 #4",
+        "amount": 34.8,
+        "type": "Expense",
+        "date": "2025-12-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2025-12 #1",
+        "amount": 25.67,
+        "type": "Expense",
+        "date": "2025-12-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2025-12 #2",
+        "amount": 22.36,
+        "type": "Expense",
+        "date": "2025-12-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2025-12 #3",
+        "amount": 18.22,
+        "type": "Expense",
+        "date": "2025-12-23T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2025-12 #4",
+        "amount": 16.55,
+        "type": "Expense",
+        "date": "2025-12-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2025-12 #1",
+        "amount": 114.66,
+        "type": "Expense",
+        "date": "2025-12-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2025-12 #2",
+        "amount": 81.54,
+        "type": "Expense",
+        "date": "2025-12-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2025-12 #3",
+        "amount": 58.6,
+        "type": "Expense",
+        "date": "2025-12-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2025-12 #1",
+        "amount": 376.65,
+        "type": "Expense",
+        "date": "2025-12-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2025-12 #2",
+        "amount": 267.84,
+        "type": "Expense",
+        "date": "2025-12-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2025-12 #3",
+        "amount": 192.51,
+        "type": "Expense",
+        "date": "2025-12-05T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2025-12 #1",
+        "amount": 76.56,
+        "type": "Expense",
+        "date": "2025-12-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2025-12 #2",
+        "amount": 55.44,
+        "type": "Expense",
+        "date": "2025-12-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2025-12 #1",
+        "amount": 74.01,
+        "type": "Expense",
+        "date": "2025-12-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2025-12 #2",
+        "amount": 53.59,
+        "type": "Expense",
+        "date": "2025-12-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2025-12 #1",
+        "amount": 45.36,
+        "type": "Expense",
+        "date": "2025-12-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2025-12 #2",
+        "amount": 32.84,
+        "type": "Expense",
+        "date": "2025-12-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2025-12 #1",
+        "amount": 68.21,
+        "type": "Expense",
+        "date": "2025-12-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2025-12 #2",
+        "amount": 49.39,
+        "type": "Expense",
+        "date": "2025-12-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2025-12 #1",
+        "amount": 84.24,
+        "type": "Expense",
+        "date": "2025-12-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2025-12 #2",
+        "amount": 59.9,
+        "type": "Expense",
+        "date": "2025-12-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2025-12 #3",
+        "amount": 43.06,
+        "type": "Expense",
+        "date": "2025-12-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2025-12",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Savings transfer 2025-12",
+        "amount": 700,
+        "type": "Transaction",
+        "date": "2025-12-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "savings-transfer",
+        "accountFromKey": "checking",
+        "accountToKey": "savings",
+        "description": "Imported scenario transfer"
+      },
+      {
+        "title": "Salary 2026-01",
+        "amount": 3900,
+        "type": "Income",
+        "date": "2026-01-02T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "salary",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Freelance 2026-01",
+        "amount": 450,
+        "type": "Income",
+        "date": "2026-01-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "freelance",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Rent 2026-01 #1",
+        "amount": 560.28,
+        "type": "Expense",
+        "date": "2026-01-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Rent 2026-01 #2",
+        "amount": 405.72,
+        "type": "Expense",
+        "date": "2026-01-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-01 #1",
+        "amount": 267.34,
+        "type": "Expense",
+        "date": "2026-01-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-01 #2",
+        "amount": 232.85,
+        "type": "Expense",
+        "date": "2026-01-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-01 #3",
+        "amount": 189.73,
+        "type": "Expense",
+        "date": "2026-01-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-01 #4",
+        "amount": 172.48,
+        "type": "Expense",
+        "date": "2026-01-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-01 #1",
+        "amount": 250.56,
+        "type": "Expense",
+        "date": "2026-01-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-01 #2",
+        "amount": 181.44,
+        "type": "Expense",
+        "date": "2026-01-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-01 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-01-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-01 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-01-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-01 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-01-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-01 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-01-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-01 #1",
+        "amount": 100.92,
+        "type": "Expense",
+        "date": "2026-01-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-01 #2",
+        "amount": 73.08,
+        "type": "Expense",
+        "date": "2026-01-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-01 #1",
+        "amount": 64.03,
+        "type": "Expense",
+        "date": "2026-01-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-01 #2",
+        "amount": 46.37,
+        "type": "Expense",
+        "date": "2026-01-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-01 #1",
+        "amount": 54,
+        "type": "Expense",
+        "date": "2026-01-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-01 #2",
+        "amount": 39.1,
+        "type": "Expense",
+        "date": "2026-01-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-01 #1",
+        "amount": 121.68,
+        "type": "Expense",
+        "date": "2026-01-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-01 #2",
+        "amount": 86.53,
+        "type": "Expense",
+        "date": "2026-01-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-01 #3",
+        "amount": 62.19,
+        "type": "Expense",
+        "date": "2026-01-14T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-01 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-01-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-01 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-01-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-01 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-01-17T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-01 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-01-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-01 #1",
+        "amount": 53.94,
+        "type": "Expense",
+        "date": "2026-01-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-01 #2",
+        "amount": 46.98,
+        "type": "Expense",
+        "date": "2026-01-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-01 #3",
+        "amount": 38.28,
+        "type": "Expense",
+        "date": "2026-01-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-01 #4",
+        "amount": 34.8,
+        "type": "Expense",
+        "date": "2026-01-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-01 #1",
+        "amount": 25.67,
+        "type": "Expense",
+        "date": "2026-01-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-01 #2",
+        "amount": 22.36,
+        "type": "Expense",
+        "date": "2026-01-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-01 #3",
+        "amount": 18.22,
+        "type": "Expense",
+        "date": "2026-01-23T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-01 #4",
+        "amount": 16.55,
+        "type": "Expense",
+        "date": "2026-01-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-01 #1",
+        "amount": 114.66,
+        "type": "Expense",
+        "date": "2026-01-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-01 #2",
+        "amount": 81.54,
+        "type": "Expense",
+        "date": "2026-01-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-01 #3",
+        "amount": 58.6,
+        "type": "Expense",
+        "date": "2026-01-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-01 #1",
+        "amount": 56.16,
+        "type": "Expense",
+        "date": "2026-01-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-01 #2",
+        "amount": 39.94,
+        "type": "Expense",
+        "date": "2026-01-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-01 #3",
+        "amount": 28.7,
+        "type": "Expense",
+        "date": "2026-01-05T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-01 #1",
+        "amount": 76.56,
+        "type": "Expense",
+        "date": "2026-01-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-01 #2",
+        "amount": 55.44,
+        "type": "Expense",
+        "date": "2026-01-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-01 #1",
+        "amount": 74.01,
+        "type": "Expense",
+        "date": "2026-01-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-01 #2",
+        "amount": 53.59,
+        "type": "Expense",
+        "date": "2026-01-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-01 #1",
+        "amount": 45.36,
+        "type": "Expense",
+        "date": "2026-01-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-01 #2",
+        "amount": 32.84,
+        "type": "Expense",
+        "date": "2026-01-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-01 #1",
+        "amount": 68.21,
+        "type": "Expense",
+        "date": "2026-01-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-01 #2",
+        "amount": 49.39,
+        "type": "Expense",
+        "date": "2026-01-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-01 #1",
+        "amount": 84.24,
+        "type": "Expense",
+        "date": "2026-01-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-01 #2",
+        "amount": 59.9,
+        "type": "Expense",
+        "date": "2026-01-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-01 #3",
+        "amount": 43.06,
+        "type": "Expense",
+        "date": "2026-01-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-01",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Savings transfer 2026-01",
+        "amount": 520,
+        "type": "Transaction",
+        "date": "2026-01-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "savings-transfer",
+        "accountFromKey": "checking",
+        "accountToKey": "savings",
+        "description": "Imported scenario transfer"
+      },
+      {
+        "title": "Salary 2026-02",
+        "amount": 3900,
+        "type": "Income",
+        "date": "2026-02-02T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "salary",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Freelance 2026-02",
+        "amount": 450,
+        "type": "Income",
+        "date": "2026-02-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "freelance",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Rent 2026-02 #1",
+        "amount": 560.28,
+        "type": "Expense",
+        "date": "2026-02-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Rent 2026-02 #2",
+        "amount": 405.72,
+        "type": "Expense",
+        "date": "2026-02-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-02 #1",
+        "amount": 267.34,
+        "type": "Expense",
+        "date": "2026-02-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-02 #2",
+        "amount": 232.85,
+        "type": "Expense",
+        "date": "2026-02-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-02 #3",
+        "amount": 189.73,
+        "type": "Expense",
+        "date": "2026-02-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-02 #4",
+        "amount": 172.48,
+        "type": "Expense",
+        "date": "2026-02-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-02 #1",
+        "amount": 250.56,
+        "type": "Expense",
+        "date": "2026-02-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-02 #2",
+        "amount": 181.44,
+        "type": "Expense",
+        "date": "2026-02-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-02 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-02-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-02 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-02-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-02 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-02-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-02 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-02-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-02 #1",
+        "amount": 100.92,
+        "type": "Expense",
+        "date": "2026-02-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-02 #2",
+        "amount": 73.08,
+        "type": "Expense",
+        "date": "2026-02-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-02 #1",
+        "amount": 64.03,
+        "type": "Expense",
+        "date": "2026-02-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-02 #2",
+        "amount": 46.37,
+        "type": "Expense",
+        "date": "2026-02-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-02 #1",
+        "amount": 54,
+        "type": "Expense",
+        "date": "2026-02-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-02 #2",
+        "amount": 39.1,
+        "type": "Expense",
+        "date": "2026-02-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-02 #1",
+        "amount": 121.68,
+        "type": "Expense",
+        "date": "2026-02-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-02 #2",
+        "amount": 86.53,
+        "type": "Expense",
+        "date": "2026-02-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-02 #3",
+        "amount": 62.19,
+        "type": "Expense",
+        "date": "2026-02-14T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-02 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-02-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-02 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-02-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-02 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-02-17T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-02 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-02-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-02 #1",
+        "amount": 53.94,
+        "type": "Expense",
+        "date": "2026-02-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-02 #2",
+        "amount": 46.98,
+        "type": "Expense",
+        "date": "2026-02-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-02 #3",
+        "amount": 38.28,
+        "type": "Expense",
+        "date": "2026-02-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-02 #4",
+        "amount": 34.8,
+        "type": "Expense",
+        "date": "2026-02-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-02 #1",
+        "amount": 25.67,
+        "type": "Expense",
+        "date": "2026-02-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-02 #2",
+        "amount": 22.36,
+        "type": "Expense",
+        "date": "2026-02-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-02 #3",
+        "amount": 18.22,
+        "type": "Expense",
+        "date": "2026-02-23T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-02 #4",
+        "amount": 16.55,
+        "type": "Expense",
+        "date": "2026-02-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-02 #1",
+        "amount": 114.66,
+        "type": "Expense",
+        "date": "2026-02-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-02 #2",
+        "amount": 81.54,
+        "type": "Expense",
+        "date": "2026-02-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-02 #3",
+        "amount": 58.6,
+        "type": "Expense",
+        "date": "2026-02-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-02 #1",
+        "amount": 56.16,
+        "type": "Expense",
+        "date": "2026-02-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-02 #2",
+        "amount": 39.94,
+        "type": "Expense",
+        "date": "2026-02-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-02 #3",
+        "amount": 28.7,
+        "type": "Expense",
+        "date": "2026-02-05T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-02 #1",
+        "amount": 76.56,
+        "type": "Expense",
+        "date": "2026-02-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-02 #2",
+        "amount": 55.44,
+        "type": "Expense",
+        "date": "2026-02-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-02 #1",
+        "amount": 74.01,
+        "type": "Expense",
+        "date": "2026-02-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-02 #2",
+        "amount": 53.59,
+        "type": "Expense",
+        "date": "2026-02-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-02 #1",
+        "amount": 45.36,
+        "type": "Expense",
+        "date": "2026-02-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-02 #2",
+        "amount": 32.84,
+        "type": "Expense",
+        "date": "2026-02-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-02 #1",
+        "amount": 68.21,
+        "type": "Expense",
+        "date": "2026-02-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-02 #2",
+        "amount": 49.39,
+        "type": "Expense",
+        "date": "2026-02-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-02 #1",
+        "amount": 84.24,
+        "type": "Expense",
+        "date": "2026-02-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-02 #2",
+        "amount": 59.9,
+        "type": "Expense",
+        "date": "2026-02-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-02 #3",
+        "amount": 43.06,
+        "type": "Expense",
+        "date": "2026-02-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-02",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Savings transfer 2026-02",
+        "amount": 520,
+        "type": "Transaction",
+        "date": "2026-02-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "savings-transfer",
+        "accountFromKey": "checking",
+        "accountToKey": "savings",
+        "description": "Imported scenario transfer"
+      },
+      {
+        "title": "Salary 2026-03",
+        "amount": 3900,
+        "type": "Income",
+        "date": "2026-03-02T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "salary",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Freelance 2026-03",
+        "amount": 450,
+        "type": "Income",
+        "date": "2026-03-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "freelance",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Rent 2026-03 #1",
+        "amount": 560.28,
+        "type": "Expense",
+        "date": "2026-03-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Rent 2026-03 #2",
+        "amount": 405.72,
+        "type": "Expense",
+        "date": "2026-03-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-03 #1",
+        "amount": 267.34,
+        "type": "Expense",
+        "date": "2026-03-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-03 #2",
+        "amount": 232.85,
+        "type": "Expense",
+        "date": "2026-03-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-03 #3",
+        "amount": 189.73,
+        "type": "Expense",
+        "date": "2026-03-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-03 #4",
+        "amount": 172.48,
+        "type": "Expense",
+        "date": "2026-03-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-03 #1",
+        "amount": 104.63,
+        "type": "Expense",
+        "date": "2026-03-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-03 #2",
+        "amount": 75.77,
+        "type": "Expense",
+        "date": "2026-03-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-03 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-03-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-03 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-03-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-03 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-03-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-03 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-03-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-03 #1",
+        "amount": 100.92,
+        "type": "Expense",
+        "date": "2026-03-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-03 #2",
+        "amount": 73.08,
+        "type": "Expense",
+        "date": "2026-03-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-03 #1",
+        "amount": 64.03,
+        "type": "Expense",
+        "date": "2026-03-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-03 #2",
+        "amount": 46.37,
+        "type": "Expense",
+        "date": "2026-03-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-03 #1",
+        "amount": 54,
+        "type": "Expense",
+        "date": "2026-03-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-03 #2",
+        "amount": 39.1,
+        "type": "Expense",
+        "date": "2026-03-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-03 #1",
+        "amount": 121.68,
+        "type": "Expense",
+        "date": "2026-03-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-03 #2",
+        "amount": 86.53,
+        "type": "Expense",
+        "date": "2026-03-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-03 #3",
+        "amount": 62.19,
+        "type": "Expense",
+        "date": "2026-03-14T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-03 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-03-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-03 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-03-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-03 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-03-17T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-03 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-03-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-03 #1",
+        "amount": 53.94,
+        "type": "Expense",
+        "date": "2026-03-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-03 #2",
+        "amount": 46.98,
+        "type": "Expense",
+        "date": "2026-03-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-03 #3",
+        "amount": 38.28,
+        "type": "Expense",
+        "date": "2026-03-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-03 #4",
+        "amount": 34.8,
+        "type": "Expense",
+        "date": "2026-03-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-03 #1",
+        "amount": 25.67,
+        "type": "Expense",
+        "date": "2026-03-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-03 #2",
+        "amount": 22.36,
+        "type": "Expense",
+        "date": "2026-03-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-03 #3",
+        "amount": 18.22,
+        "type": "Expense",
+        "date": "2026-03-23T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-03 #4",
+        "amount": 16.55,
+        "type": "Expense",
+        "date": "2026-03-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-03 #1",
+        "amount": 114.66,
+        "type": "Expense",
+        "date": "2026-03-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-03 #2",
+        "amount": 81.54,
+        "type": "Expense",
+        "date": "2026-03-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-03 #3",
+        "amount": 58.6,
+        "type": "Expense",
+        "date": "2026-03-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-03 #1",
+        "amount": 56.16,
+        "type": "Expense",
+        "date": "2026-03-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-03 #2",
+        "amount": 39.94,
+        "type": "Expense",
+        "date": "2026-03-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-03 #3",
+        "amount": 28.7,
+        "type": "Expense",
+        "date": "2026-03-05T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-03 #1",
+        "amount": 82.13,
+        "type": "Expense",
+        "date": "2026-03-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-03 #2",
+        "amount": 59.47,
+        "type": "Expense",
+        "date": "2026-03-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-03 #1",
+        "amount": 74.01,
+        "type": "Expense",
+        "date": "2026-03-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-03 #2",
+        "amount": 53.59,
+        "type": "Expense",
+        "date": "2026-03-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-03 #1",
+        "amount": 45.36,
+        "type": "Expense",
+        "date": "2026-03-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-03 #2",
+        "amount": 32.84,
+        "type": "Expense",
+        "date": "2026-03-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-03 #1",
+        "amount": 68.21,
+        "type": "Expense",
+        "date": "2026-03-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-03 #2",
+        "amount": 49.39,
+        "type": "Expense",
+        "date": "2026-03-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-03 #1",
+        "amount": 84.24,
+        "type": "Expense",
+        "date": "2026-03-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-03 #2",
+        "amount": 59.9,
+        "type": "Expense",
+        "date": "2026-03-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-03 #3",
+        "amount": 43.06,
+        "type": "Expense",
+        "date": "2026-03-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-03",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Savings transfer 2026-03",
+        "amount": 520,
+        "type": "Transaction",
+        "date": "2026-03-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "savings-transfer",
+        "accountFromKey": "checking",
+        "accountToKey": "savings",
+        "description": "Imported scenario transfer"
+      },
+      {
+        "title": "Salary 2026-04",
+        "amount": 3900,
+        "type": "Income",
+        "date": "2026-04-02T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "salary",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Freelance 2026-04",
+        "amount": 450,
+        "type": "Income",
+        "date": "2026-04-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "freelance",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Rent 2026-04 #1",
+        "amount": 560.28,
+        "type": "Expense",
+        "date": "2026-04-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Rent 2026-04 #2",
+        "amount": 405.72,
+        "type": "Expense",
+        "date": "2026-04-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-04 #1",
+        "amount": 267.34,
+        "type": "Expense",
+        "date": "2026-04-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-04 #2",
+        "amount": 232.85,
+        "type": "Expense",
+        "date": "2026-04-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-04 #3",
+        "amount": 189.73,
+        "type": "Expense",
+        "date": "2026-04-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-04 #4",
+        "amount": 172.48,
+        "type": "Expense",
+        "date": "2026-04-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-04 #1",
+        "amount": 104.63,
+        "type": "Expense",
+        "date": "2026-04-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-04 #2",
+        "amount": 75.77,
+        "type": "Expense",
+        "date": "2026-04-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-04 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-04-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-04 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-04-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-04 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-04-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-04 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-04-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-04 #1",
+        "amount": 100.92,
+        "type": "Expense",
+        "date": "2026-04-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-04 #2",
+        "amount": 73.08,
+        "type": "Expense",
+        "date": "2026-04-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-04 #1",
+        "amount": 64.03,
+        "type": "Expense",
+        "date": "2026-04-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-04 #2",
+        "amount": 46.37,
+        "type": "Expense",
+        "date": "2026-04-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-04 #1",
+        "amount": 54,
+        "type": "Expense",
+        "date": "2026-04-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-04 #2",
+        "amount": 39.1,
+        "type": "Expense",
+        "date": "2026-04-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-04 #1",
+        "amount": 121.68,
+        "type": "Expense",
+        "date": "2026-04-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-04 #2",
+        "amount": 86.53,
+        "type": "Expense",
+        "date": "2026-04-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-04 #3",
+        "amount": 62.19,
+        "type": "Expense",
+        "date": "2026-04-14T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-04 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-04-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-04 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-04-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-04 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-04-17T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-04 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-04-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-04 #1",
+        "amount": 53.94,
+        "type": "Expense",
+        "date": "2026-04-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-04 #2",
+        "amount": 46.98,
+        "type": "Expense",
+        "date": "2026-04-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-04 #3",
+        "amount": 38.28,
+        "type": "Expense",
+        "date": "2026-04-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-04 #4",
+        "amount": 34.8,
+        "type": "Expense",
+        "date": "2026-04-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-04 #1",
+        "amount": 25.67,
+        "type": "Expense",
+        "date": "2026-04-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-04 #2",
+        "amount": 22.36,
+        "type": "Expense",
+        "date": "2026-04-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-04 #3",
+        "amount": 18.22,
+        "type": "Expense",
+        "date": "2026-04-23T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-04 #4",
+        "amount": 16.55,
+        "type": "Expense",
+        "date": "2026-04-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-04 #1",
+        "amount": 114.66,
+        "type": "Expense",
+        "date": "2026-04-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-04 #2",
+        "amount": 81.54,
+        "type": "Expense",
+        "date": "2026-04-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-04 #3",
+        "amount": 58.6,
+        "type": "Expense",
+        "date": "2026-04-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-04 #1",
+        "amount": 56.16,
+        "type": "Expense",
+        "date": "2026-04-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-04 #2",
+        "amount": 39.94,
+        "type": "Expense",
+        "date": "2026-04-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-04 #3",
+        "amount": 28.7,
+        "type": "Expense",
+        "date": "2026-04-05T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-04 #1",
+        "amount": 82.13,
+        "type": "Expense",
+        "date": "2026-04-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-04 #2",
+        "amount": 59.47,
+        "type": "Expense",
+        "date": "2026-04-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-04 #1",
+        "amount": 74.01,
+        "type": "Expense",
+        "date": "2026-04-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-04 #2",
+        "amount": 53.59,
+        "type": "Expense",
+        "date": "2026-04-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-04 #1",
+        "amount": 45.36,
+        "type": "Expense",
+        "date": "2026-04-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-04 #2",
+        "amount": 32.84,
+        "type": "Expense",
+        "date": "2026-04-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-04 #1",
+        "amount": 68.21,
+        "type": "Expense",
+        "date": "2026-04-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-04 #2",
+        "amount": 49.39,
+        "type": "Expense",
+        "date": "2026-04-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-04 #1",
+        "amount": 84.24,
+        "type": "Expense",
+        "date": "2026-04-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-04 #2",
+        "amount": 59.9,
+        "type": "Expense",
+        "date": "2026-04-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-04 #3",
+        "amount": 43.06,
+        "type": "Expense",
+        "date": "2026-04-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-04",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Savings transfer 2026-04",
+        "amount": 520,
+        "type": "Transaction",
+        "date": "2026-04-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "savings-transfer",
+        "accountFromKey": "checking",
+        "accountToKey": "savings",
+        "description": "Imported scenario transfer"
+      },
+      {
+        "title": "Salary 2026-05",
+        "amount": 3900,
+        "type": "Income",
+        "date": "2026-05-02T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "salary",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Freelance 2026-05",
+        "amount": 450,
+        "type": "Income",
+        "date": "2026-05-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "freelance",
+        "accountToKey": "checking",
+        "description": "Imported scenario income"
+      },
+      {
+        "title": "Rent 2026-05 #1",
+        "amount": 560.28,
+        "type": "Expense",
+        "date": "2026-05-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Rent 2026-05 #2",
+        "amount": 405.72,
+        "type": "Expense",
+        "date": "2026-05-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "rent",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-05 #1",
+        "amount": 267.34,
+        "type": "Expense",
+        "date": "2026-05-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-05 #2",
+        "amount": 232.85,
+        "type": "Expense",
+        "date": "2026-05-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-05 #3",
+        "amount": 189.73,
+        "type": "Expense",
+        "date": "2026-05-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Supermarket 2026-05 #4",
+        "amount": 172.48,
+        "type": "Expense",
+        "date": "2026-05-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "supermarket",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-05 #1",
+        "amount": 104.63,
+        "type": "Expense",
+        "date": "2026-05-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Utilities 2026-05 #2",
+        "amount": 75.77,
+        "type": "Expense",
+        "date": "2026-05-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "utilities",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-05 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-05-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-05 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-05-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-05 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-05-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Transport 2026-05 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-05-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "transport",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-05 #1",
+        "amount": 100.92,
+        "type": "Expense",
+        "date": "2026-05-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fuel 2026-05 #2",
+        "amount": 73.08,
+        "type": "Expense",
+        "date": "2026-05-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fuel",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-05 #1",
+        "amount": 64.03,
+        "type": "Expense",
+        "date": "2026-05-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Health 2026-05 #2",
+        "amount": 46.37,
+        "type": "Expense",
+        "date": "2026-05-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "health",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-05 #1",
+        "amount": 54,
+        "type": "Expense",
+        "date": "2026-05-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Subscriptions 2026-05 #2",
+        "amount": 39.1,
+        "type": "Expense",
+        "date": "2026-05-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "subscriptions",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-05 #1",
+        "amount": 121.68,
+        "type": "Expense",
+        "date": "2026-05-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-05 #2",
+        "amount": 86.53,
+        "type": "Expense",
+        "date": "2026-05-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Entertainment 2026-05 #3",
+        "amount": 62.19,
+        "type": "Expense",
+        "date": "2026-05-14T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "entertainment",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-05 #1",
+        "amount": 71.61,
+        "type": "Expense",
+        "date": "2026-05-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-05 #2",
+        "amount": 62.37,
+        "type": "Expense",
+        "date": "2026-05-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-05 #3",
+        "amount": 50.82,
+        "type": "Expense",
+        "date": "2026-05-17T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Delivery 2026-05 #4",
+        "amount": 46.2,
+        "type": "Expense",
+        "date": "2026-05-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "delivery",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-05 #1",
+        "amount": 53.94,
+        "type": "Expense",
+        "date": "2026-05-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-05 #2",
+        "amount": 46.98,
+        "type": "Expense",
+        "date": "2026-05-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-05 #3",
+        "amount": 38.28,
+        "type": "Expense",
+        "date": "2026-05-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Fastfood 2026-05 #4",
+        "amount": 34.8,
+        "type": "Expense",
+        "date": "2026-05-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "fastfood",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-05 #1",
+        "amount": 25.67,
+        "type": "Expense",
+        "date": "2026-05-09T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-05 #2",
+        "amount": 22.36,
+        "type": "Expense",
+        "date": "2026-05-16T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-05 #3",
+        "amount": 18.22,
+        "type": "Expense",
+        "date": "2026-05-23T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Coffee 2026-05 #4",
+        "amount": 16.55,
+        "type": "Expense",
+        "date": "2026-05-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "coffee",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-05 #1",
+        "amount": 114.66,
+        "type": "Expense",
+        "date": "2026-05-12T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-05 #2",
+        "amount": 81.54,
+        "type": "Expense",
+        "date": "2026-05-19T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Shopping 2026-05 #3",
+        "amount": 58.6,
+        "type": "Expense",
+        "date": "2026-05-26T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "shopping",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-05 #1",
+        "amount": 56.16,
+        "type": "Expense",
+        "date": "2026-05-15T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-05 #2",
+        "amount": 39.94,
+        "type": "Expense",
+        "date": "2026-05-22T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Gifts 2026-05 #3",
+        "amount": 28.7,
+        "type": "Expense",
+        "date": "2026-05-05T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "gifts",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-05 #1",
+        "amount": 246.38,
+        "type": "Expense",
+        "date": "2026-05-18T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Travel 2026-05 #2",
+        "amount": 178.42,
+        "type": "Expense",
+        "date": "2026-05-25T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "travel",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-05 #1",
+        "amount": 74.01,
+        "type": "Expense",
+        "date": "2026-05-21T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Education 2026-05 #2",
+        "amount": 53.59,
+        "type": "Expense",
+        "date": "2026-05-04T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "education",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-05 #1",
+        "amount": 45.36,
+        "type": "Expense",
+        "date": "2026-05-24T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Pet 2026-05 #2",
+        "amount": 32.84,
+        "type": "Expense",
+        "date": "2026-05-07T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "pet",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-05 #1",
+        "amount": 68.21,
+        "type": "Expense",
+        "date": "2026-05-03T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Repairs 2026-05 #2",
+        "amount": 49.39,
+        "type": "Expense",
+        "date": "2026-05-10T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "repairs",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-05 #1",
+        "amount": 84.24,
+        "type": "Expense",
+        "date": "2026-05-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "cash",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-05 #2",
+        "amount": 59.9,
+        "type": "Expense",
+        "date": "2026-05-13T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Other 2026-05 #3",
+        "amount": 43.06,
+        "type": "Expense",
+        "date": "2026-05-20T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "other",
+        "budgetPlanKey": "plan-2026-05",
+        "accountFromKey": "checking",
+        "description": "Imported scenario expense"
+      },
+      {
+        "title": "Savings transfer 2026-05",
+        "amount": 520,
+        "type": "Transaction",
+        "date": "2026-05-06T00:00:00Z",
+        "currencyKey": "usd",
+        "categoryKey": "savings-transfer",
+        "accountFromKey": "checking",
+        "accountToKey": "savings",
+        "description": "Imported scenario transfer"
+      }
+    ],
+    "financialGoals": [
+      {
+        "title": "Holiday and travel reserve",
+        "targetAmount": 6500,
+        "initialAmount": 2600,
+        "targetDate": "2026-08-31T00:00:00Z",
+        "createdAt": "2025-11-01T00:00:00Z",
+        "linkedAccountKey": "savings",
+        "description": "Tests gifts, winter utilities, and travel seasonality."
+      }
+    ]
+  }
+}

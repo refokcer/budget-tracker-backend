@@ -43,6 +43,7 @@ public class CategoryManager : ICategoryManager
     {
         var entity = _mapper.Map<Category>(dto) ??
             throw new CustomException("Cannot map CreateCategoryDto", StatusCodes.Status400BadRequest);
+        entity.Color = NormalizeColor(dto.Color);
 
         await _context.Categories.AddAsync(entity, cancellationToken);
         var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
@@ -59,6 +60,7 @@ public class CategoryManager : ICategoryManager
             throw new CustomException("Category not found", StatusCodes.Status404NotFound);
 
         _mapper.Map(dto, existing);
+        existing.Color = NormalizeColor(dto.Color);
         _context.Categories.Update(existing);
         var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
         if (!saved)
@@ -79,5 +81,31 @@ public class CategoryManager : ICategoryManager
             throw new CustomException("Failed to delete category", StatusCodes.Status500InternalServerError);
 
         return true;
+    }
+
+    private static string? NormalizeColor(string? color)
+    {
+        if (string.IsNullOrWhiteSpace(color))
+            return null;
+
+        var trimmed = color.Trim();
+        if (trimmed.Length == 6 && trimmed.All(IsHexDigit))
+            trimmed = $"#{trimmed}";
+
+        if (trimmed.Length == 7
+            && trimmed[0] == '#'
+            && trimmed.Skip(1).All(IsHexDigit))
+        {
+            return trimmed.ToUpperInvariant();
+        }
+
+        throw new CustomException("Category color must be a hex value like #5FB3A7", StatusCodes.Status400BadRequest);
+    }
+
+    private static bool IsHexDigit(char value)
+    {
+        return value is >= '0' and <= '9'
+            or >= 'a' and <= 'f'
+            or >= 'A' and <= 'F';
     }
 }

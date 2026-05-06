@@ -41,4 +41,10 @@
     <PackageReference Include="itext7" Version="7.2.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="AdminDataTemplates\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
