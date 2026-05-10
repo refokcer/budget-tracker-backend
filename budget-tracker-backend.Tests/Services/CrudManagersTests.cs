@@ -78,7 +78,8 @@ public class CrudManagersTests
     {
         await using var context = TestInfrastructure.CreateContext();
         await TestInfrastructure.SeedReferenceDataAsync(context);
-        var manager = new BudgetPlanManager(context, TestInfrastructure.CreateMapper());
+        var mapper = TestInfrastructure.CreateMapper();
+        var manager = TestInfrastructure.CreateBudgetPlanManager(context, mapper);
 
         var created = await manager.CreateAsync(new CreateBudgetPlanDto
         {
@@ -97,7 +98,8 @@ public class CrudManagersTests
     public void BudgetPlanManager_CreateAsync_WhenMonthlyHasParent_ThrowsBadRequest()
     {
         using var context = TestInfrastructure.CreateContext();
-        var manager = new BudgetPlanManager(context, TestInfrastructure.CreateMapper());
+        var mapper = TestInfrastructure.CreateMapper();
+        var manager = TestInfrastructure.CreateBudgetPlanManager(context, mapper);
 
         Assert.That(async () => await manager.CreateAsync(new CreateBudgetPlanDto
         {

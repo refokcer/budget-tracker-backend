@@ -38,6 +38,41 @@ internal static class TestInfrastructure
         return configuration.CreateMapper();
     }
 
+    public static AutoBudgetPlanAlgorithm CreateAutoBudgetPlanAlgorithm(ApplicationDbContext context, IMapper mapper)
+    {
+        return new AutoBudgetPlanAlgorithm(context, mapper);
+    }
+
+    public static FinancialGoalBudgetAdjustmentAlgorithm CreateFinancialGoalBudgetAdjustmentAlgorithm(ApplicationDbContext context)
+    {
+        return new FinancialGoalBudgetAdjustmentAlgorithm(context);
+    }
+
+    public static FinancialGoalForecastAlgorithm CreateFinancialGoalForecastAlgorithm(ApplicationDbContext context)
+    {
+        return new FinancialGoalForecastAlgorithm(
+            context,
+            CreateFinancialGoalBudgetAdjustmentAlgorithm(context));
+    }
+
+    public static FinancialGoalManager CreateFinancialGoalManager(ApplicationDbContext context, IMapper mapper)
+    {
+        var adjustmentAlgorithm = CreateFinancialGoalBudgetAdjustmentAlgorithm(context);
+        return new FinancialGoalManager(
+            context,
+            mapper,
+            new FinancialGoalForecastAlgorithm(context, adjustmentAlgorithm),
+            adjustmentAlgorithm);
+    }
+
+    public static BudgetPlanManager CreateBudgetPlanManager(ApplicationDbContext context, IMapper mapper)
+    {
+        return new BudgetPlanManager(
+            context,
+            mapper,
+            CreateAutoBudgetPlanAlgorithm(context, mapper));
+    }
+
     public static ApplicationDbContext CreateContext(string? databaseName = null)
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()

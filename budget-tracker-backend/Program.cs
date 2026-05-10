@@ -12,6 +12,9 @@ using budget_tracker_backend.Services.ChatGpt;
 using budget_tracker_backend.Services.FinancialGoals;
 using budget_tracker_backend.Services.UserSettings;
 using budget_tracker_backend.Services.AdminData;
+using budget_tracker_backend.Services.Algorithms.Analytics;
+using budget_tracker_backend.Services.Algorithms.BudgetPlanning;
+using budget_tracker_backend.Services.Algorithms.FinancialGoals;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +42,13 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IFinancialGoalManager, FinancialGoalManager>();
 builder.Services.AddScoped<IUserSettingsManager, UserSettingsManager>();
 builder.Services.AddScoped<IAdminDataManager, AdminDataManager>();
+builder.Services.AddScoped<IAdminDataTemplateProvider, AdminDataTemplateProvider>();
+builder.Services.AddScoped<IAdminDataSampleBuilder, AdminDataSampleBuilder>();
+builder.Services.AddScoped<IAutoBudgetPlanAlgorithm, AutoBudgetPlanAlgorithm>();
+builder.Services.AddScoped<IFinancialStabilityAlgorithm, FinancialStabilityAlgorithm>();
+builder.Services.AddScoped<IBehavioralScoreAlgorithm, BehavioralScoreAlgorithm>();
+builder.Services.AddScoped<IFinancialGoalForecastAlgorithm, FinancialGoalForecastAlgorithm>();
+builder.Services.AddScoped<IFinancialGoalBudgetAdjustmentAlgorithm, FinancialGoalBudgetAdjustmentAlgorithm>();
 builder.Services.AddHttpClient<IChatGptService, ChatGptService>();
 // Ïîäêëþ÷àåì EF Core è MS SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

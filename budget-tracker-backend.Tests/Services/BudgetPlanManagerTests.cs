@@ -7,7 +7,8 @@ public class BudgetPlanManagerTests
 {
     private static BudgetPlanManager CreateManager(ApplicationDbContext context)
     {
-        return new BudgetPlanManager(context, TestInfrastructure.CreateMapper());
+        var mapper = TestInfrastructure.CreateMapper();
+        return TestInfrastructure.CreateBudgetPlanManager(context, mapper);
     }
 
     [Test]

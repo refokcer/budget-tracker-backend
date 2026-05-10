@@ -9,10 +9,10 @@ public class PageManagerTests
     {
         var mapper = TestInfrastructure.CreateMapper();
         var accountManager = new AccountManager(context, mapper);
-        var budgetPlanManager = new BudgetPlanManager(context, mapper);
+        var budgetPlanManager = TestInfrastructure.CreateBudgetPlanManager(context, mapper);
         var budgetPlanItemManager = new BudgetPlanItemManager(context, mapper);
         var transactionManager = new TransactionManager(context, mapper, accountManager);
-        var financialGoalManager = new FinancialGoalManager(context, mapper);
+        var financialGoalManager = TestInfrastructure.CreateFinancialGoalManager(context, mapper);
 
         return new PageManager(
             context,
@@ -21,7 +21,9 @@ public class PageManagerTests
             budgetPlanManager,
             budgetPlanItemManager,
             transactionManager,
-            financialGoalManager);
+            financialGoalManager,
+            new FinancialStabilityAlgorithm(context),
+            new BehavioralScoreAlgorithm(context));
     }
 
     [Test]

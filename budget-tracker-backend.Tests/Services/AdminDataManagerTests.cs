@@ -11,7 +11,9 @@ public class AdminDataManagerTests
     {
         return new AdminDataManager(
             context,
-            new HttpContextAccessor { HttpContext = TestInfrastructure.CreateHttpContext() });
+            new HttpContextAccessor { HttpContext = TestInfrastructure.CreateHttpContext() },
+            new AdminDataTemplateProvider(),
+            new AdminDataSampleBuilder());
     }
 
     [Test]

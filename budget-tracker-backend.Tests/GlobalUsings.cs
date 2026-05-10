@@ -25,3 +25,6 @@ global using budget_tracker_backend.Services.Currencies;
 global using budget_tracker_backend.Services.FinancialGoals;
 global using budget_tracker_backend.Services.Pages;
 global using budget_tracker_backend.Services.Transactions;
+global using budget_tracker_backend.Services.Algorithms.Analytics;
+global using budget_tracker_backend.Services.Algorithms.BudgetPlanning;
+global using budget_tracker_backend.Services.Algorithms.FinancialGoals;

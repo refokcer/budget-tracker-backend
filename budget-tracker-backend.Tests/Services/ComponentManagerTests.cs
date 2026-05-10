@@ -12,7 +12,7 @@ public class ComponentManagerTests
             new AccountManager(context, mapper),
             new CategoryManager(context, mapper),
             new CurrencyManager(context, mapper),
-            new BudgetPlanManager(context, mapper),
+            TestInfrastructure.CreateBudgetPlanManager(context, mapper),
             mapper);
     }
 

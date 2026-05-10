@@ -3,7 +3,6 @@ namespace budget_tracker_backend.Services.AdminData;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.AdminData;
 using budget_tracker_backend.Exceptions;
@@ -14,65 +13,21 @@ using Microsoft.EntityFrameworkCore;
 
 public class AdminDataManager : IAdminDataManager
 {
-    private static readonly IReadOnlyList<AdminDataTemplateDto> Templates =
-    [
-        new()
-        {
-            Id = "stable-household",
-            Name = "Stable household, 7 months",
-            Description = "Stable income, regular savings and mostly controlled spending. Good baseline for dashboard, analytics and forecasts.",
-            FileName = "stable-household-7-months.json",
-            Accounts = 5,
-            Categories = 23,
-            BudgetPlans = 7,
-            Transactions = 371,
-            FinancialGoals = 1
-        },
-        new()
-        {
-            Id = "declining-discipline",
-            Name = "Declining discipline, 7 months",
-            Description = "Income drops while discretionary overspend grows. Good for behavioral score, stability decline and auto-plan cuts.",
-            FileName = "declining-discipline-7-months.json",
-            Accounts = 5,
-            Categories = 23,
-            BudgetPlans = 7,
-            Transactions = 368,
-            FinancialGoals = 1
-        },
-        new()
-        {
-            Id = "seasonal-winter-holidays",
-            Name = "Seasonal winter and holidays, 7 months",
-            Description = "December gifts, winter utilities, spring normalization and an event budget. Good for seasonality checks.",
-            FileName = "seasonal-winter-holidays-7-months.json",
-            Accounts = 5,
-            Categories = 23,
-            BudgetPlans = 8,
-            Transactions = 372,
-            FinancialGoals = 1
-        },
-        new()
-        {
-            Id = "aggressive-goal-pressure",
-            Name = "Aggressive goal pressure, 7 months",
-            Description = "Strong savings goal pressure with reduced discretionary budgets. Good for goal-aware next-month plan generation.",
-            FileName = "aggressive-goal-pressure-7-months.json",
-            Accounts = 5,
-            Categories = 23,
-            BudgetPlans = 8,
-            Transactions = 378,
-            FinancialGoals = 2
-        }
-    ];
-
-    private readonly ApplicationDbContext _context;
+    private readonly IApplicationDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAdminDataTemplateProvider _templateProvider;
+    private readonly IAdminDataSampleBuilder _sampleBuilder;
 
-    public AdminDataManager(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+    public AdminDataManager(
+        IApplicationDbContext context,
+        IHttpContextAccessor httpContextAccessor,
+        IAdminDataTemplateProvider templateProvider,
+        IAdminDataSampleBuilder sampleBuilder)
     {
         _context = context;
         _httpContextAccessor = httpContextAccessor;
+        _templateProvider = templateProvider;
+        _sampleBuilder = sampleBuilder;
     }
 
     public async Task ClearCurrentUserDataAsync(CancellationToken cancellationToken)
@@ -154,165 +109,19 @@ public class AdminDataManager : IAdminDataManager
 
     public IReadOnlyList<AdminDataTemplateDto> GetTemplates()
     {
-        var templatesDirectory = TryFindTemplatesDirectory();
-        if (templatesDirectory == null)
-            return Templates;
-
-        return Templates
-            .Where(template => File.Exists(Path.Combine(templatesDirectory, template.FileName)))
-            .ToList();
+        return _templateProvider.GetTemplates();
     }
 
     public async Task<AdminDataImportDto> GetTemplateAsync(
         string templateId,
         CancellationToken cancellationToken)
     {
-        var template = Templates.FirstOrDefault(t =>
-            string.Equals(t.Id, templateId, StringComparison.OrdinalIgnoreCase))
-            ?? throw new CustomException($"Unknown admin data template: {templateId}", StatusCodes.Status404NotFound);
-
-        var templatesDirectory = TryFindTemplatesDirectory()
-            ?? throw new CustomException("Admin data templates directory was not found.", StatusCodes.Status404NotFound);
-        var path = Path.Combine(templatesDirectory, template.FileName);
-        if (!File.Exists(path))
-            throw new CustomException($"Admin data template file was not found: {template.FileName}", StatusCodes.Status404NotFound);
-
-        await using var stream = File.OpenRead(path);
-        var dto = await JsonSerializer.DeserializeAsync<AdminDataImportDto>(
-            stream,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-            cancellationToken);
-
-        return dto ?? throw new CustomException($"Admin data template is empty: {template.FileName}", StatusCodes.Status400BadRequest);
+        return await _templateProvider.GetTemplateAsync(templateId, cancellationToken);
     }
 
     public AdminDataImportDto BuildSample()
     {
-        var now = DateTime.UtcNow;
-        var currentMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0, DateTimeKind.Utc);
-        var data = new AdminDataSeedDto
-        {
-            Currencies =
-            [
-                new() { Key = "usd", Code = "USD", Title = "US Dollar", Symbol = "$", IsBase = true }
-            ],
-            Categories =
-            [
-                new() { Key = "salary", Title = "Salary", Type = "Income", Color = "#35B978" },
-                new() { Key = "supermarket", Title = "Supermarket", Type = "Expense", Description = "Essential groceries", Color = "#35B978" },
-                new() { Key = "utilities", Title = "Utilities", Type = "Expense", Description = "Heating, water, electricity", Color = "#4AA3FF" },
-                new() { Key = "transport", Title = "Transport", Type = "Expense", Color = "#5FB3A7" },
-                new() { Key = "entertainment", Title = "Entertainment", Type = "Expense", Color = "#A78BFA" },
-                new() { Key = "delivery", Title = "Delivery food", Type = "Expense", Color = "#FF6B5F" },
-                new() { Key = "shopping", Title = "Shopping", Type = "Expense", Color = "#F7B731" },
-                new() { Key = "savings-transfer", Title = "Savings transfer", Type = "Transaction", Color = "#35B978" }
-            ],
-            Accounts =
-            [
-                new() { Key = "checking", Title = "Main checking", Amount = 1800m, CurrencyKey = "usd", Type = "Checking" },
-                new() { Key = "cash", Title = "Cash", Amount = 300m, CurrencyKey = "usd", Type = "Cash" },
-                new() { Key = "savings", Title = "Goal savings", Amount = 2400m, CurrencyKey = "usd", Type = "Savings" }
-            ],
-            FinancialGoals =
-            [
-                new()
-                {
-                    Title = "Emergency fund",
-                    TargetAmount = 6000m,
-                    InitialAmount = 1800m,
-                    TargetDate = currentMonth.AddMonths(8).AddDays(14),
-                    CreatedAt = currentMonth.AddMonths(-6),
-                    LinkedAccountKey = "savings",
-                    Description = "Safety buffer"
-                }
-            ]
-        };
-
-        for (var offset = -5; offset <= 0; offset++)
-        {
-            var month = currentMonth.AddMonths(offset);
-            var planKey = $"plan-{month:yyyy-MM}";
-            data.BudgetPlans.Add(new AdminBudgetPlanSeedDto
-            {
-                Key = planKey,
-                Title = $"{month:MMMM yyyy} simulation",
-                StartDate = month,
-                EndDate = month.AddMonths(1).AddDays(-1),
-                Type = "Monthly",
-                Description = "Generated admin sample plan",
-                Items =
-                [
-                    new() { CategoryKey = "supermarket", Amount = 900m, CurrencyKey = "usd" },
-                    new() { CategoryKey = "utilities", Amount = offset is -5 or -4 or -3 ? 380m : 260m, CurrencyKey = "usd" },
-                    new() { CategoryKey = "transport", Amount = 220m, CurrencyKey = "usd" },
-                    new() { CategoryKey = "entertainment", Amount = offset >= -2 ? 450m : 300m, CurrencyKey = "usd" },
-                    new() { CategoryKey = "delivery", Amount = offset >= -2 ? 360m : 180m, CurrencyKey = "usd" },
-                    new() { CategoryKey = "shopping", Amount = offset >= -1 ? 500m : 250m, CurrencyKey = "usd" }
-                ]
-            });
-
-            data.Transactions.Add(new AdminTransactionSeedDto
-            {
-                Title = $"Salary {month:yyyy-MM}",
-                Amount = offset >= -2 ? 3000m : 3600m,
-                Type = "Income",
-                Date = month.AddDays(2),
-                CurrencyKey = "usd",
-                CategoryKey = "salary",
-                AccountToKey = "checking"
-            });
-
-            AddExpenseMonth(data, planKey, month, offset);
-
-            data.Transactions.Add(new AdminTransactionSeedDto
-            {
-                Title = $"Savings transfer {month:yyyy-MM}",
-                Amount = offset >= -2 ? 150m : 450m,
-                Type = "Transaction",
-                Date = month.AddDays(5),
-                CurrencyKey = "usd",
-                CategoryKey = "savings-transfer",
-                AccountFromKey = "checking",
-                AccountToKey = "savings"
-            });
-        }
-
-        return new AdminDataImportDto
-        {
-            ClearExisting = true,
-            Data = data
-        };
-    }
-
-    private static void AddExpenseMonth(AdminDataSeedDto data, string planKey, DateTime month, int offset)
-    {
-        var stress = offset >= -2 ? 1.35m : 1m;
-        var essentials = offset >= -2 ? 1.08m : 1m;
-
-        var expenses = new[]
-        {
-            ("Supermarket", "supermarket", 780m * essentials, 6),
-            ("Utilities", "utilities", (offset is -5 or -4 or -3 ? 350m : 230m) * essentials, 8),
-            ("Transport", "transport", 180m, 10),
-            ("Entertainment", "entertainment", 240m * stress, 14),
-            ("Delivery", "delivery", 145m * stress, 18),
-            ("Shopping", "shopping", 220m * stress, 22)
-        };
-
-        foreach (var (title, categoryKey, amount, day) in expenses)
-        {
-            data.Transactions.Add(new AdminTransactionSeedDto
-            {
-                Title = $"{title} {month:yyyy-MM}",
-                Amount = Math.Round(amount, 2),
-                Type = "Expense",
-                Date = month.AddDays(day),
-                CurrencyKey = "usd",
-                CategoryKey = categoryKey,
-                BudgetPlanKey = planKey,
-                AccountFromKey = "checking"
-            });
-        }
+        return _sampleBuilder.BuildSample();
     }
 
     private async Task<Dictionary<string, int>> SeedCurrenciesAsync(
@@ -374,6 +183,8 @@ public class AdminDataManager : IAdminDataManager
         CancellationToken cancellationToken)
     {
         var map = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var entitiesByKey = new Dictionary<string, Category>(StringComparer.OrdinalIgnoreCase);
+
         foreach (var item in categories)
         {
             RequireKey(item.Key, "category");
@@ -386,10 +197,14 @@ public class AdminDataManager : IAdminDataManager
                 UserId = userId
             };
             await _context.Categories.AddAsync(entity, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-            map[item.Key] = entity.Id;
+            entitiesByKey[item.Key] = entity;
             result.Categories++;
         }
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        foreach (var (key, entity) in entitiesByKey)
+            map[key] = entity.Id;
 
         return map;
     }
@@ -402,6 +217,8 @@ public class AdminDataManager : IAdminDataManager
         CancellationToken cancellationToken)
     {
         var map = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var entitiesByKey = new Dictionary<string, Account>(StringComparer.OrdinalIgnoreCase);
+
         foreach (var item in accounts)
         {
             RequireKey(item.Key, "account");
@@ -415,10 +232,14 @@ public class AdminDataManager : IAdminDataManager
                 UserId = userId
             };
             await _context.Accounts.AddAsync(entity, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-            map[item.Key] = entity.Id;
+            entitiesByKey[item.Key] = entity;
             result.Accounts++;
         }
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        foreach (var (key, entity) in entitiesByKey)
+            map[key] = entity.Id;
 
         return map;
     }
@@ -447,11 +268,14 @@ public class AdminDataManager : IAdminDataManager
                 UserId = userId
             };
             await _context.BudgetPlans.AddAsync(entity, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-            map[item.Key] = entity.Id;
             planEntities[item.Key] = entity;
             result.BudgetPlans++;
         }
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        foreach (var (key, entity) in planEntities)
+            map[key] = entity.Id;
 
         foreach (var item in plans.Where(p => !string.IsNullOrWhiteSpace(p.ParentKey)))
         {
@@ -632,30 +456,4 @@ public class AdminDataManager : IAdminDataManager
             or >= 'A' and <= 'F';
     }
 
-    private static string? TryFindTemplatesDirectory()
-    {
-        foreach (var root in new[] { Directory.GetCurrentDirectory(), AppContext.BaseDirectory })
-        {
-            var current = new DirectoryInfo(root);
-            while (current != null)
-            {
-                var candidates = new[]
-                {
-                    Path.Combine(current.FullName, "AdminDataTemplates"),
-                    Path.Combine(current.FullName, "budget-tracker-backend", "AdminDataTemplates"),
-                    Path.Combine(current.FullName, "budget-tracker-test-data", "admin-import")
-                };
-
-                foreach (var candidate in candidates)
-                {
-                    if (Directory.Exists(candidate))
-                        return candidate;
-                }
-
-                current = current.Parent;
-            }
-        }
-
-        return null;
-    }
 }

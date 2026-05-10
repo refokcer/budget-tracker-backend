@@ -7,7 +7,8 @@ public class FinancialGoalManagerTests
 {
     private static FinancialGoalManager CreateManager(ApplicationDbContext context)
     {
-        return new FinancialGoalManager(context, TestInfrastructure.CreateMapper());
+        var mapper = TestInfrastructure.CreateMapper();
+        return TestInfrastructure.CreateFinancialGoalManager(context, mapper);
     }
 
     [Test]
