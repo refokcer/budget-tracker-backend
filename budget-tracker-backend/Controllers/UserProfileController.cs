@@ -3,6 +3,7 @@ namespace budget_tracker_backend.Controllers;
 using System.Security.Claims;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.UserProfile;
+using budget_tracker_backend.Extensions;
 using budget_tracker_backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -28,7 +29,7 @@ public class UserProfileController : ControllerBase
     {
         var user = await GetCurrentUserAsync();
         if (user == null)
-            return Unauthorized();
+            return this.ApiError(StatusCodes.Status401Unauthorized, "unauthorized", "Authentication is required.");
 
         return Ok(await BuildProfileAsync(user, cancellationToken));
     }
@@ -38,7 +39,7 @@ public class UserProfileController : ControllerBase
     {
         var user = await GetCurrentUserAsync();
         if (user == null)
-            return Unauthorized();
+            return this.ApiError(StatusCodes.Status401Unauthorized, "unauthorized", "Authentication is required.");
 
         var requestedEmail = NormalizeNullable(dto.Email);
         if (!string.IsNullOrWhiteSpace(requestedEmail)
@@ -46,11 +47,11 @@ public class UserProfileController : ControllerBase
         {
             var existingEmailUser = await _userManager.FindByEmailAsync(requestedEmail);
             if (existingEmailUser != null && existingEmailUser.Id != user.Id)
-                return BadRequest(new[] { "Email is already used by another account." });
+                return this.ApiValidationError("Profile update failed.", new[] { "Email is already used by another account." });
 
             var emailResult = await _userManager.SetEmailAsync(user, requestedEmail);
             if (!emailResult.Succeeded)
-                return BadRequest(emailResult.Errors);
+                return this.ApiValidationError("Profile update failed.", emailResult.Errors);
 
             user.EmailConfirmed = false;
         }
@@ -61,21 +62,21 @@ public class UserProfileController : ControllerBase
         {
             var existingNameUser = await _userManager.FindByNameAsync(requestedUserName);
             if (existingNameUser != null && existingNameUser.Id != user.Id)
-                return BadRequest(new[] { "Username is already used by another account." });
+                return this.ApiValidationError("Profile update failed.", new[] { "Username is already used by another account." });
 
             var userNameResult = await _userManager.SetUserNameAsync(user, requestedUserName);
             if (!userNameResult.Succeeded)
-                return BadRequest(userNameResult.Errors);
+                return this.ApiValidationError("Profile update failed.", userNameResult.Errors);
         }
 
         user.FullName = NormalizeNullable(dto.FullName);
         var phoneResult = await _userManager.SetPhoneNumberAsync(user, NormalizeNullable(dto.PhoneNumber));
         if (!phoneResult.Succeeded)
-            return BadRequest(phoneResult.Errors);
+            return this.ApiValidationError("Profile update failed.", phoneResult.Errors);
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
-            return BadRequest(result.Errors);
+            return this.ApiValidationError("Profile update failed.", result.Errors);
 
         return Ok(await BuildProfileAsync(user, cancellationToken));
     }
@@ -85,14 +86,14 @@ public class UserProfileController : ControllerBase
     {
         var user = await GetCurrentUserAsync();
         if (user == null)
-            return Unauthorized();
+            return this.ApiError(StatusCodes.Status401Unauthorized, "unauthorized", "Authentication is required.");
 
         if (string.IsNullOrWhiteSpace(dto.CurrentPassword) || string.IsNullOrWhiteSpace(dto.NewPassword))
-            return BadRequest(new[] { "Current password and new password are required." });
+            return this.ApiValidationError("Password change failed.", new[] { "Current password and new password are required." });
 
         var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
         if (!result.Succeeded)
-            return BadRequest(result.Errors);
+            return this.ApiValidationError("Password change failed.", result.Errors);
 
         return Ok(new { changed = true });
     }

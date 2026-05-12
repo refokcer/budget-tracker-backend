@@ -1,4 +1,5 @@
-﻿using FluentResults;
+using budget_tracker_backend.Extensions;
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,10 +18,11 @@ public class BaseApiController : ControllerBase
     {
         if (result.IsSuccess)
         {
-            return result.Value is null ?
-                NotFound("Found result matching null") : Ok(result.Value);
+            return result.Value is null
+                ? this.ApiError(StatusCodes.Status404NotFound, "not_found", "Resource was not found.")
+                : Ok(result.Value);
         }
 
-        return BadRequest(result.Reasons);
+        return this.ApiResultError(result.Reasons);
     }
 }

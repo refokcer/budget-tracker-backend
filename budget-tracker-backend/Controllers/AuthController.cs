@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Dto.Auth;
+using budget_tracker_backend.Extensions;
 using budget_tracker_backend.Models;
 using budget_tracker_backend.Services.Auth;
 
@@ -30,7 +31,7 @@ public class AuthController : ControllerBase
         var result = await _userManager.CreateAsync(user, dto.Password);
         if (!result.Succeeded)
         {
-            return BadRequest(result.Errors);
+            return this.ApiValidationError("Registration failed.", result.Errors);
         }
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -47,7 +48,7 @@ public class AuthController : ControllerBase
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
-            return Unauthorized();
+            return this.ApiError(StatusCodes.Status401Unauthorized, "invalid_credentials", "Invalid email or password.");
 
         var roles = await _userManager.GetRolesAsync(user);
         var accessToken = _tokenService.CreateAccessToken(user, roles);
@@ -63,14 +64,14 @@ public class AuthController : ControllerBase
     {
         var principal = _tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
         if (principal?.Identity?.Name == null)
-            return BadRequest();
+            return this.ApiError(StatusCodes.Status400BadRequest, "invalid_refresh_request", "Invalid refresh request.");
         var user = await _userManager.FindByNameAsync(principal.Identity.Name);
         if (user == null)
-            return BadRequest();
+            return this.ApiError(StatusCodes.Status400BadRequest, "invalid_refresh_request", "Invalid refresh request.");
 
         var refreshToken = user.RefreshTokens.FirstOrDefault(x => x.Token == request.RefreshToken && x.IsActive);
         if (refreshToken == null)
-            return Unauthorized();
+            return this.ApiError(StatusCodes.Status401Unauthorized, "invalid_refresh_token", "Invalid refresh token.");
 
         refreshToken.Revoked = DateTime.UtcNow;
         var newRefreshToken = _tokenService.CreateRefreshToken();
@@ -87,7 +88,7 @@ public class AuthController : ControllerBase
     {
         var user = await _userManager.FindByNameAsync(User.Identity!.Name);
         if (user == null)
-            return BadRequest();
+            return this.ApiError(StatusCodes.Status400BadRequest, "current_user_not_found", "Current user was not found.");
         var refreshToken = user.RefreshTokens.FirstOrDefault(x => x.Token == request.RefreshToken && x.IsActive);
         if (refreshToken != null)
         {

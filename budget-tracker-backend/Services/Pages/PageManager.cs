@@ -10,6 +10,7 @@ using budget_tracker_backend.Services.BudgetPlanItems;
 using budget_tracker_backend.Services.FinancialGoals;
 using budget_tracker_backend.Services.Algorithms.Analytics;
 using budget_tracker_backend.Services.Transactions;
+using budget_tracker_backend.Exceptions;
 using budget_tracker_backend.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -162,7 +163,7 @@ public class PageManager : IPageManager
     {
         var plan = await _budgetPlanManager.GetByIdAsync(planId, ct);
         if (plan == null)
-            throw new Exception($"Budget plan {planId} not found");
+            throw new CustomException($"Budget plan {planId} not found", StatusCodes.Status404NotFound, "budget_plan_not_found");
 
         var items = await _budgetPlanItemManager.GetByPlanIdAsync(planId, ct);
 
@@ -289,7 +290,7 @@ public class PageManager : IPageManager
     {
         var ev = await _budgetPlanManager.GetByIdAsync(eventId, ct);
         if (ev == null || ev.Type != BudgetPlanType.Event)
-            throw new Exception($"Event {eventId} not found");
+            throw new CustomException($"Event {eventId} not found", StatusCodes.Status404NotFound, "event_not_found");
 
         return await GetBudgetPlanPageAsync(eventId, false, ct);
     }
@@ -297,7 +298,7 @@ public class PageManager : IPageManager
     public async Task<IncomesByMonthDto> GetIncomesByMonthAsync(int month, int? year, CancellationToken ct)
     {
         if (month is < 1 or > 12)
-            throw new Exception("Month must be 1-12");
+            throw new CustomException("Month must be between 1 and 12", StatusCodes.Status400BadRequest, "invalid_month");
 
         var yr = year ?? DateTime.Today.Year;
         var start = new DateTime(yr, month, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -322,7 +323,7 @@ public class PageManager : IPageManager
     public async Task<ExpensesByMonthDto> GetExpensesByMonthAsync(int month, int? year, CancellationToken ct)
     {
         if (month is < 1 or > 12)
-            throw new Exception("Month must be 1-12");
+            throw new CustomException("Month must be between 1 and 12", StatusCodes.Status400BadRequest, "invalid_month");
 
         var yr = year ?? DateTime.Today.Year;
         var start = new DateTime(yr, month, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -348,7 +349,7 @@ public class PageManager : IPageManager
     public async Task<TransfersByMonthDto> GetTransfersByMonthAsync(int month, int? year, CancellationToken ct)
     {
         if (month is < 1 or > 12)
-            throw new Exception("Month must be 1-12");
+            throw new CustomException("Month must be between 1 and 12", StatusCodes.Status400BadRequest, "invalid_month");
 
         var yr = year ?? DateTime.Today.Year;
         var start = new DateTime(yr, month, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -374,7 +375,7 @@ public class PageManager : IPageManager
     public async Task<MonthlyReportDto> GetMonthlyReportAsync(int month, int? year, CancellationToken ct)
     {
         if (month is < 1 or > 12)
-            throw new Exception("Month must be 1-12");
+            throw new CustomException("Month must be between 1 and 12", StatusCodes.Status400BadRequest, "invalid_month");
 
         var yr = year ?? DateTime.Today.Year;
         var start = new DateTime(yr, month, 1, 0, 0, 0, DateTimeKind.Utc);

@@ -7,6 +7,7 @@ using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.ChatGpt;
 using budget_tracker_backend.Models.Enums;
 using budget_tracker_backend.Dto.Transactions;
+using budget_tracker_backend.Extensions;
 using budget_tracker_backend.Services.ChatGpt;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -63,12 +64,12 @@ public class ChatGptController : ControllerBase
     {
         if (form.Pdf == null || form.Pdf.Length == 0)
         {
-            return BadRequest("Файл PDF не передан или пуст.");
+            return this.ApiError(StatusCodes.Status400BadRequest, "missing_pdf_file", "PDF file is required.");
         }
 
         if (!form.Pdf.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
         {
-            return BadRequest("Ожидается файл с расширением .pdf.");
+            return this.ApiError(StatusCodes.Status400BadRequest, "invalid_pdf_file", "Expected a file with .pdf extension.");
         }
 
         string rawText;
@@ -79,13 +80,13 @@ public class ChatGptController : ControllerBase
         catch (Exception ex) when (ex is PdfException or InvalidOperationException or IOException)
         {
             _logger.LogError(ex, "Failed to extract text from PDF {FileName}", form.Pdf.FileName);
-            return BadRequest("Не удалось прочитать содержимое PDF файла.");
+            return this.ApiError(StatusCodes.Status400BadRequest, "pdf_read_failed", "Failed to read PDF content.");
         }
 
         var normalizedText = NormalizeExtractedText(rawText);
         if (string.IsNullOrWhiteSpace(normalizedText))
         {
-            return BadRequest("В переданном PDF не найден текст для анализа.");
+            return this.ApiError(StatusCodes.Status400BadRequest, "empty_pdf_text", "No text was found in the PDF for analysis.");
         }
 
         var userContext = await BuildUserContextAsync(cancellationToken);
@@ -121,7 +122,7 @@ public class ChatGptController : ControllerBase
         catch (JsonException ex)
         {
             _logger.LogError(ex, "Failed to deserialize ChatGPT response: {Response}", response);
-            return BadRequest("Ответ ChatGPT имеет неверный формат. Ожидается JSON с массивом transactions.");
+            return this.ApiError(StatusCodes.Status400BadRequest, "invalid_ai_response", "ChatGPT response has invalid format. Expected JSON with transactions array.");
         }
 
         return Ok(transactions);

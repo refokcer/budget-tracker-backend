@@ -1,34 +1,34 @@
+using System.Text;
 using budget_tracker_backend.Data;
+using budget_tracker_backend.Exceptions;
+using budget_tracker_backend.Models;
 using budget_tracker_backend.Services.Accounts;
-using budget_tracker_backend.Services.BudgetPlans;
-using budget_tracker_backend.Services.BudgetPlanItems;
-using budget_tracker_backend.Services.Categories;
-using budget_tracker_backend.Services.Components;
-using budget_tracker_backend.Services.Currencies;
-using budget_tracker_backend.Services.Pages;
-using budget_tracker_backend.Services.Transactions;
-using budget_tracker_backend.Services.Auth;
-using budget_tracker_backend.Services.ChatGpt;
-using budget_tracker_backend.Services.FinancialGoals;
-using budget_tracker_backend.Services.UserSettings;
 using budget_tracker_backend.Services.AdminData;
 using budget_tracker_backend.Services.Algorithms.Analytics;
 using budget_tracker_backend.Services.Algorithms.BudgetPlanning;
 using budget_tracker_backend.Services.Algorithms.FinancialGoals;
+using budget_tracker_backend.Services.Auth;
+using budget_tracker_backend.Services.BudgetPlanItems;
+using budget_tracker_backend.Services.BudgetPlans;
+using budget_tracker_backend.Services.Categories;
+using budget_tracker_backend.Services.ChatGpt;
+using budget_tracker_backend.Services.Components;
+using budget_tracker_backend.Services.Currencies;
+using budget_tracker_backend.Services.FinancialGoals;
+using budget_tracker_backend.Services.Pages;
+using budget_tracker_backend.Services.Transactions;
+using budget_tracker_backend.Services.UserSettings;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
-using System.Text;
-using MediatR;
-using budget_tracker_backend.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>(optional: true);
 var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-
 
 builder.Services.AddScoped<IAccountManager, AccountManager>();
 builder.Services.AddScoped<IBudgetPlanManager, BudgetPlanManager>();
@@ -50,7 +50,7 @@ builder.Services.AddScoped<IBehavioralScoreAlgorithm, BehavioralScoreAlgorithm>(
 builder.Services.AddScoped<IFinancialGoalForecastAlgorithm, FinancialGoalForecastAlgorithm>();
 builder.Services.AddScoped<IFinancialGoalBudgetAdjustmentAlgorithm, FinancialGoalBudgetAdjustmentAlgorithm>();
 builder.Services.AddHttpClient<IChatGptService, ChatGptService>();
-// Ïîäêëþ÷àåì EF Core è MS SQL
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IApplicationDbContext>(sp =>
@@ -79,7 +79,18 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var error = ApiErrorFactory.FromModelState(
+                context.ModelState,
+                context.HttpContext.TraceIdentifier);
+
+            return ApiErrorFactory.ToObjectResult(error);
+        };
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -123,10 +134,10 @@ builder.Services.AddAutoMapper(currentAssemblies);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",
-        builder => builder.WithOrigins("http://localhost:3000") 
-                          .AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowCredentials());
+        policy => policy.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 
 var app = builder.Build();
@@ -137,40 +148,47 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowReact");
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-
 app.UseExceptionHandler(appBuilder =>
 {
     appBuilder.Run(async context =>
     {
-        context.Response.StatusCode = 500;
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
         if (exception != null)
         {
-            Console.WriteLine($"Îøèáêà íà ñåðâåðå: {exception.Message}");
-            Console.WriteLine($"StackTrace: {exception.StackTrace}");
+            var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError(exception, "Unhandled API exception");
         }
-        await context.Response.WriteAsync("An unexpected error occurred.");
+
+        var error = exception == null
+            ? ApiErrorFactory.FromStatusCode(StatusCodes.Status500InternalServerError, context.TraceIdentifier)
+            : ApiErrorFactory.FromException(exception, context.TraceIdentifier);
+
+        context.Response.StatusCode = error.Status;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(error);
     });
 });
 
 app.UseStatusCodePages(async context =>
 {
     var response = context.HttpContext.Response;
-    if (response.StatusCode == 401)
+    if (!response.HasStarted && response.StatusCode is StatusCodes.Status401Unauthorized
+        or StatusCodes.Status403Forbidden
+        or StatusCodes.Status404NotFound)
     {
+        var error = ApiErrorFactory.FromStatusCode(
+            response.StatusCode,
+            context.HttpContext.TraceIdentifier);
+
         response.ContentType = "application/json";
-        await response.WriteAsJsonAsync(new { status = 401, error = "Unauthorized" });
-    }
-    else if (response.StatusCode == 403)
-    {
-        response.ContentType = "application/json";
-        await response.WriteAsJsonAsync(new { status = 403, error = "Forbidden" });
+        await response.WriteAsJsonAsync(error);
     }
 });
+
+app.UseHttpsRedirection();
+app.UseCors("AllowReact");
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();

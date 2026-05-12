@@ -1,4 +1,6 @@
+using budget_tracker_backend.Exceptions;
 using budget_tracker_backend.Tests.Common;
+using Microsoft.AspNetCore.Http;
 
 namespace budget_tracker_backend.Tests.Services;
 
@@ -319,7 +321,10 @@ public class PageManagerTests
         var manager = CreateManager(context);
 
         Assert.That(async () => await manager.GetEventPageAsync(1, CancellationToken.None),
-            Throws.TypeOf<Exception>().With.Message.EqualTo("Event 1 not found"));
+            Throws.TypeOf<CustomException>()
+                .With.Message.EqualTo("Event 1 not found")
+                .And.Property(nameof(CustomException.Code)).EqualTo("event_not_found")
+                .And.Property(nameof(CustomException.StatusCode)).EqualTo(StatusCodes.Status404NotFound));
     }
 
     [TestCase(0)]
@@ -331,10 +336,10 @@ public class PageManagerTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(async () => await manager.GetIncomesByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<Exception>());
-            Assert.That(async () => await manager.GetExpensesByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<Exception>());
-            Assert.That(async () => await manager.GetTransfersByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<Exception>());
-            Assert.That(async () => await manager.GetMonthlyReportAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<Exception>());
+            Assert.That(async () => await manager.GetIncomesByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<CustomException>());
+            Assert.That(async () => await manager.GetExpensesByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<CustomException>());
+            Assert.That(async () => await manager.GetTransfersByMonthAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<CustomException>());
+            Assert.That(async () => await manager.GetMonthlyReportAsync(month, TestInfrastructure.CurrentMonthStart.Year, CancellationToken.None), Throws.TypeOf<CustomException>());
         });
     }
 

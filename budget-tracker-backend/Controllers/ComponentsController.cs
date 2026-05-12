@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using budget_tracker_backend.Controllers.Interfaces;
+using budget_tracker_backend.Extensions;
 using budget_tracker_backend.MediatR.Components.IncomeModal;
 using budget_tracker_backend.MediatR.Components.ExpenseModal;
 using budget_tracker_backend.MediatR.Components.TransferModal;
@@ -60,7 +61,7 @@ public class ComponentsController : BaseApiController
     public async Task<IActionResult> ManageCategories(string type)
     {
         if (!Enum.TryParse<TransactionCategoryType>(type, true, out var txType))
-            return BadRequest("Invalid type");
+            return this.ApiError(StatusCodes.Status400BadRequest, "invalid_category_type", "Invalid category type.");
 
         var query = new GetManageCategoriesQuery(txType);
         var result = await Mediator.Send(query);
