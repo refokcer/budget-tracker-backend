@@ -16,6 +16,7 @@ public class CrudManagersTests
         {
             Title = "Transport",
             Type = (int)TransactionCategoryType.Expense,
+            Priority = (int)CategoryPriority.Flexible,
             Description = "Bus and taxi"
         }, CancellationToken.None);
 
@@ -24,6 +25,7 @@ public class CrudManagersTests
             Id = created.Id,
             Title = "Transport Updated",
             Type = (int)TransactionCategoryType.Expense,
+            Priority = (int)CategoryPriority.Discretionary,
             Description = "Taxi only"
         }, CancellationToken.None);
 
@@ -34,6 +36,7 @@ public class CrudManagersTests
         {
             Assert.That(created.UserId, Is.EqualTo(TestInfrastructure.UserId));
             Assert.That(updated.Title, Is.EqualTo("Transport Updated"));
+            Assert.That(updated.Priority, Is.EqualTo(CategoryPriority.Discretionary));
             Assert.That(deleted, Is.True);
             Assert.That(stored, Is.Null);
         });

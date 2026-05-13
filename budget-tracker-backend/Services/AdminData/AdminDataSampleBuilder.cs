@@ -1,4 +1,4 @@
-namespace budget_tracker_backend.Services.AdminData;
+﻿namespace budget_tracker_backend.Services.AdminData;
 
 using budget_tracker_backend.Dto.AdminData;
 
@@ -16,14 +16,14 @@ public class AdminDataSampleBuilder : IAdminDataSampleBuilder
             ],
             Categories =
             [
-                new() { Key = "salary", Title = "Salary", Type = "Income", Color = "#35B978" },
-                new() { Key = "supermarket", Title = "Supermarket", Type = "Expense", Description = "Essential groceries", Color = "#35B978" },
-                new() { Key = "utilities", Title = "Utilities", Type = "Expense", Description = "Heating, water, electricity", Color = "#4AA3FF" },
-                new() { Key = "transport", Title = "Transport", Type = "Expense", Color = "#5FB3A7" },
-                new() { Key = "entertainment", Title = "Entertainment", Type = "Expense", Color = "#A78BFA" },
-                new() { Key = "delivery", Title = "Delivery food", Type = "Expense", Color = "#FF6B5F" },
-                new() { Key = "shopping", Title = "Shopping", Type = "Expense", Color = "#F7B731" },
-                new() { Key = "savings-transfer", Title = "Savings transfer", Type = "Transaction", Color = "#35B978" }
+                new() { Key = "salary", Title = "Salary", Type = "Income", Priority = "Mandatory", Color = "#35B978" },
+                new() { Key = "supermarket", Title = "Supermarket", Type = "Expense", Priority = "Mandatory", Description = "Essential groceries", Color = "#35B978" },
+                new() { Key = "utilities", Title = "Utilities", Type = "Expense", Priority = "Mandatory", Description = "Heating, water, electricity", Color = "#4AA3FF" },
+                new() { Key = "transport", Title = "Transport", Type = "Expense", Priority = "Flexible", Color = "#5FB3A7" },
+                new() { Key = "entertainment", Title = "Entertainment", Type = "Expense", Priority = "Discretionary", Color = "#A78BFA" },
+                new() { Key = "delivery", Title = "Delivery food", Type = "Expense", Priority = "Discretionary", Color = "#FF6B5F" },
+                new() { Key = "shopping", Title = "Shopping", Type = "Expense", Priority = "Discretionary", Color = "#F7B731" },
+                new() { Key = "savings-transfer", Title = "Savings transfer", Type = "Transfer", Priority = "Mandatory", Color = "#35B978" }
             ],
             Accounts =
             [
@@ -45,6 +45,50 @@ public class AdminDataSampleBuilder : IAdminDataSampleBuilder
                 }
             ]
         };
+
+        data.RecurringPayments.AddRange([
+            new()
+            {
+                Title = "Monthly salary",
+                Amount = 3300m,
+                Type = "Income",
+                Frequency = "Monthly",
+                DayOfMonth = 2,
+                StartDate = currentMonth.AddMonths(-6),
+                CurrencyKey = "usd",
+                CategoryKey = "salary",
+                AccountToKey = "checking",
+                AutoCreateTransactions = true,
+                Description = "Base salary recurrence"
+            },
+            new()
+            {
+                Title = "Rent",
+                Amount = 950m,
+                Type = "Expense",
+                Frequency = "Monthly",
+                DayOfMonth = 3,
+                StartDate = currentMonth.AddMonths(-6),
+                CurrencyKey = "usd",
+                CategoryKey = "utilities",
+                AccountFromKey = "checking",
+                AutoCreateTransactions = true,
+                Description = "Fixed housing payment"
+            },
+            new()
+            {
+                Title = "Streaming subscriptions",
+                Amount = 38m,
+                Type = "Expense",
+                Frequency = "Monthly",
+                DayOfMonth = 12,
+                StartDate = currentMonth.AddMonths(-6),
+                CurrencyKey = "usd",
+                CategoryKey = "entertainment",
+                AccountFromKey = "checking",
+                Description = "Recurring subscriptions"
+            }
+        ]);
 
         for (var offset = -5; offset <= 0; offset++)
         {
@@ -86,7 +130,7 @@ public class AdminDataSampleBuilder : IAdminDataSampleBuilder
             {
                 Title = $"Savings transfer {month:yyyy-MM}",
                 Amount = offset >= -2 ? 150m : 450m,
-                Type = "Transaction",
+                Type = "Transfer",
                 Date = month.AddDays(5),
                 CurrencyKey = "usd",
                 CategoryKey = "savings-transfer",
@@ -133,3 +177,5 @@ public class AdminDataSampleBuilder : IAdminDataSampleBuilder
         }
     }
 }
+
+

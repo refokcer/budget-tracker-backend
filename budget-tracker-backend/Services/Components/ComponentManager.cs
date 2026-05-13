@@ -1,4 +1,4 @@
-namespace budget_tracker_backend.Services.Components;
+﻿namespace budget_tracker_backend.Services.Components;
 
 using AutoMapper;
 using budget_tracker_backend.Dto.Components;
@@ -68,7 +68,7 @@ public class ComponentManager : IComponentManager
     {
         var currencies = await _currencyManager.GetAllAsync(ct);
         var accounts = await _accountManager.GetAllAsync(ct);
-        var categories = await _categoryManager.GetByTypeAsync(TransactionCategoryType.Transaction, ct);
+        var categories = await _categoryManager.GetByTypeAsync(TransactionCategoryType.Transfer, ct);
 
         return new TransferModalDto
         {
@@ -108,3 +108,4 @@ public class ComponentManager : IComponentManager
         };
     }
 }
+

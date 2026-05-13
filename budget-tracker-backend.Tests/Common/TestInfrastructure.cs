@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
@@ -125,13 +125,13 @@ internal static class TestInfrastructure
 
         await context.Currencies.AddRangeAsync(
             new Currency { Id = 1, Title = "US Dollar", Code = "USD", Symbol = '$', IsBase = true },
-            new Currency { Id = 2, Title = "Euro", Code = "EUR", Symbol = '€', IsBase = false });
+            new Currency { Id = 2, Title = "Euro", Code = "EUR", Symbol = '\u20AC', IsBase = false });
 
         await context.Categories.AddRangeAsync(
-            new Category { Id = 1, Title = "Salary", Type = TransactionCategoryType.Income, UserId = UserId },
-            new Category { Id = 2, Title = "Groceries", Type = TransactionCategoryType.Expense, UserId = UserId },
-            new Category { Id = 3, Title = "Transfer", Type = TransactionCategoryType.Transaction, UserId = UserId },
-            new Category { Id = 4, Title = "Bonus", Type = TransactionCategoryType.Income, UserId = UserId });
+            new Category { Id = 1, Title = "Salary", Type = TransactionCategoryType.Income, Priority = CategoryPriority.Mandatory, UserId = UserId },
+            new Category { Id = 2, Title = "Groceries", Type = TransactionCategoryType.Expense, Priority = CategoryPriority.Mandatory, UserId = UserId },
+            new Category { Id = 3, Title = "Transfer", Type = TransactionCategoryType.Transfer, Priority = CategoryPriority.Mandatory, UserId = UserId },
+            new Category { Id = 4, Title = "Bonus", Type = TransactionCategoryType.Income, Priority = CategoryPriority.Flexible, UserId = UserId });
 
         await context.Accounts.AddRangeAsync(
             new Account { Id = 1, Title = "Cash", Amount = 1000m, CurrencyId = 1, Type = AccountType.Cash, UserId = UserId },
@@ -201,7 +201,7 @@ internal static class TestInfrastructure
                 CategoryId = 3,
                 CurrencyId = 1,
                 Date = CurrentMonthStart.AddDays(7),
-                Type = TransactionCategoryType.Transaction,
+                Type = TransactionCategoryType.Transfer,
                 AccountFrom = 1,
                 AccountTo = 2,
                 UserId = UserId,
@@ -247,3 +247,4 @@ internal static class TestInfrastructure
     }
 
 }
+

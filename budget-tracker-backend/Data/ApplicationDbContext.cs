@@ -25,6 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<Account> Accounts { get; set; }
     public DbSet<FinancialGoal> FinancialGoals { get; set; }
+    public DbSet<RecurringPayment> RecurringPayments { get; set; }
     public DbSet<BudgetPlan> BudgetPlans { get; set; }
     public DbSet<BudgetPlanItem> BudgetPlanItems { get; set; }
     public DbSet<Currency> Currencies { get; set; }
@@ -52,6 +53,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         modelBuilder.Entity<Category>(b =>
         {
             b.Property(c => c.Color).HasMaxLength(7);
+            b.Property(c => c.Priority)
+                .HasConversion<string>()
+                .HasMaxLength(32)
+                .HasDefaultValue(CategoryPriority.Flexible);
             b.HasQueryFilter(c => c.UserId == CurrentUserId);
             b.HasIndex(c => c.UserId);
             b.HasOne(c => c.User)
@@ -88,6 +93,42 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             b.HasOne(g => g.LinkedAccount)
                 .WithMany()
                 .HasForeignKey(g => g.LinkedAccountId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RecurringPayment>(b =>
+        {
+            b.Property(p => p.Title).HasMaxLength(180);
+            b.Property(p => p.Amount).HasColumnType("decimal(18,4)");
+            b.Property(p => p.Frequency)
+                .HasConversion<string>()
+                .HasMaxLength(32);
+            b.Property(p => p.Type)
+                .HasConversion<string>()
+                .HasMaxLength(32);
+            b.Property(p => p.Description).HasMaxLength(512);
+            b.HasQueryFilter(p => p.UserId == CurrentUserId);
+            b.HasIndex(p => p.UserId);
+            b.HasIndex(p => new { p.UserId, p.IsActive, p.StartDate });
+            b.HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(p => p.Category)
+                .WithMany()
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+            b.HasOne(p => p.Currency)
+                .WithMany()
+                .HasForeignKey(p => p.CurrencyId)
+                .OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(p => p.FromAccount)
+                .WithMany()
+                .HasForeignKey(p => p.AccountFrom)
+                .OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(p => p.ToAccount)
+                .WithMany()
+                .HasForeignKey(p => p.AccountTo)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 

@@ -1,4 +1,4 @@
-namespace budget_tracker_backend.Services.Accounts;
+﻿namespace budget_tracker_backend.Services.Accounts;
 
 using AutoMapper;
 using budget_tracker_backend.Data;
@@ -108,7 +108,7 @@ public class AccountManager : IAccountManager
                 if (from != null) from.Amount -= sign * amount;
                 break;
 
-            case TransactionCategoryType.Transaction:
+            case TransactionCategoryType.Transfer:
                 if (from != null) from.Amount -= sign * amount;
                 if (to != null) to.Amount += sign * amount;
                 break;
@@ -168,7 +168,7 @@ public class AccountManager : IAccountManager
                     return Result.Fail("Income must be >0");
             }
             else if (type == TransactionCategoryType.Expense ||
-                     type == TransactionCategoryType.Transaction)
+                     type == TransactionCategoryType.Transfer)
             {
                 if (from != null && from.Amount - amount < 0)
                     return Result.Fail("Not enough money");
@@ -179,3 +179,4 @@ public class AccountManager : IAccountManager
         return Result.Ok();
     }
 }
+

@@ -43,6 +43,7 @@ public class CategoryManager : ICategoryManager
     {
         var entity = _mapper.Map<Category>(dto) ??
             throw new CustomException("Cannot map CreateCategoryDto", StatusCodes.Status400BadRequest);
+        ValidatePriority(entity.Priority);
         entity.Color = NormalizeColor(dto.Color);
 
         await _context.Categories.AddAsync(entity, cancellationToken);
@@ -60,6 +61,7 @@ public class CategoryManager : ICategoryManager
             throw new CustomException("Category not found", StatusCodes.Status404NotFound);
 
         _mapper.Map(dto, existing);
+        ValidatePriority(existing.Priority);
         existing.Color = NormalizeColor(dto.Color);
         _context.Categories.Update(existing);
         var saved = await _context.SaveChangesAsync(cancellationToken) > 0;
@@ -100,6 +102,12 @@ public class CategoryManager : ICategoryManager
         }
 
         throw new CustomException("Category color must be a hex value like #5FB3A7", StatusCodes.Status400BadRequest);
+    }
+
+    private static void ValidatePriority(CategoryPriority priority)
+    {
+        if (!Enum.IsDefined(priority))
+            throw new CustomException("Invalid category priority", StatusCodes.Status400BadRequest);
     }
 
     private static bool IsHexDigit(char value)

@@ -40,6 +40,9 @@ public class AdminDataManager : IAdminDataManager
         var goals = await _context.FinancialGoals.ToListAsync(cancellationToken);
         _context.FinancialGoals.RemoveRange(goals);
 
+        var recurringPayments = await _context.RecurringPayments.ToListAsync(cancellationToken);
+        _context.RecurringPayments.RemoveRange(recurringPayments);
+
         var planItems = await _context.BudgetPlanItems.ToListAsync(cancellationToken);
         _context.BudgetPlanItems.RemoveRange(planItems);
         await _context.SaveChangesAsync(cancellationToken);
@@ -93,6 +96,15 @@ public class AdminDataManager : IAdminDataManager
             categoryIds,
             accountIds,
             planIds,
+            userId,
+            result,
+            cancellationToken);
+
+        await SeedRecurringPaymentsAsync(
+            dto.Data.RecurringPayments,
+            currencyIds,
+            categoryIds,
+            accountIds,
             userId,
             result,
             cancellationToken);
@@ -192,6 +204,7 @@ public class AdminDataManager : IAdminDataManager
             {
                 Title = RequireText(item.Title, "category title"),
                 Type = ParseEnum<TransactionCategoryType>(item.Type, "category type"),
+                Priority = ParseEnum<CategoryPriority>(item.Priority, "category priority"),
                 Description = item.Description,
                 Color = NormalizeColor(item.Color),
                 UserId = userId
@@ -337,6 +350,46 @@ public class AdminDataManager : IAdminDataManager
                 : item.UnicCode;
             await _context.Transactions.AddAsync(entity, cancellationToken);
             result.Transactions++;
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task SeedRecurringPaymentsAsync(
+        List<AdminRecurringPaymentSeedDto> recurringPayments,
+        Dictionary<string, int> currencyIds,
+        Dictionary<string, int> categoryIds,
+        Dictionary<string, int> accountIds,
+        string userId,
+        AdminDataImportResultDto result,
+        CancellationToken cancellationToken)
+    {
+        foreach (var item in recurringPayments)
+        {
+            var entity = new RecurringPayment
+            {
+                Title = RequireText(item.Title, "recurring payment title"),
+                Amount = item.Amount,
+                Type = ParseEnum<TransactionCategoryType>(item.Type, "recurring payment type"),
+                Frequency = ParseEnum<RecurringPaymentFrequency>(item.Frequency, "recurring payment frequency"),
+                Interval = Math.Max(1, item.Interval),
+                DayOfMonth = item.DayOfMonth,
+                DayOfWeek = string.IsNullOrWhiteSpace(item.DayOfWeek)
+                    ? null
+                    : ParseEnum<DayOfWeek>(item.DayOfWeek, "recurring payment day of week"),
+                StartDate = EnsureUtc(item.StartDate),
+                EndDate = item.EndDate.HasValue ? EnsureUtc(item.EndDate.Value) : null,
+                IsActive = item.IsActive,
+                AutoCreateTransactions = item.AutoCreateTransactions,
+                CurrencyId = Resolve(currencyIds, item.CurrencyKey, "currency"),
+                CategoryId = ResolveOptional(categoryIds, item.CategoryKey),
+                AccountFrom = ResolveOptional(accountIds, item.AccountFromKey),
+                AccountTo = ResolveOptional(accountIds, item.AccountToKey),
+                Description = item.Description,
+                UserId = userId
+            };
+            await _context.RecurringPayments.AddAsync(entity, cancellationToken);
+            result.RecurringPayments++;
         }
 
         await _context.SaveChangesAsync(cancellationToken);

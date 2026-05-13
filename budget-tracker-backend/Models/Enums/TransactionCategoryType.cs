@@ -2,7 +2,11 @@
 
 public enum TransactionCategoryType
 {
-    Transaction,
+    Transfer = 0,
+
+    [Obsolete("Use Transfer for account-to-account money movement.")]
+    Transaction = Transfer,
+
     Income,
     Expense,
     None

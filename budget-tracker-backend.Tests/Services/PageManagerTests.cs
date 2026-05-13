@@ -189,6 +189,28 @@ public class PageManagerTests
     }
 
     [Test]
+    public async Task GetFinancialRecommendationsAsync_ReturnsSignalsAndActions()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var manager = CreateManager(context);
+
+        var result = await manager.GetFinancialRecommendationsAsync(CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Headline, Is.Not.Empty);
+            Assert.That(result.Explanation, Is.Not.Empty);
+            Assert.That(result.FinancialStabilityIndex, Is.InRange(0, 100));
+            Assert.That(result.BehavioralScore, Is.InRange(0, 100));
+            Assert.That(result.Signals, Is.Not.Empty);
+            Assert.That(result.PriorityActions, Is.Not.Empty);
+            Assert.That(result.Sections.Select(s => s.Title), Does.Contain("Financial stability"));
+            Assert.That(result.Sections.Select(s => s.Title), Does.Contain("Financial behavior"));
+        });
+    }
+
+    [Test]
     public async Task GetBudgetPlanPageAsync_WhenIncludingEvents_AddsEventSummariesAndTransactions()
     {
         await using var context = TestInfrastructure.CreateContext();
@@ -310,6 +332,58 @@ public class PageManagerTests
             Assert.That(other.Amount, Is.EqualTo(100m));
             Assert.That(other.Spent, Is.EqualTo(75m));
             Assert.That(other.Remaining, Is.EqualTo(25m));
+        });
+    }
+
+    [Test]
+    public async Task GetBudgetPlanPageAsync_ForecastDoesNotTreatElapsedRecurringPaymentsAsDailyPace()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+
+        var today = DateTime.UtcNow.Date;
+        await context.RecurringPayments.AddAsync(new RecurringPayment
+        {
+            Title = "Large utility subscription",
+            Amount = 10000m,
+            CurrencyId = 1,
+            CategoryId = 2,
+            AccountFrom = 1,
+            Type = TransactionCategoryType.Expense,
+            Frequency = RecurringPaymentFrequency.Monthly,
+            DayOfMonth = today.Day,
+            StartDate = TestInfrastructure.CurrentMonthStart,
+            IsActive = true,
+            UserId = TestInfrastructure.UserId
+        });
+        await context.Transactions.AddAsync(new Transaction
+        {
+            Title = "Large utility subscription",
+            Amount = 10000m,
+            CategoryId = 2,
+            CurrencyId = 1,
+            BudgetPlanId = 1,
+            Date = today,
+            Type = TransactionCategoryType.Expense,
+            AccountFrom = 1,
+            UserId = TestInfrastructure.UserId,
+            UnicCode = "large-recurring-expense",
+            AuthCode = $"recurring:900:{today:yyyyMMdd}"
+        });
+        await context.SaveChangesAsync(CancellationToken.None);
+        var manager = CreateManager(context);
+
+        var result = await manager.GetBudgetPlanPageAsync(1, includeEvents: false, CancellationToken.None);
+        var forecast = result.MonthEndForecast!;
+        var groceries = result.Items.First(i => i.CategoryTitle == "Groceries");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(forecast.ActualSpent, Is.EqualTo(10120m));
+            Assert.That(forecast.ProjectedVariableSpending, Is.LessThan(1000m));
+            Assert.That(forecast.ProjectedTotalSpent, Is.LessThan(12000m));
+            Assert.That(groceries.FutureRecurringSpending, Is.EqualTo(0m));
+            Assert.That(groceries.ProjectedSpent, Is.EqualTo(forecast.ProjectedTotalSpent));
         });
     }
 

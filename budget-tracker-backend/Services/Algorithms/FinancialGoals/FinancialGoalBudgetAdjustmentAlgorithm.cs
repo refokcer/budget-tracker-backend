@@ -63,7 +63,7 @@ public class FinancialGoalBudgetAdjustmentAlgorithm : IFinancialGoalBudgetAdjust
         var candidateCategories = activePlan.Items
             .Where(i => i.Category != null)
             .Where(i => !alreadyAdjustedCategoryIds.Contains(i.CategoryId))
-            .Where(i => !IsProtectedBudgetCategory(i.Category!.Title))
+            .Where(i => i.Category!.Priority != CategoryPriority.Mandatory)
             .Select(i =>
             {
                 expenseStatsByCategory.TryGetValue(i.CategoryId, out var stats);
@@ -73,9 +73,15 @@ public class FinancialGoalBudgetAdjustmentAlgorithm : IFinancialGoalBudgetAdjust
                 var spendingBaseline = averageMonthlySpending > 0m
                     ? averageMonthlySpending
                     : currentBudgetLimit;
+                var maxSpendingReductionShare = i.Category!.Priority == CategoryPriority.Discretionary
+                    ? MaxSpendingReductionShare
+                    : 0.20m;
+                var maxBudgetLimitReductionShare = i.Category.Priority == CategoryPriority.Discretionary
+                    ? MaxBudgetLimitReductionShare
+                    : 0.18m;
                 var maxReducible = Math.Min(
-                    Math.Round(spendingBaseline * MaxSpendingReductionShare, 2),
-                    Math.Round(currentBudgetLimit * MaxBudgetLimitReductionShare, 2));
+                    Math.Round(spendingBaseline * maxSpendingReductionShare, 2),
+                    Math.Round(currentBudgetLimit * maxBudgetLimitReductionShare, 2));
                 maxReducible = Math.Min(maxReducible, Math.Max(0m, currentBudgetLimit - currentMonthSpending));
 
                 return new
@@ -85,11 +91,13 @@ public class FinancialGoalBudgetAdjustmentAlgorithm : IFinancialGoalBudgetAdjust
                     AverageMonthlySpending = averageMonthlySpending,
                     CurrentMonthSpending = currentMonthSpending,
                     CurrentBudgetLimit = currentBudgetLimit,
-                    MaxReducible = maxReducible
+                    MaxReducible = maxReducible,
+                    Priority = i.Category.Priority
                 };
             })
             .Where(x => x.CurrentBudgetLimit > 0m && x.MaxReducible > 0m)
-            .OrderByDescending(x => x.MaxReducible)
+            .OrderByDescending(x => x.Priority == CategoryPriority.Discretionary)
+            .ThenByDescending(x => x.MaxReducible)
             .ThenByDescending(x => x.CurrentMonthSpending)
             .ThenByDescending(x => x.AverageMonthlySpending)
             .ToList();

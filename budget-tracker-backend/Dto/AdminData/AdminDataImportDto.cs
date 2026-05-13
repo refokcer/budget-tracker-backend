@@ -14,6 +14,7 @@ public class AdminDataSeedDto
     public List<AdminBudgetPlanSeedDto> BudgetPlans { get; set; } = new();
     public List<AdminTransactionSeedDto> Transactions { get; set; } = new();
     public List<AdminFinancialGoalSeedDto> FinancialGoals { get; set; } = new();
+    public List<AdminRecurringPaymentSeedDto> RecurringPayments { get; set; } = new();
 }
 
 public class AdminCurrencySeedDto
@@ -30,6 +31,7 @@ public class AdminCategorySeedDto
     public string Key { get; set; } = null!;
     public string Title { get; set; } = null!;
     public string Type { get; set; } = null!;
+    public string Priority { get; set; } = "Flexible";
     public string? Description { get; set; }
     public string? Color { get; set; }
 }
@@ -91,6 +93,26 @@ public class AdminFinancialGoalSeedDto
     public string? Description { get; set; }
 }
 
+public class AdminRecurringPaymentSeedDto
+{
+    public string Title { get; set; } = null!;
+    public decimal Amount { get; set; }
+    public string Type { get; set; } = null!;
+    public string Frequency { get; set; } = "Monthly";
+    public int Interval { get; set; } = 1;
+    public int? DayOfMonth { get; set; }
+    public string? DayOfWeek { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public bool IsActive { get; set; } = true;
+    public bool AutoCreateTransactions { get; set; }
+    public string CurrencyKey { get; set; } = null!;
+    public string? CategoryKey { get; set; }
+    public string? AccountFromKey { get; set; }
+    public string? AccountToKey { get; set; }
+    public string? Description { get; set; }
+}
+
 public class AdminDataImportResultDto
 {
     public int Currencies { get; set; }
@@ -100,6 +122,7 @@ public class AdminDataImportResultDto
     public int BudgetPlanItems { get; set; }
     public int Transactions { get; set; }
     public int FinancialGoals { get; set; }
+    public int RecurringPayments { get; set; }
 }
 
 public class AdminDataTemplateDto

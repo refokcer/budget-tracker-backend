@@ -7,6 +7,7 @@ using budget_tracker_backend.MediatR.Pages.BudgetPlanPage;
 using budget_tracker_backend.MediatR.Pages.EventPage;
 using budget_tracker_backend.MediatR.Pages.Dashboard;
 using budget_tracker_backend.MediatR.Pages.MonthlyReport;
+using budget_tracker_backend.MediatR.Pages.Recommendations;
 using budget_tracker_backend.Controllers.Interfaces;
 
 namespace budget_tracker_backend.Controllers;
@@ -75,6 +76,13 @@ public class PagesController : BaseApiController
     public async Task<IActionResult> Dashboard()
     {
         var result = await Mediator.Send(new GetDashboardQuery());
+        return HandleResult(result);
+    }
+
+    [HttpGet("recommendations")]
+    public async Task<IActionResult> Recommendations()
+    {
+        var result = await Mediator.Send(new GetFinancialRecommendationsQuery());
         return HandleResult(result);
     }
 

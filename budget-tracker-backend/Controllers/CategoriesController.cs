@@ -80,10 +80,11 @@ public class CategoriesController : BaseApiController
 
     // GET: /api/Categories/Transfers
     [HttpGet("Transfers")]
-    public async Task<IActionResult> GetTransactionCategories()
+    public async Task<IActionResult> GetTransferCategories()
     {
-        var query = new GetCategoriesByTypeQuery(TransactionCategoryType.Transaction);
+        var query = new GetCategoriesByTypeQuery(TransactionCategoryType.Transfer);
         var result = await Mediator.Send(query);
         return HandleResult(result);
     }
 }
+

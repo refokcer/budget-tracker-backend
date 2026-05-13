@@ -1,4 +1,4 @@
-namespace budget_tracker_backend.Services.Algorithms.Analytics;
+﻿namespace budget_tracker_backend.Services.Algorithms.Analytics;
 
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Pages;
@@ -139,7 +139,7 @@ public class BehavioralScoreAlgorithm : IBehavioralScoreAlgorithm
             activeIncomeMonths++;
 
             var hasSavingsAction = monthTransactions.Any(t =>
-                (t.Type == TransactionCategoryType.Transaction || t.Type == TransactionCategoryType.Income)
+                (t.Type == TransactionCategoryType.Transfer || t.Type == TransactionCategoryType.Income)
                 && t.AccountTo != null
                 && savingsAccountIds.Contains(t.AccountTo.Value));
             var hasMeaningfulPositiveCashFlow = income > 0m && (income - expense) / income >= 0.10m;
@@ -313,3 +313,4 @@ public class BehavioralScoreAlgorithm : IBehavioralScoreAlgorithm
         int CategoryId,
         decimal Amount);
 }
+

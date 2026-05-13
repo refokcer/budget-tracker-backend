@@ -12,6 +12,7 @@ public interface IApplicationDbContext
     DbSet<Transaction> Transactions { get; }
     DbSet<Account> Accounts { get; }
     DbSet<FinancialGoal> FinancialGoals { get; }
+    DbSet<RecurringPayment> RecurringPayments { get; }
     DbSet<BudgetPlan> BudgetPlans { get; }
     DbSet<BudgetPlanItem> BudgetPlanItems { get; }
     DbSet<Currency> Currencies { get; }

@@ -1,4 +1,4 @@
-{
+﻿{
   "clearExisting": true,
   "data": {
     "currencies": [
@@ -130,12 +130,12 @@
       {
         "key": "savings-transfer",
         "title": "Savings transfer",
-        "type": "Transaction"
+        "type": "Transfer"
       },
       {
         "key": "investment-transfer",
         "title": "Investment transfer",
-        "type": "Transaction"
+        "type": "Transfer"
       }
     ],
     "accounts": [
@@ -1600,7 +1600,7 @@
       {
         "title": "Savings transfer 2025-11",
         "amount": 900,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2025-11-06T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "savings-transfer",
@@ -1611,7 +1611,7 @@
       {
         "title": "Investment transfer 2025-11",
         "amount": 220,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2025-11-18T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "investment-transfer",
@@ -2192,7 +2192,7 @@
       {
         "title": "Savings transfer 2025-12",
         "amount": 900,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2025-12-06T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "savings-transfer",
@@ -2203,7 +2203,7 @@
       {
         "title": "Investment transfer 2025-12",
         "amount": 220,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2025-12-18T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "investment-transfer",
@@ -2784,7 +2784,7 @@
       {
         "title": "Savings transfer 2026-01",
         "amount": 900,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-01-06T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "savings-transfer",
@@ -2795,7 +2795,7 @@
       {
         "title": "Investment transfer 2026-01",
         "amount": 220,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-01-18T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "investment-transfer",
@@ -3376,7 +3376,7 @@
       {
         "title": "Savings transfer 2026-02",
         "amount": 900,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-02-06T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "savings-transfer",
@@ -3387,7 +3387,7 @@
       {
         "title": "Investment transfer 2026-02",
         "amount": 220,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-02-18T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "investment-transfer",
@@ -3968,7 +3968,7 @@
       {
         "title": "Savings transfer 2026-03",
         "amount": 900,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-03-06T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "savings-transfer",
@@ -3979,7 +3979,7 @@
       {
         "title": "Investment transfer 2026-03",
         "amount": 220,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-03-18T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "investment-transfer",
@@ -4560,7 +4560,7 @@
       {
         "title": "Savings transfer 2026-04",
         "amount": 900,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-04-06T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "savings-transfer",
@@ -4571,7 +4571,7 @@
       {
         "title": "Investment transfer 2026-04",
         "amount": 220,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-04-18T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "investment-transfer",
@@ -5152,7 +5152,7 @@
       {
         "title": "Savings transfer 2026-05",
         "amount": 900,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-05-06T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "savings-transfer",
@@ -5163,7 +5163,7 @@
       {
         "title": "Investment transfer 2026-05",
         "amount": 220,
-        "type": "Transaction",
+        "type": "Transfer",
         "date": "2026-05-18T00:00:00Z",
         "currencyKey": "usd",
         "categoryKey": "investment-transfer",
@@ -5194,3 +5194,8 @@
     ]
   }
 }
+
+
+
+
+

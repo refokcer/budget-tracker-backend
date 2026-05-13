@@ -1,4 +1,4 @@
-namespace budget_tracker_backend.Services.Algorithms.Analytics;
+﻿namespace budget_tracker_backend.Services.Algorithms.Analytics;
 
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.Pages;
@@ -92,7 +92,7 @@ public class FinancialStabilityAlgorithm : IFinancialStabilityAlgorithm
             .ToHashSet();
 
         var transfersToSavings = transactions
-            .Where(t => t.Type == TransactionCategoryType.Transaction
+            .Where(t => t.Type == TransactionCategoryType.Transfer
                 && t.Date >= currentMonthStart
                 && t.Date < currentMonthEnd
                 && t.AccountTo != null
@@ -309,3 +309,4 @@ public class FinancialStabilityAlgorithm : IFinancialStabilityAlgorithm
         return "High";
     }
 }
+

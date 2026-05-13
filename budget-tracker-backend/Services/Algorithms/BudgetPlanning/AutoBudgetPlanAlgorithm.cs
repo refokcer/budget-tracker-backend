@@ -1,11 +1,15 @@
-namespace budget_tracker_backend.Services.Algorithms.BudgetPlanning;
+﻿namespace budget_tracker_backend.Services.Algorithms.BudgetPlanning;
 
+using System.Text.Json;
 using AutoMapper;
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.BudgetPlans;
+using budget_tracker_backend.Dto.UserSettings;
 using budget_tracker_backend.Exceptions;
 using budget_tracker_backend.Models;
 using budget_tracker_backend.Models.Enums;
+using budget_tracker_backend.Services.RecurringPayments;
+using budget_tracker_backend.Services.UserSettings;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +18,7 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
     private const decimal MinGeneratedAmount = 0m;
     private const decimal MaxAutomaticMultiplier = 2m;
     private const int IntelligentAnalysisMonths = 6;
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
@@ -49,6 +54,8 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
 
         if (sourcePlan == null)
             throw new CustomException("Previous monthly budget plan was not found", StatusCodes.Status400BadRequest);
+
+        var rules = await LoadAutoBudgetPlanRulesAsync(sourcePlan.UserId, cancellationToken);
 
         var existingPlans = await _context.BudgetPlans
             .Include(p => p.Items)
@@ -91,7 +98,40 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
                     return g.Sum(t => t.Amount) / activeMonths;
                 });
 
-        var averageMonthlyIncome = CalculateAverageMonthlyIncome(analysisTransactions);
+        var recurringPayments = await _context.RecurringPayments
+            .Include(p => p.Category)
+            .AsNoTracking()
+            .Where(p => p.IsActive
+                && p.StartDate < targetEndExclusive
+                && (p.EndDate == null || p.EndDate >= targetStart))
+            .ToListAsync(cancellationToken);
+
+        var recurringOccurrences = recurringPayments
+            .SelectMany(payment => RecurringPaymentSchedule.GetOccurrences(payment, targetStart, targetEndExclusive)
+                .Select(date => new { Payment = payment, Date = date }))
+            .ToList();
+
+        var recurringExpenseByCategory = recurringOccurrences
+            .Where(o => o.Payment.Type == TransactionCategoryType.Expense && o.Payment.CategoryId.HasValue)
+            .GroupBy(o => o.Payment.CategoryId!.Value)
+            .ToDictionary(
+                g => g.Key,
+                g => new RecurringBudgetCommitment
+                {
+                    CategoryId = g.Key,
+                    CategoryTitle = g.First().Payment.Category?.Title ?? $"Category #{g.Key}",
+                    Category = g.First().Payment.Category,
+                    CurrencyId = g.First().Payment.CurrencyId,
+                    Amount = g.Sum(o => o.Payment.Amount)
+                });
+
+        var recurringMonthlyIncome = recurringOccurrences
+            .Where(o => o.Payment.Type == TransactionCategoryType.Income)
+            .Sum(o => o.Payment.Amount);
+
+        var averageMonthlyIncome = Math.Max(
+            CalculateAverageMonthlyIncome(analysisTransactions),
+            recurringMonthlyIncome);
         var goalReserve = await CalculateMonthlyGoalReserveAsync(targetStart, cancellationToken);
         var previousFinancialStateIndex = CalculateFinancialStateIndex(
             analysisTransactions,
@@ -129,7 +169,7 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
             StartDate = targetStart,
             EndDate = targetEnd,
             Type = BudgetPlanType.Monthly,
-            Description = $"Generated from \"{sourcePlan.Title}\" with overspend, remaining budget, and seasonal coefficients.",
+            Description = $"Generated from \"{sourcePlan.Title}\" with overspend, remaining budget, recurring payments, and configured category rules.",
             ParentId = null,
             Items = new List<BudgetPlanItem>()
         };
@@ -140,26 +180,36 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
         {
             spentByCategory.TryGetValue(sourceItem.CategoryId, out var spentAmount);
             expenseHistoryByCategory.TryGetValue(sourceItem.CategoryId, out var historyAverageAmount);
+            recurringExpenseByCategory.TryGetValue(sourceItem.CategoryId, out var recurringCommitment);
 
             var previousLimit = sourceItem.Amount;
             var remainingAmount = Math.Max(0m, previousLimit - spentAmount);
             var overspentAmount = Math.Max(0m, spentAmount - previousLimit);
+            var categoryRule = rules.GetCategoryRule(sourceItem.CategoryId);
+            var isProtected = categoryRule.CutBehavior == AutoBudgetPlanCutBehavior.Protected;
+            var isAggressiveCut = categoryRule.CutBehavior == AutoBudgetPlanCutBehavior.Aggressive;
             var carryAdjustment = overspentAmount * overspendCarryRate
-                - remainingAmount * underspendCarryRate;
+                - (isProtected ? 0m : remainingAmount * underspendCarryRate);
             var adjustedBase = Math.Max(MinGeneratedAmount, previousLimit + carryAdjustment);
             var priority = ResolveCategoryPriority(sourceItem);
             var historyWeightedBase = BlendWithHistory(adjustedBase, historyAverageAmount, priority);
             var sourceSeasonalityMultiplier = dto.ApplySeasonality
-                ? ResolveSeasonalityMultiplier(previousStart.Month, sourceItem, new Dictionary<int, decimal>())
+                ? ResolveSeasonalityMultiplier(previousStart.Month, sourceItem, new Dictionary<int, decimal>(), categoryRule)
                 : 1m;
             var targetSeasonalityMultiplier = dto.ApplySeasonality
-                ? ResolveSeasonalityMultiplier(targetStart.Month, sourceItem, overrides)
+                ? ResolveSeasonalityMultiplier(targetStart.Month, sourceItem, overrides, categoryRule)
                 : 1m;
             var seasonalityMultiplier = sourceSeasonalityMultiplier > 0m
                 ? ClampMultiplier(targetSeasonalityMultiplier / sourceSeasonalityMultiplier)
                 : targetSeasonalityMultiplier;
-            var financialStateMultiplier = ResolveFinancialStateMultiplier(priority, financialStateTrend);
+            var financialStateMultiplier = ResolveFinancialStateMultiplier(priority, financialStateTrend, isProtected, isAggressiveCut);
             var recommendedBeforeEnvelope = Math.Round(historyWeightedBase * seasonalityMultiplier * financialStateMultiplier, 2);
+            if (recurringCommitment != null)
+                recommendedBeforeEnvelope = Math.Max(recommendedBeforeEnvelope, recurringCommitment.Amount);
+            var recommendedAmount = Math.Max(MinGeneratedAmount, recommendedBeforeEnvelope);
+            if (isProtected)
+                recommendedAmount = Math.Max(recommendedAmount, previousLimit);
+            recommendedAmount = ApplyLimitRules(recommendedAmount, recurringCommitment?.Amount ?? 0m, categoryRule);
 
             generatedItems.Add(new AutoGeneratedBudgetItem
             {
@@ -172,9 +222,12 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
                 CarryAdjustment = Math.Round(carryAdjustment, 2),
                 HistoryAverageAmount = Math.Round(historyAverageAmount, 2),
                 Priority = priority,
+                ProtectedFromCuts = isProtected,
+                AggressiveCut = isAggressiveCut,
                 SeasonalityMultiplier = seasonalityMultiplier,
                 FinancialStateMultiplier = financialStateMultiplier,
-                RecommendedAmount = Math.Max(MinGeneratedAmount, recommendedBeforeEnvelope),
+                RecommendedAmount = recommendedAmount,
+                RecurringCommittedAmount = recurringCommitment?.Amount ?? 0m,
                 CurrencyId = sourceItem.CurrencyId,
                 Description = BuildAutoItemDescription(
                     sourceItem,
@@ -182,6 +235,45 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
                     targetStart.Month,
                     sourceSeasonalityMultiplier,
                     targetSeasonalityMultiplier)
+            });
+        }
+
+        foreach (var commitment in recurringExpenseByCategory.Values
+            .Where(c => !sourceCategoryIds.Contains(c.CategoryId)))
+        {
+            var syntheticSourceItem = new BudgetPlanItem
+            {
+                CategoryId = commitment.CategoryId,
+                Category = commitment.Category,
+                CurrencyId = commitment.CurrencyId,
+                Amount = 0m
+            };
+            var priority = ResolveCategoryPriority(syntheticSourceItem);
+            var categoryRule = rules.GetCategoryRule(commitment.CategoryId);
+            var recommendedAmount = ApplyLimitRules(
+                Math.Round(commitment.Amount, 2),
+                commitment.Amount,
+                categoryRule);
+
+            generatedItems.Add(new AutoGeneratedBudgetItem
+            {
+                CategoryId = commitment.CategoryId,
+                CategoryTitle = commitment.CategoryTitle,
+                PreviousLimit = 0m,
+                SpentAmount = 0m,
+                RemainingAmount = 0m,
+                OverspentAmount = 0m,
+                CarryAdjustment = 0m,
+                HistoryAverageAmount = expenseHistoryByCategory.GetValueOrDefault(commitment.CategoryId),
+                Priority = priority,
+                ProtectedFromCuts = categoryRule.CutBehavior == AutoBudgetPlanCutBehavior.Protected,
+                AggressiveCut = categoryRule.CutBehavior == AutoBudgetPlanCutBehavior.Aggressive,
+                SeasonalityMultiplier = 1m,
+                FinancialStateMultiplier = 1m,
+                RecommendedAmount = recommendedAmount,
+                RecurringCommittedAmount = Math.Round(commitment.Amount, 2),
+                CurrencyId = commitment.CurrencyId,
+                Description = "Added because recurring payments are scheduled for this category."
             });
         }
 
@@ -265,96 +357,40 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
         return new DateTime(targetYear, targetMonth, 1, 0, 0, 0, DateTimeKind.Utc);
     }
 
+    private async Task<AutoBudgetPlanRules> LoadAutoBudgetPlanRulesAsync(
+        string userId,
+        CancellationToken cancellationToken)
+    {
+        var claimValue = await _context.UserClaims
+            .AsNoTracking()
+            .Where(c => c.UserId == userId && c.ClaimType == UserSettingsClaimTypes.AutoBudgetPlanRules)
+            .Select(c => c.ClaimValue)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(claimValue))
+            return AutoBudgetPlanRules.Default;
+
+        try
+        {
+            var dto = JsonSerializer.Deserialize<AutoBudgetPlanRulesDto>(claimValue, JsonOptions);
+            return AutoBudgetPlanRules.FromDto(dto);
+        }
+        catch (JsonException)
+        {
+            return AutoBudgetPlanRules.Default;
+        }
+    }
+
     private static decimal ResolveSeasonalityMultiplier(
         int month,
         BudgetPlanItem item,
-        Dictionary<int, decimal> overrides)
+        Dictionary<int, decimal> overrides,
+        AutoBudgetPlanCategoryRule rules)
     {
         if (overrides.TryGetValue(item.CategoryId, out var overrideMultiplier))
-            return overrideMultiplier;
+            return ClampMultiplier(overrideMultiplier);
 
-        var categoryText = BuildCategoryText(item);
-        var multiplier = 1m;
-
-        if (month == 12)
-        {
-            multiplier = Math.Max(multiplier, 1.05m);
-
-            if (IsHolidayCategory(categoryText))
-                multiplier = Math.Max(multiplier, 1.4m);
-
-            if (IsFoodOrEntertainmentCategory(categoryText))
-                multiplier = Math.Max(multiplier, 1.15m);
-        }
-
-        if (month is 12 or 1 or 2)
-        {
-            if (IsUtilityCategory(categoryText))
-                multiplier = Math.Max(multiplier, 1.25m);
-
-            if (IsTransportCategory(categoryText))
-                multiplier = Math.Max(multiplier, 1.1m);
-        }
-
-        if (month is 6 or 7 or 8 && IsTravelCategory(categoryText))
-            multiplier = Math.Max(multiplier, 1.2m);
-
-        if (month == 9 && IsSchoolCategory(categoryText))
-            multiplier = Math.Max(multiplier, 1.25m);
-
-        return ClampMultiplier(multiplier);
-    }
-
-    private static string BuildCategoryText(BudgetPlanItem item)
-    {
-        return $"{item.Category?.Title} {item.Category?.Description} {item.Description}".ToLowerInvariant();
-    }
-
-    private static bool IsHolidayCategory(string categoryText)
-    {
-        return ContainsAny(categoryText,
-            "gift", "present", "holiday", "celebration", "party",
-            "подар", "праздн", "свят");
-    }
-
-    private static bool IsFoodOrEntertainmentCategory(string categoryText)
-    {
-        return ContainsAny(categoryText,
-            "food", "grocery", "groceries", "restaurant", "entertainment",
-            "продукт", "еда", "ресторан", "кафе");
-    }
-
-    private static bool IsUtilityCategory(string categoryText)
-    {
-        return ContainsAny(categoryText,
-            "utility", "utilities", "heating", "heat", "gas", "electric", "electricity", "water",
-            "коммун", "комун", "отоп", "опален", "электр", "електр", "вода");
-    }
-
-    private static bool IsTransportCategory(string categoryText)
-    {
-        return ContainsAny(categoryText,
-            "transport", "fuel", "taxi", "car",
-            "транспорт", "бензин", "авто", "такси");
-    }
-
-    private static bool IsTravelCategory(string categoryText)
-    {
-        return ContainsAny(categoryText,
-            "travel", "vacation", "trip", "hotel", "tickets",
-            "отпуск", "відпуст", "путеш", "подорож", "отел", "готел", "билет", "квитк");
-    }
-
-    private static bool IsSchoolCategory(string categoryText)
-    {
-        return ContainsAny(categoryText,
-            "school", "education", "kids", "children", "books",
-            "школ", "учеб", "навч", "дети", "діти", "книг");
-    }
-
-    private static bool ContainsAny(string value, params string[] needles)
-    {
-        return needles.Any(value.Contains);
+        return ClampMultiplier(rules.MonthCoefficients.GetValueOrDefault(month, 1m));
     }
 
     private static decimal ClampRate(decimal value)
@@ -377,34 +413,9 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
         if (targetSeasonalityMultiplier == sourceSeasonalityMultiplier)
             return null;
 
-        var categoryText = BuildCategoryText(item);
-        var isRaised = targetSeasonalityMultiplier > sourceSeasonalityMultiplier;
-
-        if (isRaised && targetMonth == 12 && IsHolidayCategory(categoryText))
-            return "Higher because of holidays.";
-
-        if (!isRaised && sourceMonth == 12 && IsHolidayCategory(categoryText))
-            return "Lower because holiday season ended.";
-
-        if (isRaised && targetMonth is 12 or 1 or 2 && IsUtilityCategory(categoryText))
-            return "Higher because of winter utilities.";
-
-        if (!isRaised && sourceMonth is 12 or 1 or 2 && IsUtilityCategory(categoryText))
-            return "Lower because winter season ended.";
-
-        if (isRaised && targetMonth is 6 or 7 or 8 && IsTravelCategory(categoryText))
-            return "Higher because of summer travel season.";
-
-        if (!isRaised && sourceMonth is 6 or 7 or 8 && IsTravelCategory(categoryText))
-            return "Lower because travel season ended.";
-
-        if (isRaised && targetMonth == 9 && IsSchoolCategory(categoryText))
-            return "Higher because of school season.";
-
-        if (!isRaised && sourceMonth == 9 && IsSchoolCategory(categoryText))
-            return "Lower because school season ended.";
-
-        return null;
+        return targetSeasonalityMultiplier > sourceSeasonalityMultiplier
+            ? "Higher because of configured month coefficient."
+            : "Lower because of configured month coefficient.";
     }
 
     private static decimal CalculateAverageMonthlyIncome(List<Transaction> transactions)
@@ -468,22 +479,15 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
 
     private static AutoCategoryPriority ResolveCategoryPriority(BudgetPlanItem item)
     {
-        var categoryText = BuildCategoryText(item);
-
-        if (ContainsAny(categoryText,
-            "rent", "mortgage", "loan", "debt", "insurance", "tax", "medical", "medicine",
-            "аренд", "оренд", "ипотек", "іпотек", "кредит", "долг", "борг", "мед"))
-            return AutoCategoryPriority.Essential;
-
-        if (IsUtilityCategory(categoryText)
-            || IsTransportCategory(categoryText)
-            || ContainsAny(categoryText, "grocery", "groceries", "продукт", "супермаркет"))
-            return AutoCategoryPriority.Essential;
-
-        if (ContainsAny(categoryText,
-            "entertainment", "delivery", "restaurant", "fastfood", "fast food", "shopping", "gift", "coffee", "subscription",
-            "развл", "достав", "ресторан", "фаст", "покуп", "подар", "кофе"))
-            return AutoCategoryPriority.Discretionary;
+        if (item.Category != null)
+        {
+            return item.Category.Priority switch
+            {
+                CategoryPriority.Mandatory => AutoCategoryPriority.Essential,
+                CategoryPriority.Discretionary => AutoCategoryPriority.Discretionary,
+                _ => AutoCategoryPriority.Flexible
+            };
+        }
 
         return AutoCategoryPriority.Flexible;
     }
@@ -509,21 +513,43 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
 
     private static decimal ResolveFinancialStateMultiplier(
         AutoCategoryPriority priority,
-        decimal financialStateTrend)
+        decimal financialStateTrend,
+        bool protectedFromCuts,
+        bool aggressiveCut)
     {
+        if (protectedFromCuts)
+            return 1m;
+
         if (financialStateTrend >= -0.03m)
             return 1m;
 
         var deterioration = ClampRate(Math.Abs(financialStateTrend) / 0.35m);
+        var cutFactor = aggressiveCut ? 1.35m : 1m;
         var reduction = priority switch
         {
             AutoCategoryPriority.Essential => deterioration * 0.06m,
             AutoCategoryPriority.Flexible => deterioration * 0.16m,
             AutoCategoryPriority.Discretionary => deterioration * 0.32m,
             _ => deterioration * 0.16m
-        };
+        } * cutFactor;
 
-        return Math.Round(Math.Max(0.68m, 1m - reduction), 4);
+        return Math.Round(Math.Max(aggressiveCut ? 0.55m : 0.68m, 1m - reduction), 4);
+    }
+
+    private static decimal ApplyLimitRules(
+        decimal amount,
+        decimal recurringFloor,
+        AutoBudgetPlanCategoryRule rules)
+    {
+        var result = amount;
+
+        if (rules.MinimumLimit.HasValue && result > 0m)
+            result = Math.Max(result, rules.MinimumLimit.Value);
+
+        if (rules.MaximumLimit.HasValue)
+            result = Math.Min(result, Math.Max(rules.MaximumLimit.Value, recurringFloor));
+
+        return Math.Round(Math.Max(MinGeneratedAmount, result), 2);
     }
 
     private static decimal CalculateExpenseEnvelope(
@@ -565,7 +591,14 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
                 AutoCategoryPriority.Essential => 0.08m,
                 _ => 0.20m
             };
-            var maxCutAmount = Math.Round(item.RecommendedAmount * maxCutRate, 2);
+            if (item.ProtectedFromCuts)
+                maxCutRate = 0m;
+            else if (item.AggressiveCut)
+                maxCutRate = Math.Max(maxCutRate, item.Priority == AutoCategoryPriority.Essential ? 0.20m : 0.50m);
+
+            var recurringFloor = Math.Max(0m, item.RecurringCommittedAmount);
+            var cuttableAmount = Math.Max(0m, item.RecommendedAmount - recurringFloor);
+            var maxCutAmount = Math.Round(Math.Min(item.RecommendedAmount * maxCutRate, cuttableAmount), 2);
             var cutAmount = Math.Min(maxCutAmount, remainingReduction);
 
             item.RecommendedAmount = Math.Round(Math.Max(MinGeneratedAmount, item.RecommendedAmount - cutAmount), 2);
@@ -600,7 +633,19 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
         if (goalReserve > 0m && item.IncomeEnvelopeMultiplier < 1m)
             parts.Add("Adjusted to reserve money for financial goals.");
 
+        if (item.RecurringCommittedAmount > 0m)
+            parts.Add("Includes scheduled recurring payments.");
+
         return parts.Count == 0 ? null : string.Join(" ", parts);
+    }
+
+    private sealed class RecurringBudgetCommitment
+    {
+        public int CategoryId { get; set; }
+        public string CategoryTitle { get; set; } = null!;
+        public Category? Category { get; set; }
+        public int CurrencyId { get; set; }
+        public decimal Amount { get; set; }
     }
 
     private enum AutoCategoryPriority
@@ -621,7 +666,10 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
         public decimal CarryAdjustment { get; set; }
         public decimal HistoryAverageAmount { get; set; }
         public AutoCategoryPriority Priority { get; set; }
+        public bool ProtectedFromCuts { get; set; }
+        public bool AggressiveCut { get; set; }
         public decimal SeasonalityMultiplier { get; set; }
+        public decimal RecurringCommittedAmount { get; set; }
         public decimal FinancialStateMultiplier { get; set; } = 1m;
         public decimal IncomeEnvelopeMultiplier { get; set; } = 1m;
         public decimal RecommendedAmount
@@ -639,5 +687,82 @@ public class AutoBudgetPlanAlgorithm : IAutoBudgetPlanAlgorithm
         public string? Description { get; set; }
 
         private decimal _recommendedAmount;
+    }
+
+    private sealed class AutoBudgetPlanRules
+    {
+        public static AutoBudgetPlanRules Default => FromDto(null);
+
+        private readonly Dictionary<int, AutoBudgetPlanCategoryRule> _categoryRules;
+
+        private AutoBudgetPlanRules(Dictionary<int, AutoBudgetPlanCategoryRule> categoryRules)
+        {
+            _categoryRules = categoryRules;
+        }
+
+        public AutoBudgetPlanCategoryRule GetCategoryRule(int categoryId)
+        {
+            return _categoryRules.TryGetValue(categoryId, out var rule)
+                ? rule
+                : AutoBudgetPlanCategoryRule.Default(categoryId);
+        }
+
+        public static AutoBudgetPlanRules FromDto(AutoBudgetPlanRulesDto? dto)
+        {
+            var categoryRules = (dto?.CategoryRules ?? [])
+                .Where(rule => rule.CategoryId > 0)
+                .GroupBy(rule => rule.CategoryId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => AutoBudgetPlanCategoryRule.FromDto(group.Last()));
+
+            return new AutoBudgetPlanRules(categoryRules);
+        }
+    }
+
+    private sealed class AutoBudgetPlanCategoryRule
+    {
+        public int CategoryId { get; init; }
+        public Dictionary<int, decimal> MonthCoefficients { get; init; } = new();
+        public decimal? MinimumLimit { get; init; }
+        public decimal? MaximumLimit { get; init; }
+        public AutoBudgetPlanCutBehavior CutBehavior { get; init; } = AutoBudgetPlanCutBehavior.Normal;
+
+        public static AutoBudgetPlanCategoryRule Default(int categoryId)
+        {
+            return FromDto(new AutoBudgetPlanCategoryRuleDto { CategoryId = categoryId });
+        }
+
+        public static AutoBudgetPlanCategoryRule FromDto(AutoBudgetPlanCategoryRuleDto dto)
+        {
+            var monthCoefficients = AutoBudgetPlanRulesDefaults.CreateMonthCoefficients()
+                .ToDictionary(i => i.Month, i => i.Multiplier);
+
+            foreach (var item in (dto.MonthCoefficients ?? []).Where(i => i.Month is >= 1 and <= 12))
+                monthCoefficients[item.Month] = ClampMultiplier(item.Multiplier);
+
+            var cutBehavior = (dto.CutBehavior ?? string.Empty).Trim().ToLowerInvariant() switch
+            {
+                "protected" => AutoBudgetPlanCutBehavior.Protected,
+                "aggressive" => AutoBudgetPlanCutBehavior.Aggressive,
+                _ => AutoBudgetPlanCutBehavior.Normal
+            };
+
+            return new AutoBudgetPlanCategoryRule
+            {
+                CategoryId = dto.CategoryId,
+                MonthCoefficients = monthCoefficients,
+                MinimumLimit = dto.MinimumLimit is >= 0m ? dto.MinimumLimit : null,
+                MaximumLimit = dto.MaximumLimit is >= 0m ? dto.MaximumLimit : null,
+                CutBehavior = cutBehavior
+            };
+        }
+    }
+
+    private enum AutoBudgetPlanCutBehavior
+    {
+        Normal,
+        Protected,
+        Aggressive
     }
 }

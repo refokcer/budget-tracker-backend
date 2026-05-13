@@ -11,6 +11,20 @@ public class BudgetPlanManagerTests
         return TestInfrastructure.CreateBudgetPlanManager(context, mapper);
     }
 
+    private static async Task SaveAutoRulesAsync(
+        ApplicationDbContext context,
+        budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanRulesDto rules)
+    {
+        await context.UserClaims.AddAsync(new Microsoft.AspNetCore.Identity.IdentityUserClaim<string>
+        {
+            UserId = TestInfrastructure.UserId,
+            ClaimType = budget_tracker_backend.Services.UserSettings.UserSettingsClaimTypes.AutoBudgetPlanRules,
+            ClaimValue = System.Text.Json.JsonSerializer.Serialize(
+                rules,
+                new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web))
+        });
+    }
+
     [Test]
     public async Task CreateAutoMonthlyPlanAsync_CarriesRemainingBudgetIntoLowerNextLimit()
     {
@@ -93,6 +107,7 @@ public class BudgetPlanManagerTests
             Id = 10,
             Title = "Utilities",
             Type = TransactionCategoryType.Expense,
+            Priority = CategoryPriority.Mandatory,
             UserId = TestInfrastructure.UserId
         });
         await context.BudgetPlans.AddAsync(new BudgetPlan
@@ -125,6 +140,19 @@ public class BudgetPlanManagerTests
             UserId = TestInfrastructure.UserId,
             UnicCode = "november-utilities"
         });
+        var rules = new budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanRulesDto
+        {
+            CategoryRules =
+            [
+                new budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanCategoryRuleDto
+                {
+                    CategoryId = 10,
+                    MonthCoefficients = budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanRulesDefaults.CreateMonthCoefficients()
+                }
+            ]
+        };
+        rules.CategoryRules[0].MonthCoefficients.Single(i => i.Month == 12).Multiplier = 1.25m;
+        await SaveAutoRulesAsync(context, rules);
         await context.SaveChangesAsync(CancellationToken.None);
         var manager = CreateManager(context);
 
@@ -140,7 +168,46 @@ public class BudgetPlanManagerTests
         {
             Assert.That(utilities.SeasonalityMultiplier, Is.EqualTo(1.25m));
             Assert.That(utilities.RecommendedAmount, Is.EqualTo(125m));
-            Assert.That(utilities.Description, Is.EqualTo("Higher because of winter utilities."));
+            Assert.That(utilities.Description, Is.EqualTo("Higher because of configured month coefficient."));
+        });
+    }
+
+    [Test]
+    public async Task CreateAutoMonthlyPlanAsync_AppliesConfiguredRules()
+    {
+        await using var context = TestInfrastructure.CreateContext();
+        await TestInfrastructure.SeedReferenceDataAsync(context);
+        var targetStart = TestInfrastructure.CurrentMonthStart.AddMonths(1);
+        var rules = new budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanRulesDto
+        {
+            CategoryRules =
+            [
+                new budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanCategoryRuleDto
+                {
+                    CategoryId = 2,
+                    CutBehavior = "Protected",
+                    MonthCoefficients = budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanRulesDefaults.CreateMonthCoefficients()
+                }
+            ]
+        };
+        rules.CategoryRules[0].MonthCoefficients.Single(i => i.Month == targetStart.Month).Multiplier = 1.07m;
+        await SaveAutoRulesAsync(context, rules);
+        await context.SaveChangesAsync(CancellationToken.None);
+        var manager = CreateManager(context);
+
+        var result = await manager.CreateAutoMonthlyPlanAsync(new AutoBudgetPlanRequestDto
+        {
+            Month = targetStart.Month,
+            Year = targetStart.Year
+        }, CancellationToken.None);
+
+        var groceries = result.Items.Single(i => i.CategoryTitle == "Groceries");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(groceries.CarryAdjustment, Is.EqualTo(0m));
+            Assert.That(groceries.SeasonalityMultiplier, Is.EqualTo(1.07m));
+            Assert.That(groceries.RecommendedAmount, Is.EqualTo(300m));
         });
     }
 
@@ -154,6 +221,7 @@ public class BudgetPlanManagerTests
             Id = 10,
             Title = "Utilities",
             Type = TransactionCategoryType.Expense,
+            Priority = CategoryPriority.Mandatory,
             UserId = TestInfrastructure.UserId
         });
         await context.BudgetPlans.AddAsync(new BudgetPlan
@@ -186,6 +254,20 @@ public class BudgetPlanManagerTests
             UserId = TestInfrastructure.UserId,
             UnicCode = "february-utilities"
         });
+        var rules = new budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanRulesDto
+        {
+            CategoryRules =
+            [
+                new budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanCategoryRuleDto
+                {
+                    CategoryId = 10,
+                    MonthCoefficients = budget_tracker_backend.Dto.UserSettings.AutoBudgetPlanRulesDefaults.CreateMonthCoefficients()
+                }
+            ]
+        };
+        rules.CategoryRules[0].MonthCoefficients.Single(i => i.Month == 2).Multiplier = 1.25m;
+        rules.CategoryRules[0].MonthCoefficients.Single(i => i.Month == 3).Multiplier = 1m;
+        await SaveAutoRulesAsync(context, rules);
         await context.SaveChangesAsync(CancellationToken.None);
         var manager = CreateManager(context);
 
@@ -201,7 +283,7 @@ public class BudgetPlanManagerTests
         {
             Assert.That(utilities.SeasonalityMultiplier, Is.EqualTo(0.8m));
             Assert.That(utilities.RecommendedAmount, Is.EqualTo(100m));
-            Assert.That(utilities.Description, Is.EqualTo("Lower because winter season ended."));
+            Assert.That(utilities.Description, Is.EqualTo("Lower because of configured month coefficient."));
         });
     }
 
@@ -215,6 +297,7 @@ public class BudgetPlanManagerTests
             Id = 10,
             Title = "Entertainment",
             Type = TransactionCategoryType.Expense,
+            Priority = CategoryPriority.Discretionary,
             UserId = TestInfrastructure.UserId
         });
         await context.BudgetPlanItems.AddAsync(new BudgetPlanItem
@@ -270,6 +353,7 @@ public class BudgetPlanManagerTests
             Id = 10,
             Title = "Entertainment",
             Type = TransactionCategoryType.Expense,
+            Priority = CategoryPriority.Discretionary,
             UserId = TestInfrastructure.UserId
         });
         await context.BudgetPlanItems.AddAsync(new BudgetPlanItem

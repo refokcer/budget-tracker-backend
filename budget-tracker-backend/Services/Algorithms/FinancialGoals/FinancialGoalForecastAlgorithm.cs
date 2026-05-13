@@ -1,10 +1,11 @@
-namespace budget_tracker_backend.Services.Algorithms.FinancialGoals;
+﻿namespace budget_tracker_backend.Services.Algorithms.FinancialGoals;
 
 using budget_tracker_backend.Data;
 using budget_tracker_backend.Dto.FinancialGoals;
 using budget_tracker_backend.Models;
 using budget_tracker_backend.Models.Enums;
 using budget_tracker_backend.Services.Algorithms;
+using budget_tracker_backend.Services.RecurringPayments;
 using Microsoft.EntityFrameworkCore;
 
 public class FinancialGoalForecastAlgorithm : IFinancialGoalForecastAlgorithm
@@ -86,7 +87,12 @@ public class FinancialGoalForecastAlgorithm : IFinancialGoalForecastAlgorithm
         var averageMonthlyExpenses = monthlyExpenses.Average();
         var averageMonthlyNetSavings = Math.Max(0m, averageMonthlyIncome - averageMonthlyExpenses);
         var averageMonthlyGoalContribution = monthlyGoalContributions.Average();
-        var projectedMonthlyContribution = Math.Max(averageMonthlyNetSavings, averageMonthlyGoalContribution);
+        var recurringNetSavings = await CalculateNextMonthRecurringNetSavingsAsync(
+            currentMonthStart.AddMonths(1),
+            cancellationToken);
+        var projectedMonthlyContribution = Math.Max(
+            Math.Max(averageMonthlyNetSavings, averageMonthlyGoalContribution),
+            recurringNetSavings);
         var requiredMonthlyContribution = monthsRemaining > 0
             ? remainingAmount / monthsRemaining
             : remainingAmount;
@@ -144,18 +150,45 @@ public class FinancialGoalForecastAlgorithm : IFinancialGoalForecastAlgorithm
         return savingsAccounts.Sum(a => a.Amount);
     }
 
+    private async Task<decimal> CalculateNextMonthRecurringNetSavingsAsync(
+        DateTime nextMonthStart,
+        CancellationToken cancellationToken)
+    {
+        var nextMonthEnd = nextMonthStart.AddMonths(1);
+        var recurringPayments = await _context.RecurringPayments
+            .AsNoTracking()
+            .Where(p => p.IsActive
+                && p.StartDate < nextMonthEnd
+                && (p.EndDate == null || p.EndDate >= nextMonthStart))
+            .ToListAsync(cancellationToken);
+
+        var projected = recurringPayments
+            .SelectMany(payment => RecurringPaymentSchedule.GetOccurrences(payment, nextMonthStart, nextMonthEnd)
+                .Select(_ => payment))
+            .ToList();
+
+        var income = projected
+            .Where(p => p.Type == TransactionCategoryType.Income)
+            .Sum(p => p.Amount);
+        var expenses = projected
+            .Where(p => p.Type == TransactionCategoryType.Expense)
+            .Sum(p => p.Amount);
+
+        return Math.Max(0m, income - expenses);
+    }
+
     private static bool IsContributionToGoal(FinancialGoal goal, Transaction transaction, List<Account> savingsAccounts)
     {
         if (goal.LinkedAccountId.HasValue)
         {
             return transaction.AccountTo == goal.LinkedAccountId.Value
-                && transaction.Type is TransactionCategoryType.Transaction or TransactionCategoryType.Income;
+                && transaction.Type is TransactionCategoryType.Transfer or TransactionCategoryType.Income;
         }
 
         var savingsAccountIds = savingsAccounts.Select(a => a.Id).ToHashSet();
         return transaction.AccountTo != null
             && savingsAccountIds.Contains(transaction.AccountTo.Value)
-            && transaction.Type is TransactionCategoryType.Transaction or TransactionCategoryType.Income;
+            && transaction.Type is TransactionCategoryType.Transfer or TransactionCategoryType.Income;
     }
 
     private static List<string> BuildWarnings(
@@ -240,3 +273,4 @@ public class FinancialGoalForecastAlgorithm : IFinancialGoalForecastAlgorithm
         return Math.Max(0, months);
     }
 }
+
